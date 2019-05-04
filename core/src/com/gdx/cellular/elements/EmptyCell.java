@@ -1,0 +1,20 @@
+package com.gdx.cellular.elements;
+
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.utils.Array;
+
+public class EmptyCell extends Element {
+
+    public EmptyCell(int x, int y, boolean isPixel) {
+        super(x, y, isPixel);
+    }
+
+    @Override
+    public void draw(ShapeRenderer sr) {}
+
+    @Override
+    public void step(Array<Array<Element>> matrix) {
+
+    }
+
+}
