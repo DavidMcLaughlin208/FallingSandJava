@@ -42,7 +42,7 @@ public abstract class Element {
 
     public void setCoordinatesByMatrix(int providedX, int providedY) {
         setXByMatrix(providedX);
-        setYbyMatrix(providedY);
+        setYByMatrix(providedY);
     }
 
     public void setCoordinatesByPixel(int providedX, int providedY) {
@@ -65,7 +65,7 @@ public abstract class Element {
         this.pixelX = toPixel(providedVal);
     }
 
-    public void setYbyMatrix(int providedVal) {
+    public void setYByMatrix(int providedVal) {
         this.matrixY = providedVal;
         this.pixelY = toPixel(providedVal);
     }

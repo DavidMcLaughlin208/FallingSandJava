@@ -23,7 +23,6 @@ public class CellularAutomaton extends ApplicationAdapter {
 	public static int screenHeight = 800;
 	public static int pixelSizeModifier = 3;
     public static Vector3 gravity = new Vector3(0f, -5f, 0f);
-    public static Vector3 currentGravity = gravity;
     public static BitSet stepped = new BitSet(1);
 
     private SpriteBatch batch;
@@ -63,7 +62,6 @@ public class CellularAutomaton extends ApplicationAdapter {
 //		batch.begin();
 //		batch.draw(img, 0, 0);
 //		batch.end();
-        currentGravity = multiplyVectorByConstant(gravity, Gdx.graphics.getDeltaTime());
         stepped.flip(0);
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
@@ -76,15 +74,14 @@ public class CellularAutomaton extends ApplicationAdapter {
 
 		if (Gdx.input.isTouched()) {
 			Vector3 touchPos = new Vector3();
-            int matrixX = Gdx.input.getX() / pixelSizeModifier;
-            int matrixY = Gdx.input.getY() / pixelSizeModifier;
 			touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
 			camera.unproject(touchPos);
-			if (false) {
-			    iterateAndSpawnBetweenTwoPoints();
+			if (touchedLastFrame) {
+			    iterateAndSpawnBetweenTwoPoints(lastTouchPos, touchPos, currentlySelectedElement);
             } else {
-                spawnElement(matrixX, matrixY, currentlySelectedElement);
+                spawnElementByPixel((int) touchPos.x, (int) touchPos.y, currentlySelectedElement);
             }
+			lastTouchPos = touchPos;
 			touchedLastFrame = true;
 		} else {
 			touchedLastFrame = false;
@@ -114,10 +111,55 @@ public class CellularAutomaton extends ApplicationAdapter {
 		shapeRenderer.end();
 	}
 
-    private void iterateAndSpawnBetweenTwoPoints() {
+    private void iterateAndSpawnBetweenTwoPoints(Vector3 pos1, Vector3 pos2, ElementType elementType) {
+	    if (pos1.epsilonEquals(pos2)) return;
+
+		int matrixX1 = toMatrix((int) pos1.x);
+		int matrixY1 = toMatrix((int) pos1.y);
+		int matrixX2 = toMatrix((int) pos2.x);
+		int matrixY2 = toMatrix((int) pos2.y);
+
+		int xDiff = matrixX1 - matrixX2;
+		int yDiff = matrixY1 - matrixY2;
+		boolean xDiffIsLarger = Math.abs(xDiff) > Math.abs(yDiff);
+
+		int xModifier = xDiff < 0 ? 1 : -1;
+		int yModifier = yDiff < 0 ? 1 : -1;
+
+		int upperBound = Math.max(Math.abs(xDiff), Math.abs(yDiff));
+		int min = Math.min(Math.abs(xDiff), Math.abs(yDiff));
+		int freq = (min == 0 || upperBound == 0) ? 0 : (upperBound / min);
+
+	    int smallerCount = 0;
+	    for (int i = 1; i <= upperBound; i++) {
+	        if (freq != 0 && i % freq == 0 && min != smallerCount) {
+				smallerCount += 1;
+            }
+	        int yIncrease, xIncrease;
+	        if (xDiffIsLarger) {
+				xIncrease = i;
+				yIncrease = smallerCount;
+			} else {
+	        	yIncrease = i;
+	        	xIncrease = smallerCount;
+			}
+	        int currentY = matrixY1 + (yIncrease * yModifier);
+	        int currentX = matrixX1 + (xIncrease * xModifier);
+	        if (isWithinBounds(currentX, currentY)) {
+				matrix.get(currentY).set(currentX, elementType.createElementByMatrix(currentX, currentY));
+			}
+        }
+
+
     }
 
-    private void spawnElement(int matrixX, int matrixY, ElementType elementType) {
+    public static int toMatrix(int pixelVal) {
+	    return pixelVal / pixelSizeModifier;
+    }
+
+    private void spawnElementByPixel(int pixelX, int pixelY, ElementType elementType) {
+        int matrixX = toMatrix(pixelX);
+        int matrixY = toMatrix(pixelY);
 		if (isWithinBounds(matrixX, matrixY)) {
             matrix.get(matrixY).set(matrixX, elementType.createElementByMatrix(matrixX, matrixY));
         }
@@ -143,8 +185,8 @@ public class CellularAutomaton extends ApplicationAdapter {
 	}
 
 	private Array<Array<Element>> generateMatrix() {
-	    outerArraySize = (int) Math.floor(screenHeight / pixelSizeModifier);
-		innerArraySize = (int) Math.floor(screenWidth / pixelSizeModifier);
+	    outerArraySize = toMatrix(screenHeight);
+		innerArraySize = toMatrix(screenWidth);
 		Array<Array<Element>> outerArray = new Array<>(true, outerArraySize);
 		for (int y = 0; y < outerArraySize; y++) {
 			Array<Element> innerArr = new Array<>(true, innerArraySize);
