@@ -1,6 +1,7 @@
 package com.gdx.cellular.elements;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.gdx.cellular.CellularAutomaton;
@@ -38,6 +39,26 @@ public abstract class Element {
         toSwap.setCoordinatesByMatrix(this.matrixX, this.matrixY);
         matrix.get(toSwapMatrixY).set(toSwapMatrixX, this);
         this.setCoordinatesByMatrix(toSwapMatrixX, toSwapMatrixY);
+    }
+
+    public void moveToLastValid(Array<Array<Element>> matrix, Vector2 moveToLocation) {
+        Element toSwap = matrix.get((int) moveToLocation.y).get((int) moveToLocation.x);
+        swapPositions(matrix, toSwap);
+    }
+
+    public void moveToLastValidAndSwap(Array<Array<Element>> matrix, Element toSwap, Vector2 moveToLocation) {
+        int moveToLocationMatrixX = (int) moveToLocation.x;
+        int moveToLocationMatrixY = (int) moveToLocation.y;
+        Element thirdNeighbor = matrix.get((int) moveToLocation.y).get((int) moveToLocation.x);
+
+        matrix.get(this.matrixY).set(this.matrixX, thirdNeighbor);
+        thirdNeighbor.setCoordinatesByMatrix(this.matrixX, this.matrixY);
+
+        matrix.get(toSwap.matrixY).set(toSwap.matrixX, this);
+        this.setCoordinatesByMatrix(toSwap.matrixX, toSwap.matrixY);
+
+        matrix.get(moveToLocationMatrixY).set(moveToLocationMatrixX, toSwap);
+        toSwap.setCoordinatesByMatrix(moveToLocationMatrixX, moveToLocationMatrixY);
     }
 
     public void setCoordinatesByMatrix(int providedX, int providedY) {

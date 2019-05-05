@@ -21,7 +21,7 @@ import java.util.BitSet;
 public class CellularAutomaton extends ApplicationAdapter {
 	public static int screenWidth = 480;
 	public static int screenHeight = 800;
-	public static int pixelSizeModifier = 3;
+	public static int pixelSizeModifier = 2;
     public static Vector3 gravity = new Vector3(0f, -5f, 0f);
     public static BitSet stepped = new BitSet(1);
 
@@ -152,7 +152,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 	        int currentY = matrixY1 + (yIncrease * yModifier);
 	        int currentX = matrixX1 + (xIncrease * xModifier);
 	        if (isWithinBounds(currentX, currentY)) {
-	        	spawnElementByMatrixWithBrush(currentX, currentY, elementType, this.brushSize);
+	        	spawnElementByMatrixWithBrush(currentX, currentY, elementType, brushSize);
 				//matrix.get(currentY).set(currentX, elementType.createElementByMatrix(currentX, currentY));
 			}
         }

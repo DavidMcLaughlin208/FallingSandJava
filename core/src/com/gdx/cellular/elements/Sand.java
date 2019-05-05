@@ -3,6 +3,7 @@ package com.gdx.cellular.elements;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.gdx.cellular.CellularAutomaton;
@@ -29,24 +30,30 @@ public class Sand extends Element implements Solid {
         vel.add(CellularAutomaton.gravity);
         int signFactor = vel.y < 0 ? -1 : 1;
         int velYMax = (int) (Math.abs(vel.y) * Gdx.graphics.getDeltaTime());
+
+        Vector2 lastValidLocation = new Vector2(matrixX, matrixY);
         for (int i = 1; i <= velYMax; i++) {
             int modifiedMatrixY = matrixY + (i * signFactor);
             if (modifiedMatrixY >= 0 && modifiedMatrixY < matrix.size) {
                 Element neighbor = matrix.get(matrixY + (i * signFactor)).get(matrixX);
                 if (neighbor == this) continue;
-                boolean stopped = actOnNeighboringElement(neighbor, matrix, i == velYMax, i == 1);
+                boolean stopped = actOnNeighboringElement(neighbor, matrix, i == velYMax, i == 1, lastValidLocation);
                 if (stopped) {
                     break;
                 }
+                lastValidLocation.x =  matrixX;
+                lastValidLocation.y = modifiedMatrixY;
+
             } else {
                 matrix.get(matrixY).set(matrixX, new EmptyCell(pixelX, pixelY, true));
             }
         }
     }
 
-    private boolean actOnNeighboringElement(Element neighbor, Array<Array<Element>> matrix, boolean isFinal, boolean isFirst) {
+    private boolean actOnNeighboringElement(Element neighbor, Array<Array<Element>> matrix, boolean isFinal, boolean isFirst, Vector2 lastValidLocation) {
         if (neighbor instanceof EmptyCell) {
             if (isFinal) {
+                //moveToLastValidAndSwap(matrix, neighbor, lastValidLocation);
                 swapPositions(matrix, neighbor);
             } else {
                 return false;
@@ -57,9 +64,11 @@ public class Sand extends Element implements Solid {
         } else if (neighbor instanceof Solid) {
             if (isFirst) {
                 Element diagnoalNeighbor = matrix.get(neighbor.matrixY).get(neighbor.matrixX + (Math.random() > .5 ? 1 : -1));
-                actOnNeighboringElement(diagnoalNeighbor, matrix, true, false);
+                actOnNeighboringElement(diagnoalNeighbor, matrix, true, false, lastValidLocation);
+            } else {
+                moveToLastValid(matrix, lastValidLocation);
             }
-            vel.y = -62f;
+            vel.y = Math.min(-62f, (vel.y + neighbor.vel.y) /2);
             return true;
         }
         return false;
