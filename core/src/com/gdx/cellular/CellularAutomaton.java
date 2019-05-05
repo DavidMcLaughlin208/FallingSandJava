@@ -35,6 +35,7 @@ public class CellularAutomaton extends ApplicationAdapter {
     public int innerArraySize;
     private ElementType currentlySelectedElement = ElementType.SAND;
     private Vector3 lastTouchPos = new Vector3();
+    private int brushSize = 3;
 
 	private FPSLogger fpsLogger;
 
@@ -70,16 +71,21 @@ public class CellularAutomaton extends ApplicationAdapter {
             currentlySelectedElement = ElementType.SAND;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
             currentlySelectedElement = ElementType.EMPTY_CELL;
-        }
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
+			brushSize = Math.min(9, brushSize + 2);
+		} else if (Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
+			brushSize = Math.max(1, brushSize - 2);
+		}
+
 
 		if (Gdx.input.isTouched()) {
 			Vector3 touchPos = new Vector3();
 			touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
 			camera.unproject(touchPos);
 			if (touchedLastFrame) {
-			    iterateAndSpawnBetweenTwoPoints(lastTouchPos, touchPos, currentlySelectedElement);
+			    iterateAndSpawnBetweenTwoPoints(lastTouchPos, touchPos, currentlySelectedElement, brushSize);
             } else {
-                spawnElementByPixel((int) touchPos.x, (int) touchPos.y, currentlySelectedElement);
+                spawnElementByPixelWithBrush((int) touchPos.x, (int) touchPos.y, currentlySelectedElement, brushSize);
             }
 			lastTouchPos = touchPos;
 			touchedLastFrame = true;
@@ -111,7 +117,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 		shapeRenderer.end();
 	}
 
-    private void iterateAndSpawnBetweenTwoPoints(Vector3 pos1, Vector3 pos2, ElementType elementType) {
+    private void iterateAndSpawnBetweenTwoPoints(Vector3 pos1, Vector3 pos2, ElementType elementType, int brushSize) {
 	    if (pos1.epsilonEquals(pos2)) return;
 
 		int matrixX1 = toMatrix((int) pos1.x);
@@ -146,7 +152,8 @@ public class CellularAutomaton extends ApplicationAdapter {
 	        int currentY = matrixY1 + (yIncrease * yModifier);
 	        int currentX = matrixX1 + (xIncrease * xModifier);
 	        if (isWithinBounds(currentX, currentY)) {
-				matrix.get(currentY).set(currentX, elementType.createElementByMatrix(currentX, currentY));
+	        	spawnElementByMatrixWithBrush(currentX, currentY, elementType, this.brushSize);
+				//matrix.get(currentY).set(currentX, elementType.createElementByMatrix(currentX, currentY));
 			}
         }
 
@@ -157,12 +164,31 @@ public class CellularAutomaton extends ApplicationAdapter {
 	    return pixelVal / pixelSizeModifier;
     }
 
+	private void spawnElementByPixelWithBrush(int pixelX, int pixelY, ElementType elementType, int localBrushSize) {
+		int matrixX = toMatrix(pixelX);
+		int matrixY = toMatrix(pixelY);
+		spawnElementByMatrixWithBrush(matrixX, matrixY, elementType, localBrushSize);
+	}
+
     private void spawnElementByPixel(int pixelX, int pixelY, ElementType elementType) {
         int matrixX = toMatrix(pixelX);
         int matrixY = toMatrix(pixelY);
+		spawnElementByMatrix(matrixX, matrixY, elementType);
+	}
+
+	private void spawnElementByMatrixWithBrush(int matrixX, int matrixY, ElementType elementType, int localBrushSize) {
+		int halfBrush = (int) Math.floor(localBrushSize / 2);
+		for (int x = matrixX - halfBrush; x <= matrixX + halfBrush; x++) {
+			for (int y = matrixY - halfBrush; y <= matrixY + halfBrush; y++) {
+				spawnElementByMatrix(x, y, elementType);
+			}
+		}
+	}
+
+	private void spawnElementByMatrix(int matrixX, int matrixY, ElementType elementType) {
 		if (isWithinBounds(matrixX, matrixY)) {
-            matrix.get(matrixY).set(matrixX, elementType.createElementByMatrix(matrixX, matrixY));
-        }
+			matrix.get(matrixY).set(matrixX, elementType.createElementByMatrix(matrixX, matrixY));
+		}
 	}
 
     private int adjustPixelValueToFitGrid(float val) {

@@ -30,22 +30,21 @@ public class Sand extends Element implements Solid {
         int signFactor = vel.y < 0 ? -1 : 1;
         int velYMax = (int) (Math.abs(vel.y) * Gdx.graphics.getDeltaTime());
         for (int i = 1; i <= velYMax; i++) {
-            boolean isFinal = i == velYMax;
             int modifiedMatrixY = matrixY + (i * signFactor);
             if (modifiedMatrixY >= 0 && modifiedMatrixY < matrix.size) {
                 Element neighbor = matrix.get(matrixY + (i * signFactor)).get(matrixX);
                 if (neighbor == this) continue;
-                boolean stopped = actOnNeighboringElement(neighbor, matrix, isFinal);
+                boolean stopped = actOnNeighboringElement(neighbor, matrix, i == velYMax, i == 1);
                 if (stopped) {
                     break;
                 }
             } else {
                 matrix.get(matrixY).set(matrixX, new EmptyCell(pixelX, pixelY, true));
-        }
+            }
         }
     }
 
-    private boolean actOnNeighboringElement(Element neighbor, Array<Array<Element>> matrix, boolean isFinal) {
+    private boolean actOnNeighboringElement(Element neighbor, Array<Array<Element>> matrix, boolean isFinal, boolean isFirst) {
         if (neighbor instanceof EmptyCell) {
             if (isFinal) {
                 swapPositions(matrix, neighbor);
@@ -56,6 +55,10 @@ public class Sand extends Element implements Solid {
             swapPositions(matrix, neighbor);
             return true;
         } else if (neighbor instanceof Solid) {
+            if (isFirst) {
+                Element diagnoalNeighbor = matrix.get(neighbor.matrixY).get(neighbor.matrixX + (Math.random() > .5 ? 1 : -1));
+                actOnNeighboringElement(diagnoalNeighbor, matrix, true, false);
+            }
             vel.y = -62f;
             return true;
         }
