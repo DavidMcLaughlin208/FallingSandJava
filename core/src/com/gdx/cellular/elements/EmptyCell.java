@@ -2,6 +2,7 @@ package com.gdx.cellular.elements;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Array;
+import com.gdx.cellular.CellularMatrix;
 
 public class EmptyCell extends Element {
 
@@ -13,7 +14,7 @@ public class EmptyCell extends Element {
     public void draw(ShapeRenderer sr) {}
 
     @Override
-    public void step(Array<Array<Element>> matrix) {
+    public void step(CellularMatrix matrix) {
 
     }
 

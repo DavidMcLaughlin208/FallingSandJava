@@ -15,12 +15,15 @@ import com.badlogic.gdx.utils.Array;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
 
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collections;
+import java.util.List;
 
 
 public class CellularAutomaton extends ApplicationAdapter {
-	public static int screenWidth = 480;
-	public static int screenHeight = 800;
+	public static int screenWidth = 1000; // 480;
+	public static int screenHeight = 1000; //800;
 	public static int pixelSizeModifier = 2;
     public static Vector3 gravity = new Vector3(0f, -5f, 0f);
     public static BitSet stepped = new BitSet(1);
@@ -28,7 +31,7 @@ public class CellularAutomaton extends ApplicationAdapter {
     private SpriteBatch batch;
     //	private Texture img;
     private ShapeRenderer shapeRenderer;
-    private Array<Array<Element>> matrix;
+    private CellularMatrix matrix;
     private OrthographicCamera camera;
     private boolean touchedLastFrame;
     public int outerArraySize;
@@ -52,7 +55,8 @@ public class CellularAutomaton extends ApplicationAdapter {
 		shapeRenderer.setAutoShapeType(true);
 
         stepped.set(0, true);
-		matrix = generateMatrix();
+		matrix = new CellularMatrix(screenWidth, screenHeight, pixelSizeModifier);
+//		xIndexShuffledList = generateShuffledIndexes();
 	}
 
 	@Override
@@ -64,6 +68,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 //		batch.draw(img, 0, 0);
 //		batch.end();
         stepped.flip(0);
+		matrix.reshuffleXIndexes();
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
             currentlySelectedElement = ElementType.STONE;
@@ -72,9 +77,11 @@ public class CellularAutomaton extends ApplicationAdapter {
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
             currentlySelectedElement = ElementType.EMPTY_CELL;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
-			brushSize = Math.min(9, brushSize + 2);
+			brushSize = Math.min(55, brushSize + 2);
 		} else if (Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
 			brushSize = Math.max(1, brushSize - 2);
+		} else if (Gdx.input.isKeyJustPressed(Input.Keys.C)) {
+			matrix.clearAll();
 		}
 
 
@@ -93,9 +100,9 @@ public class CellularAutomaton extends ApplicationAdapter {
 			touchedLastFrame = false;
 		}
 
-        for (int y = 0; y < matrix.size; y++) {
-            Array<Element> row = matrix.get(y);
-            for (int x = 0; x < row.size; x++) {
+        for (int y = 0; y < matrix.outerArraySize; y++) {
+            Array<Element> row = matrix.getRow(y);
+            for (int x : matrix.getShuffledXIndexes()) {
                 Element element = row.get(x);
                 if (element != null) {
                     element.step(matrix);
@@ -105,8 +112,8 @@ public class CellularAutomaton extends ApplicationAdapter {
 
 		shapeRenderer.begin();
 		shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-        for (int y = 0; y < matrix.size; y++) {
-			Array<Element> row = matrix.get(y);
+        for (int y = 0; y < matrix.outerArraySize; y++) {
+			Array<Element> row = matrix.getRow(y);
 			for (int x = 0; x < row.size; x++) {
 				Element element = row.get(x);
 				if (element != null) {
@@ -151,9 +158,8 @@ public class CellularAutomaton extends ApplicationAdapter {
 			}
 	        int currentY = matrixY1 + (yIncrease * yModifier);
 	        int currentX = matrixX1 + (xIncrease * xModifier);
-	        if (isWithinBounds(currentX, currentY)) {
+	        if (matrix.isWithinBounds(currentX, currentY)) {
 	        	spawnElementByMatrixWithBrush(currentX, currentY, elementType, brushSize);
-				//matrix.get(currentY).set(currentX, elementType.createElementByMatrix(currentX, currentY));
 			}
         }
 
@@ -186,8 +192,8 @@ public class CellularAutomaton extends ApplicationAdapter {
 	}
 
 	private void spawnElementByMatrix(int matrixX, int matrixY, ElementType elementType) {
-		if (isWithinBounds(matrixX, matrixY)) {
-			matrix.get(matrixY).set(matrixX, elementType.createElementByMatrix(matrixX, matrixY));
+		if (matrix.isWithinBounds(matrixX, matrixY) && matrix.get(matrixX, matrixY).getClass() != elementType.clazz) {
+			matrix.setElementAtIndex(matrixX, matrixY, elementType.createElementByMatrix(matrixX, matrixY));
 		}
 	}
 
@@ -211,8 +217,6 @@ public class CellularAutomaton extends ApplicationAdapter {
 	}
 
 	private Array<Array<Element>> generateMatrix() {
-	    outerArraySize = toMatrix(screenHeight);
-		innerArraySize = toMatrix(screenWidth);
 		Array<Array<Element>> outerArray = new Array<>(true, outerArraySize);
 		for (int y = 0; y < outerArraySize; y++) {
 			Array<Element> innerArr = new Array<>(true, innerArraySize);
@@ -222,6 +226,14 @@ public class CellularAutomaton extends ApplicationAdapter {
 			outerArray.add(innerArr);
 		}
 		return outerArray;
+	}
+
+	private List<Integer> generateShuffledIndexes() {
+		List<Integer> list = new ArrayList<>(innerArraySize);
+		for (int i = 0; i < innerArraySize; i++) {
+			list.add(i);
+		}
+		return list;
 	}
 
     private Vector3 multiplyVectorByConstant(Vector3 gravity, float deltaTime) {

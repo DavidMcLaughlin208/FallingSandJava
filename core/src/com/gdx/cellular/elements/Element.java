@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.gdx.cellular.CellularAutomaton;
+import com.gdx.cellular.CellularMatrix;
 
 import java.util.BitSet;
 
@@ -16,6 +17,8 @@ public abstract class Element {
     public int matrixX;
     public int matrixY;
     public Vector3 vel;
+
+    public float frictionFactor;
 
     public BitSet stepped = new BitSet(1);
 
@@ -30,19 +33,22 @@ public abstract class Element {
 
     public abstract void draw(ShapeRenderer sr);
 
-    public abstract void step(Array<Array<Element>> matrix);
+    public abstract void step(CellularMatrix matrix);
 
-    public void swapPositions(Array<Array<Element>> matrix, Element toSwap) {
+    public void swapPositions(CellularMatrix matrix, Element toSwap) {
         int toSwapMatrixX = toSwap.matrixX;
         int toSwapMatrixY = toSwap.matrixY;
-        matrix.get(this.matrixY).set(this.matrixX, toSwap);
+//        matrix.get(this.matrixY).set(this.matrixX, toSwap);
+        matrix.setElementAtIndex(this.matrixX, this.matrixY, toSwap);
         toSwap.setCoordinatesByMatrix(this.matrixX, this.matrixY);
-        matrix.get(toSwapMatrixY).set(toSwapMatrixX, this);
+//        matrix.get(toSwapMatrixY).set(toSwapMatrixX, this);
+        matrix.setElementAtIndex(toSwapMatrixX, toSwapMatrixY, this);
         this.setCoordinatesByMatrix(toSwapMatrixX, toSwapMatrixY);
     }
 
-    public void moveToLastValid(Array<Array<Element>> matrix, Vector2 moveToLocation) {
-        Element toSwap = matrix.get((int) moveToLocation.y).get((int) moveToLocation.x);
+    public void moveToLastValid(CellularMatrix matrix, Vector2 moveToLocation) {
+//        Element toSwap = matrix.get((int) moveToLocation.y).get((int) moveToLocation.x);
+        Element toSwap = matrix.get((int) moveToLocation.x, moveToLocation.y);
         swapPositions(matrix, toSwap);
     }
 
