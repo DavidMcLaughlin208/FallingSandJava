@@ -22,8 +22,8 @@ import java.util.List;
 
 
 public class CellularAutomaton extends ApplicationAdapter {
-	public static int screenWidth = 1000; // 480;
-	public static int screenHeight = 1000; //800;
+	public static int screenWidth = 800; // 480;
+	public static int screenHeight = 480; //800;
 	public static int pixelSizeModifier = 2;
     public static Vector3 gravity = new Vector3(0f, -5f, 0f);
     public static BitSet stepped = new BitSet(1);
@@ -32,6 +32,7 @@ public class CellularAutomaton extends ApplicationAdapter {
     //	private Texture img;
     private ShapeRenderer shapeRenderer;
     private CellularMatrix matrix;
+    private Array<Spout> spoutArray;
     private OrthographicCamera camera;
     private boolean touchedLastFrame;
     public int outerArraySize;
@@ -56,6 +57,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 
         stepped.set(0, true);
 		matrix = new CellularMatrix(screenWidth, screenHeight, pixelSizeModifier);
+		spoutArray = new Array<>();
 //		xIndexShuffledList = generateShuffledIndexes();
 	}
 
@@ -100,6 +102,17 @@ public class CellularAutomaton extends ApplicationAdapter {
 			touchedLastFrame = false;
 		}
 
+		if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+			Vector3 touchPos = new Vector3();
+			touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+			camera.unproject(touchPos);
+			spoutArray.add(new Spout(currentlySelectedElement, matrix.toMatrix(touchPos.x), matrix.toMatrix(touchPos.y), brushSize));
+		}
+
+		for (Spout spout : spoutArray) {
+			spawnElementByMatrixWithBrush(spout.matrixX, spout.matrixY, spout.sourceElement, spout.brushSize);
+		}
+
         for (int y = 0; y < matrix.outerArraySize; y++) {
             Array<Element> row = matrix.getRow(y);
             for (int x : matrix.getShuffledXIndexes()) {
@@ -124,7 +137,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 		shapeRenderer.end();
 	}
 
-    private void iterateAndSpawnBetweenTwoPoints(Vector3 pos1, Vector3 pos2, ElementType elementType, int brushSize) {
+	private void iterateAndSpawnBetweenTwoPoints(Vector3 pos1, Vector3 pos2, ElementType elementType, int brushSize) {
 	    if (pos1.epsilonEquals(pos2)) return;
 
 		int matrixX1 = toMatrix((int) pos1.x);

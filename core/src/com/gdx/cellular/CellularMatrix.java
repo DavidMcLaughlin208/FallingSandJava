@@ -37,6 +37,10 @@ public class CellularMatrix {
         return outerArray;
     }
 
+    public int toMatrix(float pixelVal) {
+        return toMatrix((int) pixelVal);
+    }
+
     public int toMatrix(int pixelVal) {
         return pixelVal / pixelSizeModifier;
     }
