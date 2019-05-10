@@ -9,15 +9,15 @@ import com.badlogic.gdx.utils.Array;
 import com.gdx.cellular.CellularAutomaton;
 import com.gdx.cellular.CellularMatrix;
 
-public class Sand extends Element implements Solid {
+public class Dirt extends Element implements Solid {
 
-    public Sand(int x, int y, boolean isPixel) {
+    public Dirt(int x, int y, boolean isPixel) {
         super(x, y, isPixel);
         vel = new Vector3(0f, -124f,0f);
-        frictionFactor = .8f;
+        frictionFactor = 12f;
     }
 
-    public Color color = Color.YELLOW;
+    public Color color = Color.BROWN;
 
     @Override
     public void draw(ShapeRenderer sr) {
@@ -67,7 +67,7 @@ public class Sand extends Element implements Solid {
                 if (stopped) {
                     break;
                 }
-                lastValidLocation.x = modifiedMatrixX;
+                lastValidLocation.x =  matrixX;
                 lastValidLocation.y = modifiedMatrixY;
 
             } else {
@@ -121,40 +121,33 @@ public class Sand extends Element implements Solid {
 //            return true;
         } else if (neighbor instanceof Solid) {
             if (depth > 0) {
+                vel.x *= -1;
                 return true;
             }
-            if (isFinal) {
-                moveToLastValid(matrix, lastValidLocation);
-                return true;
-            }
-            Vector3 normalizedVel = vel.cpy().nor();
-            int additionalX = getAdditional(normalizedVel.x);
-            int additionalY = getAdditional(normalizedVel.y);
-
-            Element diagonalNeighbor = matrix.get(matrixX + additionalX, matrixY + additionalY);
-            vel.x += additionalX;
             if (isFirst) {
-                vel.y = getAverageVelOrGravity(vel.y, neighbor.vel.y);
+                Vector3 normalizedVel = vel.cpy().nor();
+                int additionalX = getAdditional(normalizedVel.x);
+                int additionalY = getAdditional(normalizedVel.y);
+                Element diagonalNeighbor = matrix.get(matrixX + additionalX, matrixY + additionalY);
+                if (diagonalNeighbor != null) {
+                    boolean stopped = actOnNeighboringElement(diagonalNeighbor, matrix, true, false, lastValidLocation, depth + 1);
+                    //boolean stopped = iterateBetweenTwoPointsAndAct((int) lastValidLocation.x, (int) lastValidLocation.y, additionalX, additionalY, matrix);
+                    if (stopped) {
+                        vel.x = (-1 * additionalX * 62f);
+                        vel.y = -62f;
+                        return true;
+                    } else {
+                        vel.y = -62f;
+                        vel.x = additionalX * 62f;
+                    }
+                }
             } else {
-                vel.y = -124;
+                moveToLastValid(matrix, lastValidLocation);
+                vel.y = getAverageVelOrGravity(vel.y, neighbor.vel.y);
+                neighbor.vel.y = vel.y;
+                vel.x = (vel.x + neighbor.vel.x) / 2;
+                return true;
             }
-
-            neighbor.vel.y = vel.y;
-            vel.x = (vel.x + neighbor.vel.x) / 2 * frictionFactor;
-            if (diagonalNeighbor != null) {
-                boolean stoppedDiagonally = actOnNeighboringElement(diagonalNeighbor, matrix, true, false, lastValidLocation, depth + 1);
-                if (!stoppedDiagonally) return true;
-            }
-
-            Element adjacentNeighbor = matrix.get(matrixX + additionalX, matrixY);
-            if (adjacentNeighbor != null) {
-                boolean stoppedAdjacently = actOnNeighboringElement(adjacentNeighbor, matrix, true, false, lastValidLocation, depth + 1);
-                if (stoppedAdjacently) vel.x *= -1;
-                if (!stoppedAdjacently) return true;
-            }
-
-            moveToLastValid(matrix, lastValidLocation);
-            return true;
         }
         return false;
     }
@@ -206,12 +199,12 @@ public class Sand extends Element implements Solid {
 //    }
 
     private int getAdditional(float val) {
-        if (val < 0) {
+        if (val < -.2f) {
             return 1 * (int) Math.floor(val);
-        } else if (val > 0) {
+        } else if (val > .2f) {
             return 1 * (int) Math.ceil(val);
         } else {
-            return Math.random() > 0.5 ? 1 : -1;
+            return Math.random() > 0.5 ? 0 : (Math.random() > 0.5 ? 1 : -1);
         }
     }
 
@@ -220,7 +213,7 @@ public class Sand extends Element implements Solid {
         if (avg > 0) {
             return avg;
         } else {
-            return Math.min(avg, -124f);
+            return Math.min(avg, -62f);
         }
     }
 }

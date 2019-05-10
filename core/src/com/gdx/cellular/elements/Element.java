@@ -46,7 +46,7 @@ public abstract class Element {
         this.setCoordinatesByMatrix(toSwapMatrixX, toSwapMatrixY);
     }
 
-    public void moveToLastValid(CellularMatrix matrix, Vector2 moveToLocation) {
+    public void moveToLastValid(CellularMatrix matrix, Vector3 moveToLocation) {
 //        Element toSwap = matrix.get((int) moveToLocation.y).get((int) moveToLocation.x);
         Element toSwap = matrix.get((int) moveToLocation.x, moveToLocation.y);
         swapPositions(matrix, toSwap);

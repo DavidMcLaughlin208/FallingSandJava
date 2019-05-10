@@ -1,5 +1,6 @@
 package com.gdx.cellular;
 
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Array;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
@@ -35,6 +36,37 @@ public class CellularMatrix {
             outerArray.add(innerArr);
         }
         return outerArray;
+    }
+
+    public void stepAndDrawAll(ShapeRenderer sr) {
+        sr.begin();
+        sr.set(ShapeRenderer.ShapeType.Filled);
+        for (int y = 0; y < outerArraySize; y++) {
+            Array<Element> row = getRow(y);
+            for (int x : getShuffledXIndexes()) {
+                Element element = row.get(x);
+                if (element != null) {
+                    element.step(this);
+                    element.draw(sr);
+                }
+            }
+        }
+        sr.end();
+    }
+
+    public void drawAll(ShapeRenderer sr) {
+        sr.begin();
+        sr.set(ShapeRenderer.ShapeType.Filled);
+        for (int y = 0; y < outerArraySize; y++) {
+            Array<Element> row = getRow(y);
+            for (int x = 0; x < row.size; x++) {
+                Element element = row.get(x);
+                if (element != null) {
+                    element.draw(sr);
+                }
+            }
+        }
+        sr.end();
     }
 
     public int toMatrix(float pixelVal) {

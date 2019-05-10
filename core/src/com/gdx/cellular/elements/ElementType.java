@@ -33,6 +33,17 @@ public enum ElementType {
         public Element createElementByPixel(int x, int y) {
             return new Sand(x, y, true);
         }
+    },
+    DIRT(Dirt.class) {
+        @Override
+        public Element createElementByMatrix(int x, int y) {
+            return new Dirt(x, y, false);
+        }
+
+        @Override
+        public Element createElementByPixel(int x, int y) {
+            return new Dirt(x, y, true);
+        }
     };
 
     public final Class clazz;

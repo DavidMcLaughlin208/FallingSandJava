@@ -23,13 +23,12 @@ import java.util.List;
 
 public class CellularAutomaton extends ApplicationAdapter {
 	public static int screenWidth = 800; // 480;
-	public static int screenHeight = 480; //800;
+	public static int screenHeight = 800; //800;
 	public static int pixelSizeModifier = 2;
     public static Vector3 gravity = new Vector3(0f, -5f, 0f);
     public static BitSet stepped = new BitSet(1);
 
     private SpriteBatch batch;
-    //	private Texture img;
     private ShapeRenderer shapeRenderer;
     private CellularMatrix matrix;
     private Array<Spout> spoutArray;
@@ -40,6 +39,8 @@ public class CellularAutomaton extends ApplicationAdapter {
     private ElementType currentlySelectedElement = ElementType.SAND;
     private Vector3 lastTouchPos = new Vector3();
     private int brushSize = 3;
+
+    private boolean paused = false;
 
 	private FPSLogger fpsLogger;
 
@@ -58,17 +59,24 @@ public class CellularAutomaton extends ApplicationAdapter {
         stepped.set(0, true);
 		matrix = new CellularMatrix(screenWidth, screenHeight, pixelSizeModifier);
 		spoutArray = new Array<>();
-//		xIndexShuffledList = generateShuffledIndexes();
 	}
 
 	@Override
 	public void render () {
-		fpsLogger.log();
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-//		batch.begin();
-//		batch.draw(img, 0, 0);
-//		batch.end();
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        boolean stepOneFrame = false;
+        if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
+            stepOneFrame = true;
+        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
+            paused = !paused;
+        }
+        if (paused && !stepOneFrame) {
+            matrix.stepAndDrawAll(shapeRenderer);
+            return;
+        }
+        fpsLogger.log();
         stepped.flip(0);
 		matrix.reshuffleXIndexes();
 
@@ -77,6 +85,8 @@ public class CellularAutomaton extends ApplicationAdapter {
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
             currentlySelectedElement = ElementType.SAND;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
+            currentlySelectedElement = ElementType.DIRT;
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)) {
             currentlySelectedElement = ElementType.EMPTY_CELL;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
 			brushSize = Math.min(55, brushSize + 2);
@@ -113,29 +123,18 @@ public class CellularAutomaton extends ApplicationAdapter {
 			spawnElementByMatrixWithBrush(spout.matrixX, spout.matrixY, spout.sourceElement, spout.brushSize);
 		}
 
-        for (int y = 0; y < matrix.outerArraySize; y++) {
-            Array<Element> row = matrix.getRow(y);
-            for (int x : matrix.getShuffledXIndexes()) {
-                Element element = row.get(x);
-                if (element != null) {
-                    element.step(matrix);
-                }
-            }
-        }
+        matrix.stepAndDrawAll(shapeRenderer);
 
-		shapeRenderer.begin();
-		shapeRenderer.set(ShapeRenderer.ShapeType.Filled);
-        for (int y = 0; y < matrix.outerArraySize; y++) {
-			Array<Element> row = matrix.getRow(y);
-			for (int x = 0; x < row.size; x++) {
-				Element element = row.get(x);
-				if (element != null) {
-					element.draw(shapeRenderer);
-				}
-			}
-		}
-		shapeRenderer.end();
+		//drawAll();
 	}
+
+	private void stepAll() {
+
+    }
+
+	private void drawAll() {
+
+    }
 
 	private void iterateAndSpawnBetweenTwoPoints(Vector3 pos1, Vector3 pos2, ElementType elementType, int brushSize) {
 	    if (pos1.epsilonEquals(pos2)) return;
