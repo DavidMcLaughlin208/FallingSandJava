@@ -44,6 +44,18 @@ public enum ElementType {
         public Element createElementByPixel(int x, int y) {
             return new Dirt(x, y, true);
         }
+    },
+    WATER(Water.class) {
+        @Override
+        public Element createElementByMatrix(int x, int y) {
+            return new Water(x, y, false);
+        }
+
+        @Override
+        public Element createElementByPixel(int x, int y) {
+            return new Water(x, y, true);
+        }
+
     };
 
     public final Class clazz;

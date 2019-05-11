@@ -6,10 +6,8 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.graphics.profiling.GLProfiler;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.gdx.cellular.elements.Element;
@@ -17,7 +15,6 @@ import com.gdx.cellular.elements.ElementType;
 
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -87,6 +84,8 @@ public class CellularAutomaton extends ApplicationAdapter {
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
             currentlySelectedElement = ElementType.DIRT;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)) {
+            currentlySelectedElement = ElementType.WATER;
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)) {
             currentlySelectedElement = ElementType.EMPTY_CELL;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
 			brushSize = Math.min(55, brushSize + 2);
