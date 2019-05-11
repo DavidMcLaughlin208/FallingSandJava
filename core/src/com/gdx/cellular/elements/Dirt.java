@@ -14,7 +14,7 @@ public class Dirt extends Element implements Solid {
     public Dirt(int x, int y, boolean isPixel) {
         super(x, y, isPixel);
         vel = new Vector3(0f, -124f,0f);
-        frictionFactor = 12f;
+        frictionFactor = .9f;
     }
 
     public Color color = Color.BROWN;

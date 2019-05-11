@@ -38,17 +38,14 @@ public abstract class Element {
     public void swapPositions(CellularMatrix matrix, Element toSwap) {
         int toSwapMatrixX = toSwap.matrixX;
         int toSwapMatrixY = toSwap.matrixY;
-//        matrix.get(this.matrixY).set(this.matrixX, toSwap);
         matrix.setElementAtIndex(this.matrixX, this.matrixY, toSwap);
         toSwap.setCoordinatesByMatrix(this.matrixX, this.matrixY);
-//        matrix.get(toSwapMatrixY).set(toSwapMatrixX, this);
         matrix.setElementAtIndex(toSwapMatrixX, toSwapMatrixY, this);
         this.setCoordinatesByMatrix(toSwapMatrixX, toSwapMatrixY);
     }
 
     public void moveToLastValid(CellularMatrix matrix, Vector3 moveToLocation) {
-//        Element toSwap = matrix.get((int) moveToLocation.y).get((int) moveToLocation.x);
-        Element toSwap = matrix.get((int) moveToLocation.x, moveToLocation.y);
+        Element toSwap = matrix.get(moveToLocation.x, moveToLocation.y);
         swapPositions(matrix, toSwap);
     }
 

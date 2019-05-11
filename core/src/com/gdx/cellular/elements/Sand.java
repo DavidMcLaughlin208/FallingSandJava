@@ -11,10 +11,12 @@ import com.gdx.cellular.CellularMatrix;
 
 public class Sand extends Element implements Solid {
 
+    private boolean isFreeFalling = true;
+
     public Sand(int x, int y, boolean isPixel) {
         super(x, y, isPixel);
-        vel = new Vector3(0f, -124f,0f);
-        frictionFactor = .8f;
+        vel = new Vector3(Math.random() > 0.5 ? -1 : 1, -124f,0f);
+        frictionFactor = 0.9f;
     }
 
     public Color color = Color.YELLOW;
@@ -79,6 +81,7 @@ public class Sand extends Element implements Solid {
     private boolean actOnNeighboringElement(Element neighbor, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth) {
         if (neighbor instanceof EmptyCell) {
             if (isFinal) {
+                isFreeFalling = true;
                 swapPositions(matrix, neighbor);
             } else {
                 return false;
@@ -86,39 +89,6 @@ public class Sand extends Element implements Solid {
         } else if (neighbor instanceof Liquid) {
             swapPositions(matrix, neighbor);
             return true;
-//        } else if (neighbor instanceof Solid) {
-//            if (isFinal) {
-//                moveToLastValid(matrix, lastValidLocation);
-//                return true;
-//            }
-//            int additionalX = 0;
-//            int additionalY = 0;
-//            Vector3 normalizedVel = vel.nor();
-//            additionalY = normalizedVel.y == 0 ? (Math.random() > .5 ? 1 : -1) : (int) normalizedVel.y;
-//            additionalX = normalizedVel.x == 0 ? (Math.random() > .5 ? 1 : -1) : (int) normalizedVel.x;
-//            if (normalizedVel.x > .2f) {
-//                additionalX = (int) Math.ceil(normalizedVel.x);
-//            } else if (normalizedVel.x < -.2f) {
-//                additionalX = (int) Math.floor(normalizedVel.x);
-//            } else {
-//                additionalX = (Math.random() > .5 ? 1 : -1);
-//            }
-//            int currentMatrixX = (int) (lastValidLocation.x + additionalX);
-//            int currentMatrixY = (int) (lastValidLocation.y + additionalY);
-//            Element diagonalNeighbor = matrix.get(currentMatrixX, currentMatrixY);
-//            if (diagonalNeighbor != null) {
-//                boolean isSolid = actOnNeighboringElement(diagonalNeighbor, matrix, true, false, lastValidLocation);
-//                if (isSolid){
-//                    additionalX *= -.01f;
-//                    return true;
-//                }
-////                    vel.x = Math.abs(vel.y) * vel.x;
-//            }
-//            vel.y = Math.min(-62f, (vel.y + neighbor.vel.y) / 2) + additionalY * 62;
-//            float xVelIncrease = additionalX * neighbor.frictionFactor;
-//            boolean increaseIsLarger = Math.abs(xVelIncrease) > Math.abs(vel.x);
-//            vel.x = increaseIsLarger ? xVelIncrease * frictionFactor : vel.x;
-//            return true;
         } else if (neighbor instanceof Solid) {
             if (depth > 0) {
                 return true;
@@ -127,12 +97,16 @@ public class Sand extends Element implements Solid {
                 moveToLastValid(matrix, lastValidLocation);
                 return true;
             }
+            if (isFreeFalling) {
+                float absY = Math.max(Math.abs(vel.y) / 31, 105);
+                vel.x = vel.x < 0 ? -absY : absY;
+            }
             Vector3 normalizedVel = vel.cpy().nor();
             int additionalX = getAdditional(normalizedVel.x);
             int additionalY = getAdditional(normalizedVel.y);
 
             Element diagonalNeighbor = matrix.get(matrixX + additionalX, matrixY + additionalY);
-            vel.x += additionalX;
+//            vel.x += additionalX;
             if (isFirst) {
                 vel.y = getAverageVelOrGravity(vel.y, neighbor.vel.y);
             } else {
@@ -140,17 +114,24 @@ public class Sand extends Element implements Solid {
             }
 
             neighbor.vel.y = vel.y;
-            vel.x = (vel.x + neighbor.vel.x) / 2 * frictionFactor;
+//            vel.x = (vel.x + neighbor.vel.x) / 2 * frictionFactor;
+            vel.x *= frictionFactor * neighbor.frictionFactor;
             if (diagonalNeighbor != null) {
                 boolean stoppedDiagonally = actOnNeighboringElement(diagonalNeighbor, matrix, true, false, lastValidLocation, depth + 1);
-                if (!stoppedDiagonally) return true;
+                if (!stoppedDiagonally) {
+                    isFreeFalling = true;
+                    return true;
+                }
             }
 
             Element adjacentNeighbor = matrix.get(matrixX + additionalX, matrixY);
             if (adjacentNeighbor != null) {
                 boolean stoppedAdjacently = actOnNeighboringElement(adjacentNeighbor, matrix, true, false, lastValidLocation, depth + 1);
                 if (stoppedAdjacently) vel.x *= -1;
-                if (!stoppedAdjacently) return true;
+                if (!stoppedAdjacently) {
+                    isFreeFalling = false;
+                    return true;
+                }
             }
 
             moveToLastValid(matrix, lastValidLocation);
@@ -206,16 +187,19 @@ public class Sand extends Element implements Solid {
 //    }
 
     private int getAdditional(float val) {
-        if (val < 0) {
-            return 1 * (int) Math.floor(val);
-        } else if (val > 0) {
-            return 1 * (int) Math.ceil(val);
+        if (val < -.1f) {
+            return (int) Math.floor(val);
+        } else if (val > .1f) {
+            return (int) Math.ceil(val);
         } else {
-            return Math.random() > 0.5 ? 1 : -1;
+            return 0; //Math.random() > 0.5 ? 1 : -1;
         }
     }
 
     private float getAverageVelOrGravity(float vel, float otherVel) {
+        if (otherVel > -125f) {
+            return -124f;
+        }
         float avg = (vel + otherVel) / 2;
         if (avg > 0) {
             return avg;
