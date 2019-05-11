@@ -11,12 +11,11 @@ import com.gdx.cellular.CellularMatrix;
 
 public class Sand extends Element implements Solid {
 
-    private boolean isFreeFalling = true;
-
     public Sand(int x, int y, boolean isPixel) {
         super(x, y, isPixel);
         vel = new Vector3(Math.random() > 0.5 ? -1 : 1, -124f,0f);
         frictionFactor = 0.9f;
+        mass = .8f;
     }
 
     public Color color = Color.YELLOW;
@@ -80,6 +79,7 @@ public class Sand extends Element implements Solid {
 
     private boolean actOnNeighboringElement(Element neighbor, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth) {
         if (neighbor instanceof EmptyCell) {
+            setAdjacentNeighborsFreeFalling(matrix, depth, lastValidLocation);
             if (isFinal) {
                 isFreeFalling = true;
                 swapPositions(matrix, neighbor);
@@ -90,9 +90,7 @@ public class Sand extends Element implements Solid {
             swapPositions(matrix, neighbor);
             return true;
         } else if (neighbor instanceof Solid) {
-            if (depth > 0) {
-                return true;
-            }
+            if (depth > 0) return true;
             if (isFinal) {
                 moveToLastValid(matrix, lastValidLocation);
                 return true;
@@ -106,7 +104,6 @@ public class Sand extends Element implements Solid {
             int additionalY = getAdditional(normalizedVel.y);
 
             Element diagonalNeighbor = matrix.get(matrixX + additionalX, matrixY + additionalY);
-//            vel.x += additionalX;
             if (isFirst) {
                 vel.y = getAverageVelOrGravity(vel.y, neighbor.vel.y);
             } else {
@@ -114,7 +111,6 @@ public class Sand extends Element implements Solid {
             }
 
             neighbor.vel.y = vel.y;
-//            vel.x = (vel.x + neighbor.vel.x) / 2 * frictionFactor;
             vel.x *= frictionFactor * neighbor.frictionFactor;
             if (diagonalNeighbor != null) {
                 boolean stoppedDiagonally = actOnNeighboringElement(diagonalNeighbor, matrix, true, false, lastValidLocation, depth + 1);
@@ -134,57 +130,29 @@ public class Sand extends Element implements Solid {
                 }
             }
 
+            isFreeFalling = false;
+
             moveToLastValid(matrix, lastValidLocation);
             return true;
         }
         return false;
     }
 
-//    private boolean iterateBetweenTwoPointsAndAct(int matrixX, int matrixY, int xFactor, int yFactor, CellularMatrix matrix) {
-//        int yModifier = yFactor < 0 ? -1 : 1;
-//        int xModifier = yFactor < 0 ? -1 : 1;
-//
-//        boolean xDiffIsLarger = Math.abs(xFactor) > Math.abs(yFactor);
-//
-//        int upperBound = Math.max(Math.abs(xFactor), Math.abs(yFactor));
-//        int min = Math.min(Math.abs(xFactor), Math.abs(yFactor));
-//        int freq = (min == 0 || upperBound == 0) ? 0 : (upperBound / min);
-//
-//        int smallerCount = 0;
-//        Vector2 lastValidLocation = new Vector2(matrixX, matrixY);
-//        for (int i = 1; i <= upperBound; i++) {
-//            if (freq != 0 && i % freq == 0 && min <= smallerCount) {
-//                smallerCount += 1;
-//            }
-//
-//            int yIncrease, xIncrease;
-//            if (xDiffIsLarger) {
-//                xIncrease = i;
-//                yIncrease = smallerCount;
-//            } else {
-//                yIncrease = i;
-//                xIncrease = smallerCount;
-//            }
-//
-//            int modifiedMatrixY = matrixY + (yIncrease * yModifier);
-//            int modifiedMatrixX = matrixX + (xIncrease * xModifier);
-//            if (matrix.isWithinBounds(modifiedMatrixX, modifiedMatrixY)) {
-//                Element neighbor = matrix.get(modifiedMatrixX, modifiedMatrixY);
-//                if (neighbor == this) continue;
-//                boolean stopped = actOnNeighboringElement(neighbor, matrix, i == upperBound, false, lastValidLocation, 0);
-//                if (stopped) {
-//                    return stopped;
-//                }
-//                lastValidLocation.x =  matrixX;
-//                lastValidLocation.y = modifiedMatrixY;
-//
-//            } else {
-//                matrix.setElementAtIndex(matrixX, matrixY, ElementType.EMPTY_CELL.createElementByPixel(pixelX, pixelY));
-//                return true;
-//            }
-//        }
-//        return true;
-//    }
+    private void setAdjacentNeighborsFreeFalling(CellularMatrix matrix, int depth, Vector3 lastValidLocation) {
+        if (depth > 0) return;
+
+        Element adjacentNeighbor1 = matrix.get(lastValidLocation.x + 1, lastValidLocation.y);
+        if (adjacentNeighbor1 instanceof Solid) setElementFreeFalling(adjacentNeighbor1);
+
+        Element adjacentNeighbor2 = matrix.get(lastValidLocation.x - 1, lastValidLocation.y);
+        if (adjacentNeighbor2 instanceof Solid) setElementFreeFalling(adjacentNeighbor2);
+    }
+
+    private void setElementFreeFalling(Element element) {
+        element.isFreeFalling = Math.random() > element.mass ? true : element.isFreeFalling;
+    }
+
+
 
     private int getAdditional(float val) {
         if (val < -.1f) {
@@ -192,7 +160,7 @@ public class Sand extends Element implements Solid {
         } else if (val > .1f) {
             return (int) Math.ceil(val);
         } else {
-            return 0; //Math.random() > 0.5 ? 1 : -1;
+            return 0;
         }
     }
 

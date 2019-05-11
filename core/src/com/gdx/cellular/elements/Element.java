@@ -19,6 +19,8 @@ public abstract class Element {
     public Vector3 vel;
 
     public float frictionFactor;
+    public boolean isFreeFalling = true;
+    public float mass;
 
     public BitSet stepped = new BitSet(1);
 
