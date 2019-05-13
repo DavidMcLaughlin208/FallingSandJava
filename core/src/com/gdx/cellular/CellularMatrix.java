@@ -1,5 +1,6 @@
 package com.gdx.cellular;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.Array;
 import com.gdx.cellular.elements.Element;
@@ -39,34 +40,49 @@ public class CellularMatrix {
     }
 
     public void stepAndDrawAll(ShapeRenderer sr) {
-        sr.begin();
-        sr.set(ShapeRenderer.ShapeType.Filled);
+        stepAll();
+        drawAll(sr);
+    }
+
+    private void stepAll() {
         for (int y = 0; y < outerArraySize; y++) {
             Array<Element> row = getRow(y);
             for (int x : getShuffledXIndexes()) {
                 Element element = row.get(x);
                 if (element != null) {
                     element.step(this);
-                    element.draw(sr);
                 }
             }
         }
-        sr.end();
     }
 
-    public void drawAll(ShapeRenderer sr) {
+    private void drawAll(ShapeRenderer sr) {
         sr.begin();
         sr.set(ShapeRenderer.ShapeType.Filled);
         for (int y = 0; y < outerArraySize; y++) {
             Array<Element> row = getRow(y);
             for (int x = 0; x < row.size; x++) {
                 Element element = row.get(x);
+                Color currentColor = element.color;
+                int toIndex = x;
+                for (int following = x; following < row.size; following++) {
+                    if (get(following, y).color != currentColor) {
+                        break;
+                    }
+                    toIndex = following;
+                }
+                x = toIndex;
                 if (element != null) {
-                    element.draw(sr);
+                    sr.setColor(element.color);
+                    sr.rect(element.pixelX, element.pixelY, rectDrawWidth(toIndex), pixelSizeModifier);
                 }
             }
         }
         sr.end();
+    }
+
+    private float rectDrawWidth(int index) {
+        return (index * pixelSizeModifier) + (pixelSizeModifier - 1);
     }
 
     public int toMatrix(float pixelVal) {
@@ -106,6 +122,14 @@ public class CellularMatrix {
 
     public boolean isWithinBounds(int matrixX, int matrixY) {
         return matrixX >= 0 && matrixY >= 0 && matrixX < innerArraySize && matrixY < outerArraySize;
+    }
+
+    public boolean isWithinXBounds(int matrixX) {
+        return matrixX >= 0 && matrixX < innerArraySize;
+    }
+
+    public boolean isWithinYBounds(int matrixY) {
+        return matrixY >= 0 && matrixY < outerArraySize;
     }
 
     public List<Integer> getShuffledXIndexes() {

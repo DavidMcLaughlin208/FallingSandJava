@@ -10,11 +10,11 @@ public abstract class ImmovableSolid extends Solid {
         super(x, y, isPixel);
     }
 
-    @Override
-    public void draw(ShapeRenderer sr) {
-        sr.setColor(color);
-        sr.rect(pixelX, pixelY, CellularAutomaton.pixelSizeModifier, CellularAutomaton.pixelSizeModifier);
-    }
+//    @Override
+//    public void draw(ShapeRenderer sr) {
+//        sr.setColor(color);
+//        sr.rect(pixelX, pixelY, CellularAutomaton.pixelSizeModifier, CellularAutomaton.pixelSizeModifier);
+//    }
 
     @Override
     public void step(CellularMatrix matrix) {

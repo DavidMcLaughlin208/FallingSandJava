@@ -15,10 +15,10 @@ public abstract class Liquid extends Element {
         super(x, y, isPixel);
     }
 
-    public void draw(ShapeRenderer sr) {
-        sr.setColor(color);
-        sr.rect(pixelX, pixelY, CellularAutomaton.pixelSizeModifier, CellularAutomaton.pixelSizeModifier);
-    }
+//    public void draw(ShapeRenderer sr) {
+//        sr.setColor(color);
+//        sr.rect(pixelX, pixelY, CellularAutomaton.pixelSizeModifier, CellularAutomaton.pixelSizeModifier);
+//    }
 
     public void step(CellularMatrix matrix) {
         if (stepped.get(0) == CellularAutomaton.stepped.get(0)) return;

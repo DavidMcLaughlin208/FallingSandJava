@@ -39,7 +39,7 @@ public abstract class Element {
         stepped.set(0, CellularAutomaton.stepped.get(0));
     }
 
-    public abstract void draw(ShapeRenderer sr);
+//    public abstract void draw(ShapeRenderer sr);
 
     public abstract void step(CellularMatrix matrix);
 
