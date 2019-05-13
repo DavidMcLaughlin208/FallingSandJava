@@ -10,7 +10,8 @@ public class Stone extends ImmovableSolid {
         vel = new Vector3(0f, 0f,0f);
         frictionFactor = 0.5f;
         color = Color.GRAY;
-        mass = 1.1f;
+        inertialResistance = 1.1f;
+        mass = 500;
     }
 
 }

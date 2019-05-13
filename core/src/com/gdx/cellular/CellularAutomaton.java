@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
+import com.gdx.cellular.elements.MovableSolid;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -86,7 +87,9 @@ public class CellularAutomaton extends ApplicationAdapter {
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)) {
             currentlySelectedElement = ElementType.WATER;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)) {
-            currentlySelectedElement = ElementType.EMPTY_CELL;
+            currentlySelectedElement = ElementType.OIL;
+		} else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
+			currentlySelectedElement = ElementType.EMPTY_CELL;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
 			brushSize = Math.min(55, brushSize + 2);
 		} else if (Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
@@ -208,46 +211,45 @@ public class CellularAutomaton extends ApplicationAdapter {
 		}
 	}
 
-    private int adjustPixelValueToFitGrid(float val) {
-        int adjustedVal = (int) val;
-        while (adjustedVal % pixelSizeModifier != 0) {
-            adjustedVal -= 1;
-        }
-        return adjustedVal;
-    }
+//    private int adjustPixelValueToFitGrid(float val) {
+//        int adjustedVal = (int) val;
+//        while (adjustedVal % pixelSizeModifier != 0) {
+//            adjustedVal -= 1;
+//        }
+//        return adjustedVal;
+//    }
 
-    private boolean isWithinBounds(int matrixX, int matrixY) {
-	    return matrixX >= 0 && matrixY >= 0 && matrixX < innerArraySize && matrixY < outerArraySize;
-    }
+//    private boolean isWithinBounds(int matrixX, int matrixY) {
+//	    return matrixX >= 0 && matrixY >= 0 && matrixX < innerArraySize && matrixY < outerArraySize;
+//    }
 
     @Override
 	public void dispose () {
 		batch.dispose();
 		shapeRenderer.dispose();
-//		img.dispose();
 	}
 
-	private Array<Array<Element>> generateMatrix() {
-		Array<Array<Element>> outerArray = new Array<>(true, outerArraySize);
-		for (int y = 0; y < outerArraySize; y++) {
-			Array<Element> innerArr = new Array<>(true, innerArraySize);
-			for (int x = 0; x < innerArraySize; x++) {
-				innerArr.add(ElementType.EMPTY_CELL.createElementByMatrix(x, y));
-			}
-			outerArray.add(innerArr);
-		}
-		return outerArray;
-	}
+//	private Array<Array<Element>> generateMatrix() {
+//		Array<Array<Element>> outerArray = new Array<>(true, outerArraySize);
+//		for (int y = 0; y < outerArraySize; y++) {
+//			Array<Element> innerArr = new Array<>(true, innerArraySize);
+//			for (int x = 0; x < innerArraySize; x++) {
+//				innerArr.add(ElementType.EMPTY_CELL.createElementByMatrix(x, y));
+//			}
+//			outerArray.add(innerArr);
+//		}
+//		return outerArray;
+//	}
 
-	private List<Integer> generateShuffledIndexes() {
-		List<Integer> list = new ArrayList<>(innerArraySize);
-		for (int i = 0; i < innerArraySize; i++) {
-			list.add(i);
-		}
-		return list;
-	}
+//	private List<Integer> generateShuffledIndexes() {
+//		List<Integer> list = new ArrayList<>(innerArraySize);
+//		for (int i = 0; i < innerArraySize; i++) {
+//			list.add(i);
+//		}
+//		return list;
+//	}
 
-    private Vector3 multiplyVectorByConstant(Vector3 gravity, float deltaTime) {
-        return new Vector3(gravity.x * deltaTime, gravity.y * deltaTime, gravity.z * deltaTime);
-    }
+//    private Vector3 multiplyVectorByConstant(Vector3 gravity, float deltaTime) {
+//        return new Vector3(gravity.x * deltaTime, gravity.y * deltaTime, gravity.z * deltaTime);
+//    }
 }

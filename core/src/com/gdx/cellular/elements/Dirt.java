@@ -9,7 +9,8 @@ public class Dirt extends MovableSolid {
         super(x, y, isPixel);
         vel = new Vector3(0f, -124f,0f);
         frictionFactor = .6f;
-        mass = .8f;
+        inertialResistance = .8f;
+        mass = 200;
         color = Color.BROWN;
     }
 

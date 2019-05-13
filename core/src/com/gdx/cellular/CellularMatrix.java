@@ -100,6 +100,7 @@ public class CellularMatrix {
 
     public boolean setElementAtIndex(int x, int y, Element element) {
         matrix.get(y).set(x, element);
+        element.setCoordinatesByMatrix(x, y);
         return true;
     }
 

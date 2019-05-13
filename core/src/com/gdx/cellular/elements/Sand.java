@@ -9,7 +9,8 @@ public class Sand extends MovableSolid {
         super(x, y, isPixel);
         vel = new Vector3(Math.random() > 0.5 ? -1 : 1, -124f,0f);
         frictionFactor = 0.9f;
-        mass = .1f;
+        inertialResistance = .1f;
+        mass = 150;
         color = Color.YELLOW;
     }
 

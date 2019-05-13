@@ -56,6 +56,18 @@ public enum ElementType {
             return new Water(x, y, true);
         }
 
+    },
+    OIL(Oil.class) {
+        @Override
+        public Element createElementByMatrix(int x, int y) {
+            return new Oil(x, y, false);
+        }
+
+        @Override
+        public Element createElementByPixel(int x, int y) {
+            return new Oil(x, y, true);
+        }
+
     };
 
     public final Class clazz;
