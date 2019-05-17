@@ -27,7 +27,6 @@ public class CellularAutomaton extends ApplicationAdapter {
     private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
     private CellularMatrix matrix;
-    private Array<Spout> spoutArray;
     private OrthographicCamera camera;
     private boolean touchedLastFrame;
     private ElementType currentlySelectedElement = ElementType.SAND;
@@ -57,7 +56,6 @@ public class CellularAutomaton extends ApplicationAdapter {
         stepped.set(0, true);
 		matrix = new CellularMatrix(screenWidth, screenHeight, pixelSizeModifier);
 		matrix.generateShuffledIndexesForThreads(numThreads);
-		spoutArray = new Array<>();
 	}
 
 	@Override
@@ -96,7 +94,6 @@ public class CellularAutomaton extends ApplicationAdapter {
 			brushSize = Math.max(1, brushSize - 2);
 		} else if (Gdx.input.isKeyJustPressed(Input.Keys.C)) {
 			matrix.clearAll();
-			spoutArray = new Array<>();
 		} else if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
 			toggleThreads = !toggleThreads;
 		} else if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
@@ -117,7 +114,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 			if (touchedLastFrame) {
 			    iterateAndSpawnBetweenTwoPoints(lastTouchPos, touchPos, currentlySelectedElement, brushSize);
             } else {
-                spawnElementByPixelWithBrush((int) touchPos.x, (int) touchPos.y, currentlySelectedElement, brushSize);
+                matrix.spawnElementByPixelWithBrush((int) touchPos.x, (int) touchPos.y, currentlySelectedElement, brushSize);
             }
 			lastTouchPos = touchPos;
 			touchedLastFrame = true;
@@ -129,12 +126,10 @@ public class CellularAutomaton extends ApplicationAdapter {
 			Vector3 touchPos = new Vector3();
 			touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
 			camera.unproject(touchPos);
-			spoutArray.add(new Spout(currentlySelectedElement, matrix.toMatrix(touchPos.x), matrix.toMatrix(touchPos.y), brushSize));
+			matrix.addSpout(currentlySelectedElement, touchPos, brushSize);
 		}
 
-		for (Spout spout : spoutArray) {
-			spawnElementByMatrixWithBrush(spout.matrixX, spout.matrixY, spout.sourceElement, spout.brushSize);
-		}
+		matrix.spawnFromSpouts();
 
 		if (toggleThreads) {
 			matrix.stepAndDrawAll(shapeRenderer);
@@ -194,14 +189,6 @@ public class CellularAutomaton extends ApplicationAdapter {
 		}
 	}
 
-//	private void stepAll() {
-//
-//    }
-//
-//	private void drawAll() {
-//
-//    }
-
 	private void iterateAndSpawnBetweenTwoPoints(Vector3 pos1, Vector3 pos2, ElementType elementType, int brushSize) {
 
 		int matrixX1 = toMatrix((int) pos1.x);
@@ -210,7 +197,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 		int matrixY2 = toMatrix((int) pos2.y);
 
 		if (pos1.epsilonEquals(pos2)) {
-			spawnElementByMatrixWithBrush(matrixX1, matrixY1, elementType, brushSize);
+			matrix.spawnElementByMatrixWithBrush(matrixX1, matrixY1, elementType, brushSize);
 			return;
 		}
 
@@ -241,7 +228,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 	        int currentY = matrixY1 + (yIncrease * yModifier);
 	        int currentX = matrixX1 + (xIncrease * xModifier);
 	        if (matrix.isWithinBounds(currentX, currentY)) {
-	        	spawnElementByMatrixWithBrush(currentX, currentY, elementType, brushSize);
+	        	matrix.spawnElementByMatrixWithBrush(currentX, currentY, elementType, brushSize);
 			}
         }
 
@@ -252,72 +239,10 @@ public class CellularAutomaton extends ApplicationAdapter {
 	    return pixelVal / pixelSizeModifier;
     }
 
-	private void spawnElementByPixelWithBrush(int pixelX, int pixelY, ElementType elementType, int localBrushSize) {
-		int matrixX = toMatrix(pixelX);
-		int matrixY = toMatrix(pixelY);
-		spawnElementByMatrixWithBrush(matrixX, matrixY, elementType, localBrushSize);
-	}
-
-    private void spawnElementByPixel(int pixelX, int pixelY, ElementType elementType) {
-        int matrixX = toMatrix(pixelX);
-        int matrixY = toMatrix(pixelY);
-		spawnElementByMatrix(matrixX, matrixY, elementType);
-	}
-
-	private void spawnElementByMatrixWithBrush(int matrixX, int matrixY, ElementType elementType, int localBrushSize) {
-		int halfBrush = (int) Math.floor(localBrushSize / 2);
-		for (int x = matrixX - halfBrush; x <= matrixX + halfBrush; x++) {
-			for (int y = matrixY - halfBrush; y <= matrixY + halfBrush; y++) {
-				spawnElementByMatrix(x, y, elementType);
-			}
-		}
-	}
-
-	private void spawnElementByMatrix(int matrixX, int matrixY, ElementType elementType) {
-		if (matrix.isWithinBounds(matrixX, matrixY) && matrix.get(matrixX, matrixY).getClass() != elementType.clazz) {
-			matrix.setElementAtIndex(matrixX, matrixY, elementType.createElementByMatrix(matrixX, matrixY));
-		}
-	}
-
-//    private int adjustPixelValueToFitGrid(float val) {
-//        int adjustedVal = (int) val;
-//        while (adjustedVal % pixelSizeModifier != 0) {
-//            adjustedVal -= 1;
-//        }
-//        return adjustedVal;
-//    }
-
-//    private boolean isWithinBounds(int matrixX, int matrixY) {
-//	    return matrixX >= 0 && matrixY >= 0 && matrixX < innerArraySize && matrixY < outerArraySize;
-//    }
-
     @Override
 	public void dispose () {
 		batch.dispose();
 		shapeRenderer.dispose();
 	}
 
-//	private Array<Array<Element>> generateMatrix() {
-//		Array<Array<Element>> outerArray = new Array<>(true, outerArraySize);
-//		for (int y = 0; y < outerArraySize; y++) {
-//			Array<Element> innerArr = new Array<>(true, innerArraySize);
-//			for (int x = 0; x < innerArraySize; x++) {
-//				innerArr.add(ElementType.EMPTY_CELL.createElementByMatrix(x, y));
-//			}
-//			outerArray.add(innerArr);
-//		}
-//		return outerArray;
-//	}
-
-//	private List<Integer> generateShuffledIndexes() {
-//		List<Integer> list = new ArrayList<>(innerArraySize);
-//		for (int i = 0; i < innerArraySize; i++) {
-//			list.add(i);
-//		}
-//		return list;
-//	}
-
-//    private Vector3 multiplyVectorByConstant(Vector3 gravity, float deltaTime) {
-//        return new Vector3(gravity.x * deltaTime, gravity.y * deltaTime, gravity.z * deltaTime);
-//    }
 }

@@ -2,6 +2,7 @@ package com.gdx.cellular;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
@@ -20,6 +21,7 @@ public class CellularMatrix {
     private int threadedIndexOffset = 0;
 
     private Array<Array<Element>> matrix;
+    private Array<Spout> spoutArray;
 
     public CellularMatrix(int width, int height, int pixelSizeModifier) {
         this.pixelSizeModifier = pixelSizeModifier;
@@ -27,7 +29,9 @@ public class CellularMatrix {
         outerArraySize = toMatrix(height);
         matrix = generateMatrix();
         shuffledXIndexes = generateShuffledIndexes(innerArraySize);
+
         calculateAndSetThreadedXIndexOffset();
+        spoutArray = new Array<>();
     }
 
     public void calculateAndSetThreadedXIndexOffset() {
@@ -109,7 +113,6 @@ public class CellularMatrix {
     }
 
     public void stepProvidedColumns(int colIndex) {
-
         for (int y = 0; y < outerArraySize; y++) {
             Array<Element> row = getRow(y);
             for (int x : shuffledXIndexesForThreads.get(colIndex)) {
@@ -126,12 +129,23 @@ public class CellularMatrix {
     }
 
     private int calculateIndexWithOffset(int x) {
-        if (x + threadedIndexOffset > innerArraySize - 1) {
+        if (x + threadedIndexOffset >= innerArraySize - 1) {
             return (x + threadedIndexOffset) - (innerArraySize - 1);
         } else {
             return x + threadedIndexOffset;
         }
     }
+
+    public void addSpout(ElementType elementType, Vector3 touchPos, int brushSize) {
+        spoutArray.add(new Spout(elementType, toMatrix(touchPos.x), toMatrix(touchPos.y), brushSize));
+    }
+
+    public void spawnFromSpouts() {
+        for (Spout spout : spoutArray) {
+            spawnElementByMatrixWithBrush(spout.matrixX, spout.matrixY, spout.sourceElement, spout.brushSize);
+        }
+    }
+
 
     public int toMatrix(float pixelVal) {
         return toMatrix((int) pixelVal);
@@ -143,6 +157,7 @@ public class CellularMatrix {
 
     public boolean clearAll() {
         matrix = generateMatrix();
+        spoutArray = new Array<>();
         return true;
     }
 
@@ -166,6 +181,33 @@ public class CellularMatrix {
         matrix.get(y).set(x, element);
         element.setCoordinatesByMatrix(x, y);
         return true;
+    }
+
+    public void spawnElementByPixelWithBrush(int pixelX, int pixelY, ElementType elementType, int localBrushSize) {
+        int matrixX = toMatrix(pixelX);
+        int matrixY = toMatrix(pixelY);
+        spawnElementByMatrixWithBrush(matrixX, matrixY, elementType, localBrushSize);
+    }
+
+    public void spawnElementByPixel(int pixelX, int pixelY, ElementType elementType) {
+        int matrixX = toMatrix(pixelX);
+        int matrixY = toMatrix(pixelY);
+        spawnElementByMatrix(matrixX, matrixY, elementType);
+    }
+
+    public void spawnElementByMatrixWithBrush(int matrixX, int matrixY, ElementType elementType, int localBrushSize) {
+        int halfBrush = (int) Math.floor(localBrushSize / 2);
+        for (int x = matrixX - halfBrush; x <= matrixX + halfBrush; x++) {
+            for (int y = matrixY - halfBrush; y <= matrixY + halfBrush; y++) {
+                spawnElementByMatrix(x, y, elementType);
+            }
+        }
+    }
+
+    public void spawnElementByMatrix(int matrixX, int matrixY, ElementType elementType) {
+        if (isWithinBounds(matrixX, matrixY) && get(matrixX, matrixY).getClass() != elementType.clazz) {
+            setElementAtIndex(matrixX, matrixY, elementType.createElementByMatrix(matrixX, matrixY));
+        }
     }
 
     public boolean isWithinBounds(int matrixX, int matrixY) {
