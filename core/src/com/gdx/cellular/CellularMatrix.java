@@ -16,6 +16,8 @@ public class CellularMatrix {
     public int outerArraySize;
     public int pixelSizeModifier;
     private List<Integer> shuffledXIndexes;
+    private List<List<Integer>> shuffledXIndexesForThreads;
+    private int threadedIndexOffset = 0;
 
     private Array<Array<Element>> matrix;
 
@@ -23,11 +25,20 @@ public class CellularMatrix {
         this.pixelSizeModifier = pixelSizeModifier;
         innerArraySize = toMatrix(width);
         outerArraySize = toMatrix(height);
-        matrix = generateMatrix(width, height);
+        matrix = generateMatrix();
         shuffledXIndexes = generateShuffledIndexes(innerArraySize);
+        calculateAndSetThreadedXIndexOffset();
     }
 
-    private Array<Array<Element>> generateMatrix(int width, int height) {
+    public void calculateAndSetThreadedXIndexOffset() {
+        if (shuffledXIndexesForThreads != null) {
+            threadedIndexOffset = (int) (Math.random() * (innerArraySize / shuffledXIndexesForThreads.size()));
+        } else {
+            threadedIndexOffset = 0;
+        }
+    }
+
+    private Array<Array<Element>> generateMatrix() {
         Array<Array<Element>> outerArray = new Array<>(true, outerArraySize);
         for (int y = 0; y < outerArraySize; y++) {
             Array<Element> innerArr = new Array<>(true, innerArraySize);
@@ -56,7 +67,7 @@ public class CellularMatrix {
         }
     }
 
-    private void drawAll(ShapeRenderer sr) {
+    public void drawAll(ShapeRenderer sr) {
         sr.begin();
         sr.set(ShapeRenderer.ShapeType.Filled);
         for (int y = 0; y < outerArraySize; y++) {
@@ -85,6 +96,43 @@ public class CellularMatrix {
         return (index * pixelSizeModifier) + (pixelSizeModifier - 1);
     }
 
+    public void stepProvidedRows(int minRow, int maxRow) {
+        for (int y = minRow; y <= maxRow; y++) {
+            Array<Element> row = getRow(y);
+            for (int x : getShuffledXIndexes()) {
+                Element element = row.get(x);
+                if (element != null) {
+                    element.step(this);
+                }
+            }
+        }
+    }
+
+    public void stepProvidedColumns(int colIndex) {
+
+        for (int y = 0; y < outerArraySize; y++) {
+            Array<Element> row = getRow(y);
+            for (int x : shuffledXIndexesForThreads.get(colIndex)) {
+                try {
+                    Element element = row.get(calculateIndexWithOffset(x));
+                    if (element != null) {
+                        element.step(this);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private int calculateIndexWithOffset(int x) {
+        if (x + threadedIndexOffset > innerArraySize - 1) {
+            return (x + threadedIndexOffset) - (innerArraySize - 1);
+        } else {
+            return x + threadedIndexOffset;
+        }
+    }
+
     public int toMatrix(float pixelVal) {
         return toMatrix((int) pixelVal);
     }
@@ -94,7 +142,7 @@ public class CellularMatrix {
     }
 
     public boolean clearAll() {
-        matrix = generateMatrix(innerArraySize, outerArraySize);
+        matrix = generateMatrix();
         return true;
     }
 
@@ -146,5 +194,32 @@ public class CellularMatrix {
             list.add(i);
         }
         return list;
+    }
+
+    public List<List<Integer>> generateShuffledIndexesForThreads(int threadCount) {
+        int colSize = innerArraySize / threadCount;// + (innerArraySize % threadCount);
+        List<List<Integer>> indexList = new ArrayList<>(threadCount);
+        List<Integer> list = new ArrayList<>();
+        for (int i = 1; i <= innerArraySize; i++) {
+            if (i % colSize == 0) {
+                Collections.shuffle(list);
+                indexList.add(list);
+                list = new ArrayList<>(colSize);
+            }
+            list.add(i - 1);
+        }
+        if (!indexList.contains(list)) {
+            indexList.get(indexList.size() - 1).addAll(list);
+        }
+        shuffledXIndexesForThreads = indexList;
+        return indexList;
+    }
+
+    public void reshuffleThreadXIndexes(int numThreads) {
+        if (shuffledXIndexesForThreads.size() != numThreads) {
+            generateShuffledIndexesForThreads(numThreads);
+            return;
+        }
+        shuffledXIndexesForThreads.forEach(Collections::shuffle);
     }
 }

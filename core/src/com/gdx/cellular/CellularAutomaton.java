@@ -10,9 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
-import com.gdx.cellular.elements.MovableSolid;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -32,11 +30,13 @@ public class CellularAutomaton extends ApplicationAdapter {
     private Array<Spout> spoutArray;
     private OrthographicCamera camera;
     private boolean touchedLastFrame;
-    public int outerArraySize;
-    public int innerArraySize;
     private ElementType currentlySelectedElement = ElementType.SAND;
     private Vector3 lastTouchPos = new Vector3();
     private int brushSize = 3;
+
+    private int numThreads = 12;
+    private int maxThreads = 50;
+    private boolean toggleThreads = false;
 
     private boolean paused = false;
 
@@ -56,6 +56,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 
         stepped.set(0, true);
 		matrix = new CellularMatrix(screenWidth, screenHeight, pixelSizeModifier);
+		matrix.generateShuffledIndexesForThreads(numThreads);
 		spoutArray = new Array<>();
 	}
 
@@ -76,27 +77,37 @@ public class CellularAutomaton extends ApplicationAdapter {
         }
         fpsLogger.log();
         stepped.flip(0);
-		matrix.reshuffleXIndexes();
 
-        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
-            currentlySelectedElement = ElementType.STONE;
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
-            currentlySelectedElement = ElementType.SAND;
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
-            currentlySelectedElement = ElementType.DIRT;
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)) {
-            currentlySelectedElement = ElementType.WATER;
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)) {
-            currentlySelectedElement = ElementType.OIL;
+		if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
+			currentlySelectedElement = ElementType.STONE;
+		} else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
+			currentlySelectedElement = ElementType.SAND;
+		} else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
+			currentlySelectedElement = ElementType.DIRT;
+		} else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)) {
+			currentlySelectedElement = ElementType.WATER;
+		} else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)) {
+			currentlySelectedElement = ElementType.OIL;
 		} else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
 			currentlySelectedElement = ElementType.EMPTY_CELL;
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
+		} else if (Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
 			brushSize = Math.min(55, brushSize + 2);
 		} else if (Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
 			brushSize = Math.max(1, brushSize - 2);
 		} else if (Gdx.input.isKeyJustPressed(Input.Keys.C)) {
 			matrix.clearAll();
+			spoutArray = new Array<>();
+		} else if (Gdx.input.isKeyJustPressed(Input.Keys.T)) {
+			toggleThreads = !toggleThreads;
+		} else if (Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+			numThreads += numThreads == maxThreads ? 0 : 1;
+		} else if (Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
+			numThreads -= numThreads == 1 ? 0 : 1;
 		}
+
+		matrix.reshuffleXIndexes();
+		matrix.reshuffleThreadXIndexes(numThreads);
+		matrix.calculateAndSetThreadedXIndexOffset();
 
 
 		if (Gdx.input.isTouched()) {
@@ -125,26 +136,83 @@ public class CellularAutomaton extends ApplicationAdapter {
 			spawnElementByMatrixWithBrush(spout.matrixX, spout.matrixY, spout.sourceElement, spout.brushSize);
 		}
 
-        matrix.stepAndDrawAll(shapeRenderer);
+		if (toggleThreads) {
+			matrix.stepAndDrawAll(shapeRenderer);
+		} else {
+			matrix.reshuffleThreadXIndexes(numThreads);
+			List<Thread> threads = new ArrayList<>(numThreads);
 
-		//drawAll();
+			for (int t = 0; t < numThreads; t++) {
+				Thread newThread = new Thread(new ElementColumnStepper(matrix, t));
+				threads.add(newThread);
+			}
+			if (stepped.get(0)) {
+				startAndWaitOnOddThreads(threads);
+				startAndWaitOnEvenThreads(threads);
+			} else {
+				startAndWaitOnEvenThreads(threads);
+				startAndWaitOnOddThreads(threads);
+			}
+
+
+			matrix.drawAll(shapeRenderer);
+		}
+
 	}
 
-	private void stepAll() {
+	private void startAndWaitOnEvenThreads(List<Thread> threads) {
+		try {
+			for (int t = 0; t < threads.size(); t++) {
+				if (t % 2 == 0) {
+					threads.get(t).start();
+				}
+			}
+			for (int t = 0; t < threads.size(); t++) {
+				if (t % 2 == 0) {
+					threads.get(t).join();
+				}
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 
-    }
+	private void startAndWaitOnOddThreads(List<Thread> threads) {
+		try {
+			for (int t = 0; t < threads.size(); t++) {
+				if (t % 2 != 0) {
+					threads.get(t).start();
+				}
+			}
+			for (int t = 0; t < threads.size(); t++) {
+				if (t % 2 != 0) {
+					threads.get(t).join();
+				}
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 
-	private void drawAll() {
-
-    }
+//	private void stepAll() {
+//
+//    }
+//
+//	private void drawAll() {
+//
+//    }
 
 	private void iterateAndSpawnBetweenTwoPoints(Vector3 pos1, Vector3 pos2, ElementType elementType, int brushSize) {
-	    if (pos1.epsilonEquals(pos2)) return;
 
 		int matrixX1 = toMatrix((int) pos1.x);
 		int matrixY1 = toMatrix((int) pos1.y);
 		int matrixX2 = toMatrix((int) pos2.x);
 		int matrixY2 = toMatrix((int) pos2.y);
+
+		if (pos1.epsilonEquals(pos2)) {
+			spawnElementByMatrixWithBrush(matrixX1, matrixY1, elementType, brushSize);
+			return;
+		}
 
 		int xDiff = matrixX1 - matrixX2;
 		int yDiff = matrixY1 - matrixY2;
