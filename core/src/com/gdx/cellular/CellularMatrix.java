@@ -264,4 +264,50 @@ public class CellularMatrix {
         }
         shuffledXIndexesForThreads.forEach(Collections::shuffle);
     }
+
+    public void iterateAndSpawnBetweenTwoPoints(Vector3 pos1, Vector3 pos2, ElementType elementType, int brushSize) {
+
+        int matrixX1 = toMatrix((int) pos1.x);
+        int matrixY1 = toMatrix((int) pos1.y);
+        int matrixX2 = toMatrix((int) pos2.x);
+        int matrixY2 = toMatrix((int) pos2.y);
+
+        if (pos1.epsilonEquals(pos2)) {
+            spawnElementByMatrixWithBrush(matrixX1, matrixY1, elementType, brushSize);
+            return;
+        }
+
+        int xDiff = matrixX1 - matrixX2;
+        int yDiff = matrixY1 - matrixY2;
+        boolean xDiffIsLarger = Math.abs(xDiff) > Math.abs(yDiff);
+
+        int xModifier = xDiff < 0 ? 1 : -1;
+        int yModifier = yDiff < 0 ? 1 : -1;
+
+        int upperBound = Math.max(Math.abs(xDiff), Math.abs(yDiff));
+        int min = Math.min(Math.abs(xDiff), Math.abs(yDiff));
+        int freq = (min == 0 || upperBound == 0) ? 0 : (upperBound / min);
+
+        int smallerCount = 0;
+        for (int i = 1; i <= upperBound; i++) {
+            if (freq != 0 && i % freq == 0 && min != smallerCount) {
+                smallerCount += 1;
+            }
+            int yIncrease, xIncrease;
+            if (xDiffIsLarger) {
+                xIncrease = i;
+                yIncrease = smallerCount;
+            } else {
+                yIncrease = i;
+                xIncrease = smallerCount;
+            }
+            int currentY = matrixY1 + (yIncrease * yModifier);
+            int currentX = matrixX1 + (xIncrease * xModifier);
+            if (isWithinBounds(currentX, currentY)) {
+                spawnElementByMatrixWithBrush(currentX, currentY, elementType, brushSize);
+            }
+        }
+
+
+    }
 }
