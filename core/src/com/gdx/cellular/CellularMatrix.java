@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
+import com.gdx.cellular.elements.OutOfBoundsCell;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,7 +21,7 @@ public class CellularMatrix {
     private List<List<Integer>> shuffledXIndexesForThreads;
     private int threadedIndexOffset = 0;
 
-    private Array<Array<Element>> matrix;
+    private Array<Array<Cell>> matrix;
     private Array<Spout> spoutArray;
 
     public CellularMatrix(int width, int height, int pixelSizeModifier) {
@@ -28,6 +29,7 @@ public class CellularMatrix {
         innerArraySize = toMatrix(width);
         outerArraySize = toMatrix(height);
         matrix = generateMatrix();
+//        linkNeighbors(matrix);
         shuffledXIndexes = generateShuffledIndexes(innerArraySize);
 
         calculateAndSetThreadedXIndexOffset();
@@ -42,17 +44,37 @@ public class CellularMatrix {
         }
     }
 
-    private Array<Array<Element>> generateMatrix() {
-        Array<Array<Element>> outerArray = new Array<>(true, outerArraySize);
+    private Array<Array<Cell>> generateMatrix() {
+        Array<Array<Cell>> outerArray = new Array<>(true, outerArraySize);
         for (int y = 0; y < outerArraySize; y++) {
-            Array<Element> innerArr = new Array<>(true, innerArraySize);
+            Array<Cell> innerArr = new Array<>(true, innerArraySize);
             for (int x = 0; x < innerArraySize; x++) {
-                innerArr.add(ElementType.EMPTY_CELL.createElementByMatrix(x, y));
+                innerArr.add(new Cell(new Vector3(x, y, 0), new Vector3(toPixel(x), toPixel(y), 0)));
             }
             outerArray.add(innerArr);
         }
         return outerArray;
     }
+
+    private void linkNeighbors(Array<Array<Cell>> matrix) {
+        for (Array<Cell> row : matrix) {
+            for (Cell cell : row) {
+                for (int x = -1; x <=1; x++) {
+                    for (int y = -1; y <= 1; y++) {
+                        if (isWithinBounds(cell.matrixLocation.x + x, cell.matrixLocation.y + y) &&
+                                (x !=0 && y != 0)) {
+                            Cell neighbor = get(cell.matrixLocation.x + x, cell.matrixLocation.y + y);
+                            cell.setNeighbor(x, y, neighbor);
+                        } else if (x !=0 && y != 0) {
+                            cell.setNeighbor(x, y, new OutOfBoundsCell());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
 
     public void stepAndDrawAll(ShapeRenderer sr) {
         stepAll();
@@ -61,9 +83,9 @@ public class CellularMatrix {
 
     private void stepAll() {
         for (int y = 0; y < outerArraySize; y++) {
-            Array<Element> row = getRow(y);
+            Array<Cell> row = getRow(y);
             for (int x : getShuffledXIndexes()) {
-                Element element = row.get(x);
+                Element element = row.get(x).getElement();
                 if (element != null) {
                     element.step(this);
                 }
@@ -75,36 +97,41 @@ public class CellularMatrix {
         sr.begin();
         sr.set(ShapeRenderer.ShapeType.Filled);
         for (int y = 0; y < outerArraySize; y++) {
-            Array<Element> row = getRow(y);
+            Array<Cell> row = getRow(y);
             for (int x = 0; x < row.size; x++) {
-                Element element = row.get(x);
+                Element element = row.get(x).getElement();
+                if (element == null) {
+//                    sr.setColor(Color.CLEAR);
+                    continue;
+                }
                 Color currentColor = element.color;
                 int toIndex = x;
                 for (int following = x; following < row.size; following++) {
-                    if (get(following, y).color != currentColor) {
+                    Element nextElement = get(following, y).getElement();
+                    if (nextElement == null || nextElement.color != currentColor) {
                         break;
                     }
                     toIndex = following;
                 }
-                x = toIndex;
                 if (element != null) {
                     sr.setColor(element.color);
-                    sr.rect(element.pixelX, element.pixelY, rectDrawWidth(toIndex), pixelSizeModifier);
+                    sr.rect(element.getPixelX(), element.getPixelY(), rectDrawWidth(toIndex - x), pixelSizeModifier);
                 }
+                x = toIndex;
             }
         }
         sr.end();
     }
 
     private float rectDrawWidth(int index) {
-        return (index * pixelSizeModifier) + (pixelSizeModifier - 1);
+        return (index * pixelSizeModifier) + pixelSizeModifier;
     }
 
     public void stepProvidedRows(int minRow, int maxRow) {
         for (int y = minRow; y <= maxRow; y++) {
-            Array<Element> row = getRow(y);
+            Array<Cell> row = getRow(y);
             for (int x : getShuffledXIndexes()) {
-                Element element = row.get(x);
+                Element element = row.get(x).getElement();
                 if (element != null) {
                     element.step(this);
                 }
@@ -114,10 +141,10 @@ public class CellularMatrix {
 
     public void stepProvidedColumns(int colIndex) {
         for (int y = 0; y < outerArraySize; y++) {
-            Array<Element> row = getRow(y);
+            Array<Cell> row = getRow(y);
             for (int x : shuffledXIndexesForThreads.get(colIndex)) {
                 try {
-                    Element element = row.get(calculateIndexWithOffset(x));
+                    Element element = row.get(calculateIndexWithOffset(x)).getElement();
                     if (element != null) {
                         element.step(this);
                     }
@@ -155,17 +182,25 @@ public class CellularMatrix {
         return pixelVal / pixelSizeModifier;
     }
 
+    private int toPixel(float matrixVal) {
+        return toPixel((int) matrixVal);
+    }
+
+    private int toPixel(int matrixVal) {
+        return (int) Math.floor(matrixVal * pixelSizeModifier);
+    }
+
     public boolean clearAll() {
         matrix = generateMatrix();
         spoutArray = new Array<>();
         return true;
     }
 
-    public Element get(float x, float y) {
+    public Cell get(float x, float y) {
         return get((int) x, (int) y);
     }
 
-    public Element get(int x, int y) {
+    public Cell get(int x, int y) {
         if (isWithinBounds(x, y)) {
             return matrix.get(y).get(x);
         } else {
@@ -173,13 +208,13 @@ public class CellularMatrix {
         }
     }
 
-    public Array<Element> getRow(int index) {
+    public Array<Cell> getRow(int index) {
         return matrix.get(index);
     }
 
     public boolean setElementAtIndex(int x, int y, Element element) {
-        matrix.get(y).set(x, element);
-        element.setCoordinatesByMatrix(x, y);
+        Cell cell = matrix.get(y).get(x);
+        cell.setElement(element);
         return true;
     }
 
@@ -206,8 +241,12 @@ public class CellularMatrix {
 
     public void spawnElementByMatrix(int matrixX, int matrixY, ElementType elementType) {
         if (isWithinBounds(matrixX, matrixY) && get(matrixX, matrixY).getClass() != elementType.clazz) {
-            setElementAtIndex(matrixX, matrixY, elementType.createElementByMatrix(matrixX, matrixY));
+            setElementAtIndex(matrixX, matrixY, elementType.create(get(matrixX, matrixY)));
         }
+    }
+
+    private boolean isWithinBounds(float x, float y) {
+        return isWithinBounds((int) x, (int) y);
     }
 
     public boolean isWithinBounds(int matrixX, int matrixY) {
@@ -309,5 +348,9 @@ public class CellularMatrix {
         }
 
 
+    }
+
+    public Cell getCellByVector(Vector3 lastValidLocation) {
+        return get(lastValidLocation.x, lastValidLocation.y);
     }
 }

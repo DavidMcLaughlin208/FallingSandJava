@@ -2,11 +2,12 @@ package com.gdx.cellular.elements;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
+import com.gdx.cellular.Cell;
 
 public class Dirt extends MovableSolid {
 
-    public Dirt(int x, int y, boolean isPixel) {
-        super(x, y, isPixel);
+    public Dirt(Cell cell) {
+        super(cell);
         vel = new Vector3(0f, -124f,0f);
         frictionFactor = .6f;
         inertialResistance = .8f;
