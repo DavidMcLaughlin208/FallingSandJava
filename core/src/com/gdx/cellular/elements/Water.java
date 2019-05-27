@@ -2,12 +2,11 @@ package com.gdx.cellular.elements;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
-import com.gdx.cellular.Cell;
 
 public class Water extends Liquid {
 
-    public Water(Cell cell) {
-        super(cell);
+    public Water(int x, int y, boolean isPixel) {
+        super(x, y, isPixel);
         vel = new Vector3(0,-124f,0);
         inertialResistance = 0;
         mass = 100;

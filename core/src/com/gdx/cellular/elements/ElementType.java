@@ -1,98 +1,71 @@
 package com.gdx.cellular.elements;
 
-import com.gdx.cellular.Cell;
-
 public enum ElementType {
     EMPTY_CELL(EmptyCell.class) {
-//        @Override
-//        public Element createElementByMatrix(int x, int y) {
-//            return new EmptyCell(x, y, false);
-//        }
-//
-//        @Override
-//        public Element createElementByPixel(int x, int y) {
-//            return new EmptyCell(x, y, true);
-//        }
         @Override
-        public Element create(Cell cell) {
-            return null;
+        public Element createElementByMatrix(int x, int y) {
+            return new EmptyCell(x, y, false);
+        }
+
+        @Override
+        public Element createElementByPixel(int x, int y) {
+            return new EmptyCell(x, y, true);
         }
     },
     STONE(Stone.class) {
-//        @Override
-//        public Element createElementByMatrix(int x, int y) {
-//            return new Stone(x, y, false);
-//        }
-//
-//        @Override
-//        public Element createElementByPixel(int x, int y) {
-//            return new Stone(x, y, true);
-//        }
         @Override
-        public Element create(Cell cell) {
-            return new Stone(cell);
+        public Element createElementByMatrix(int x, int y) {
+            return new Stone(x, y, false);
+        }
+
+        @Override
+        public Element createElementByPixel(int x, int y) {
+            return new Stone(x, y, true);
         }
     },
     SAND(Sand.class) {
-//        @Override
-//        public Element createElementByMatrix(int x, int y) {
-//            return new Sand(x, y, false);
-//        }
-//
-//        @Override
-//        public Element createElementByPixel(int x, int y) {
-//            return new Sand(x, y, true);
-//        }
         @Override
-        public Element create(Cell cell) {
-            return new Sand(cell);
+        public Element createElementByMatrix(int x, int y) {
+            return new Sand(x, y, false);
+        }
+
+        @Override
+        public Element createElementByPixel(int x, int y) {
+            return new Sand(x, y, true);
         }
     },
     DIRT(Dirt.class) {
-//        @Override
-//        public Element createElementByMatrix(int x, int y) {
-//            return new Dirt(x, y, false);
-//        }
-//
-//        @Override
-//        public Element createElementByPixel(int x, int y) {
-//            return new Dirt(x, y, true);
-//        }
         @Override
-        public Element create(Cell cell) {
-            return new Dirt(cell);
+        public Element createElementByMatrix(int x, int y) {
+            return new Dirt(x, y, false);
+        }
+
+        @Override
+        public Element createElementByPixel(int x, int y) {
+            return new Dirt(x, y, true);
         }
     },
     WATER(Water.class) {
-//        @Override
-//        public Element createElementByMatrix(int x, int y) {
-//            return new Water(x, y, false);
-//        }
-//
-//        @Override
-//        public Element createElementByPixel(int x, int y) {
-//            return new Water(x, y, true);
-//        }
         @Override
-        public Element create(Cell cell) {
-            return new Water(cell);
+        public Element createElementByMatrix(int x, int y) {
+            return new Water(x, y, false);
+        }
+
+        @Override
+        public Element createElementByPixel(int x, int y) {
+            return new Water(x, y, true);
         }
 
     },
     OIL(Oil.class) {
-//        @Override
-//        public Element createElementByMatrix(int x, int y) {
-//            return new Oil(x, y, false);
-//        }
-//
-//        @Override
-//        public Element createElementByPixel(int x, int y) {
-//            return new Oil(x, y, true);
-//        }
+        @Override
+        public Element createElementByMatrix(int x, int y) {
+            return new Oil(x, y, false);
+        }
 
         @Override
-        public Element create(Cell cell) {
-            return new Oil(cell);
+        public Element createElementByPixel(int x, int y) {
+            return new Oil(x, y, true);
         }
 
     };
@@ -103,9 +76,8 @@ public enum ElementType {
         this.clazz = clazz;
     }
 
-//    public abstract Element createElementByMatrix(int x, int y);
+    public abstract Element createElementByMatrix(int x, int y);
 
-//    public abstract Element createElementByPixel(int x, int y);
+    public abstract Element createElementByPixel(int x, int y);
 
-    public abstract  Element create(Cell cell);
 }

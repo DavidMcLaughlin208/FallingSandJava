@@ -1,18 +1,13 @@
 package com.gdx.cellular.elements;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.gdx.cellular.Cell;
 import com.gdx.cellular.CellularAutomaton;
 import com.gdx.cellular.CellularMatrix;
 
 public abstract class ImmovableSolid extends Solid {
 
-//    public ImmovableSolid(int x, int y, boolean isPixel) {
-//        super(x, y, isPixel);
-//    }
-
-    public ImmovableSolid(Cell cell) {
-        super(cell);
+    public ImmovableSolid(int x, int y, boolean isPixel) {
+        super(x, y, isPixel);
     }
 
 //    @Override
