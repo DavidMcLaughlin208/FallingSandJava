@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
+import com.gdx.cellular.elements.NeighborLocation;
 import com.gdx.cellular.elements.OutOfBoundsCell;
 
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ public class CellularMatrix {
         innerArraySize = toMatrix(width);
         outerArraySize = toMatrix(height);
         matrix = generateMatrix();
-//        linkNeighbors(matrix);
+        linkNeighbors(matrix);
         shuffledXIndexes = generateShuffledIndexes(innerArraySize);
 
         calculateAndSetThreadedXIndexOffset();
@@ -62,11 +63,11 @@ public class CellularMatrix {
                 for (int x = -1; x <=1; x++) {
                     for (int y = -1; y <= 1; y++) {
                         if (isWithinBounds(cell.matrixLocation.x + x, cell.matrixLocation.y + y) &&
-                                (x !=0 && y != 0)) {
+                                !(x == 0 && y == 0)) {
                             Cell neighbor = get(cell.matrixLocation.x + x, cell.matrixLocation.y + y);
-                            cell.setNeighbor(x, y, neighbor);
-                        } else if (x !=0 && y != 0) {
-                            cell.setNeighbor(x, y, new OutOfBoundsCell());
+                            cell.setNeighbor(NeighborLocation.fromInts(x, y), neighbor);
+                        } else if (!(x == 0 && y == 0)) {
+                            cell.setNeighbor(NeighborLocation.fromInts(x, y), new OutOfBoundsCell());
                         }
                     }
                 }

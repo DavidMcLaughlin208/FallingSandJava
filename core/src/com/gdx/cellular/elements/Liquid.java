@@ -11,10 +11,7 @@ public abstract class Liquid extends Element {
 
     public int density;
     public int dispersionRate;
-
-//    public Liquid(int x, int y, boolean isPixel) {
-//        super(x, y, isPixel);
-//    }
+    public boolean swappedDensityThisStep = false;
 
     public Liquid(Cell cell) {
         super(cell);
@@ -29,6 +26,7 @@ public abstract class Liquid extends Element {
         if (stepped.get(0) == CellularAutomaton.stepped.get(0)) return;
         stepped.flip(0);
         vel.add(CellularAutomaton.gravity);
+        swappedDensityThisStep = false;
 
         int yModifier = vel.y < 0 ? -1 : 1;
         int xModifier = vel.x < 0 ? -1 : 1;
@@ -43,6 +41,12 @@ public abstract class Liquid extends Element {
 
         int smallerCount = 0;
         Vector3 lastValidLocation = new Vector3(getMatrixX(), getMatrixY(), 0);
+//        if (this.outerCell.up != null && this.outerCell.up.getElement() instanceof Liquid &&
+//                density < ((Liquid) this.outerCell.up.getElement()).density && this.getClass() != this.outerCell.up.getElement().getClass() && !((Liquid) this.outerCell.up.getElement()).swappedDensityThisStep) {
+//            this.swappedDensityThisStep = true;
+//            this.outerCell.swapElements(this.outerCell.up);
+//            return;
+//        }
         for (int i = 1; i <= upperBound; i++) {
             if (freq != 0 && i % freq == 0 && min <= smallerCount) {
                 smallerCount += 1;
@@ -82,30 +86,71 @@ public abstract class Liquid extends Element {
             setAdjacentNeighborsFreeFalling(matrix, depth, lastValidLocation);
             if (isFinal) {
                 isFreeFalling = true;
-//                swapPositions(matrix, neighbor);
                 this.outerCell.swapElements(cellNeighbor);
             } else {
                 return false;
             }
-//        } else if (neighbor instanceof Liquid) {
-//            moveToLastValid(matrix, lastValidLocation);
-//            return true;
-        } else if (neighbor instanceof Solid || neighbor instanceof Liquid) {
-
-            if (neighbor instanceof Liquid) {
-                isFreeFalling = true;
-                if (density > ((Liquid) neighbor).density && neighbor.getMatrixY() < getMatrixY()) {
-//                    moveToLastValidAndSwap(matrix, neighbor, lastValidLocation);
-                    this.outerCell.moveElementToLastValidAndSwapElements(cellNeighbor, matrix.getCellByVector(lastValidLocation));
-                    return true;
-                }
+        } else if (neighbor instanceof Liquid) {
+            isFreeFalling = true;
+            if (density >= ((Liquid) neighbor).density && this.getClass() != neighbor.getClass() && neighbor.getMatrixY() <= getMatrixY() && !((Liquid) neighbor).swappedDensityThisStep) {
+                swappedDensityThisStep = true;
+                this.outerCell.moveElementToLastValidAndSwapElements(cellNeighbor, matrix.getCellByVector(lastValidLocation));
+                return true;
             }
             if (depth > 0) {
                 return true;
             }
             if (isFinal) {
                 this.outerCell.swapElements(matrix.getCellByVector(lastValidLocation));
-//                moveToLastValid(matrix, lastValidLocation);
+                return true;
+            }
+            if (isFreeFalling) {
+                float absY = Math.max(Math.abs(vel.y) / 31, 105);
+                vel.x = vel.x < 0 ? -absY : absY;
+            }
+            Vector3 normalizedVel = vel.cpy().nor();
+            int additionalX = getAdditional(normalizedVel.x);
+            int additionalY = getAdditional(normalizedVel.y);
+
+            additionalX *= Math.random() > 0.5 ? dispersionRate + 1 : dispersionRate - 1;
+
+            Cell diagonalNeighbor = matrix.get(getMatrixX() + additionalX, getMatrixY() + additionalY);
+            if (isFirst) {
+                vel.y = getAverageVelOrGravity(vel.y, neighbor.vel.y);
+            } else {
+                vel.y = -124;
+            }
+
+            neighbor.vel.y = vel.y;
+            vel.x *= frictionFactor;
+            if (diagonalNeighbor != null) {
+                boolean stoppedDiagonally = actOnNeighboringElement(diagonalNeighbor, matrix, true, false, lastValidLocation, depth + 1);
+                if (!stoppedDiagonally) {
+                    isFreeFalling = true;
+                    return true;
+                }
+            }
+
+            Cell adjacentNeighbor = matrix.get(getMatrixX() + additionalX, getMatrixY());
+            if (adjacentNeighbor != null && adjacentNeighbor != diagonalNeighbor) {
+                boolean stoppedAdjacently = actOnNeighboringElement(adjacentNeighbor, matrix, true, false, lastValidLocation, depth + 1);
+                if (stoppedAdjacently) vel.x *= -1;
+                if (!stoppedAdjacently) {
+                    isFreeFalling = false;
+                    return true;
+                }
+            }
+
+            isFreeFalling = false;
+
+            this.outerCell.swapElements(matrix.getCellByVector(lastValidLocation));
+            return true;
+        } else if (neighbor instanceof Solid) {
+            if (depth > 0) {
+                return true;
+            }
+            if (isFinal) {
+                this.outerCell.swapElements(matrix.getCellByVector(lastValidLocation));
                 return true;
             }
             if (isFreeFalling) {

@@ -2,6 +2,7 @@ package com.gdx.cellular;
 
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.elements.Element;
+import com.gdx.cellular.elements.NeighborLocation;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,62 +13,43 @@ public class Cell {
     public Vector3 matrixLocation;
     public Vector3 pixelLocation;
 
-    public Cell upLeft = null;
-    public Cell up = null;
-    public Cell upRight = null;
-    public Cell right = null;
-    public Cell downRight = null;
-    public Cell down = null;
-    public Cell downLeft = null;
-    public Cell left = null;
-
-    public Map<String, Cell> neighborMap = new HashMap<>();
+    public Map<NeighborLocation, Cell> neighborMap = new HashMap<>();
 
 
     public Cell(Vector3 matrixLocation, Vector3 pixelLocation) {
         this.matrixLocation = matrixLocation;
         this.pixelLocation = pixelLocation;
-        setUpNeighborMap();
     }
 
-    private void setUpNeighborMap() {
-        neighborMap.put("-11", upLeft);
-        neighborMap.put("01", up);
-        neighborMap.put("11", upRight);
-        neighborMap.put("10", right);
-        neighborMap.put("1-1", downRight);
-        neighborMap.put("0-1", down);
-        neighborMap.put("-1-1", downLeft);
-        neighborMap.put("-10", left);
+    public Cell getNeighbor(NeighborLocation location) {
+        return neighborMap.get(location);
     }
 
-    public void setNeighbor(int x, int y, Cell neighbor) {
-        String location = String.format("%s%s", x, y);
-
+    public void setNeighbor(NeighborLocation location, Cell neighbor) {
         switch (location) {
-            case "-11":
-                upLeft = neighbor;
+            case UPLEFT:
+                neighborMap.put(NeighborLocation.UPLEFT, neighbor);
                 break;
-            case "01":
-                up = neighbor;
+            case UP:
+                neighborMap.put(NeighborLocation.UP, neighbor);
                 break;
-            case "11":
-                upRight = neighbor;
+            case UPRIGHT:
+                neighborMap.put(NeighborLocation.UPRIGHT, neighbor);
                 break;
-            case "10":
-                right = neighbor;
+            case RIGHT:
+                neighborMap.put(NeighborLocation.RIGHT, neighbor);
                 break;
-            case "1-1":
-                downRight = neighbor;
+            case DOWNRIGHT:
+                neighborMap.put(NeighborLocation.DOWNRIGHT, neighbor);
                 break;
-            case "0-1":
-                down = neighbor;
+            case DOWN:
+                neighborMap.put(NeighborLocation.DOWN, neighbor);
                 break;
-            case "-1-1":
-                downLeft = neighbor;
+            case DOWNLEFT:
+                neighborMap.put(NeighborLocation.DOWNLEFT, neighbor);
                 break;
-            case "-10":
-                left = neighbor;
+            case LEFT:
+                neighborMap.put(NeighborLocation.LEFT, neighbor);
                 break;
             default:
                 throw new RuntimeException("Invalid neighbor location provided while assigning neighbor: " + location);
@@ -95,6 +77,11 @@ public class Cell {
     }
 
     public void moveElementToLastValidAndSwapElements(Cell toSwap, Cell lastValid) {
+
+        if (this == lastValid) {
+            swapElements(toSwap);
+            return;
+        }
         Element curElement = getElement();
         Element toSwapElement = toSwap.getElement();
         Element lastValidElement = lastValid.getElement();
