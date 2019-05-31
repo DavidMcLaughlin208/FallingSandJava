@@ -12,7 +12,7 @@ public class Oil extends Liquid {
         mass = 75;
         frictionFactor = 1f;
         density = 4;
-        dispersionRate = 2;
+        dispersionRate = 4;
         color = Color.DARK_GRAY;
     }
 }

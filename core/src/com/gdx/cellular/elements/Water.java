@@ -12,7 +12,7 @@ public class Water extends Liquid {
         mass = 100;
         frictionFactor = 1f;
         density = 5;
-        dispersionRate = 4;
+        dispersionRate = 5;
         color = Color.BLUE;
     }
 }

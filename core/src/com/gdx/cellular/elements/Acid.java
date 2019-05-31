@@ -11,7 +11,7 @@ public class Acid extends Liquid {
         mass = 50;
         frictionFactor = 1f;
         density = 7;
-        dispersionRate = 6;
+        dispersionRate = 7;
         color = Color.GREEN;
     }
 }

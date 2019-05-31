@@ -101,6 +101,7 @@ public abstract class Liquid extends Element {
             int additionalX = getAdditional(normalizedVel.x);
             int additionalY = getAdditional(normalizedVel.y);
 
+//            int randomDispersion = (int) Math.ceil(Math.random() * dispersionRate/2);
             int distance = additionalX * (Math.random() > 0.5 ? dispersionRate + 2 : dispersionRate - 1);
 
             Element diagonalNeighbor = matrix.get(matrixX + additionalX, matrixY + additionalY);
@@ -152,6 +153,7 @@ public abstract class Liquid extends Element {
             int additionalX = getAdditional(normalizedVel.x);
             int additionalY = getAdditional(normalizedVel.y);
 
+            //            int randomDispersion = (int) Math.ceil(Math.random() * dispersionRate/2);
             int distance = additionalX * (Math.random() > 0.5 ? dispersionRate + 2 : dispersionRate - 1);
 
             Element diagonalNeighbor = matrix.get(matrixX + additionalX, matrixY + additionalY);
@@ -200,7 +202,7 @@ public abstract class Liquid extends Element {
             boolean isFinal = i == Math.abs(distance);
             if (neighbor instanceof EmptyCell) {
                 if (isFinal) {
-                    moveToLastValidAndSwap(matrix, neighbor, lastValidLocation);
+                    swapPositions(matrix, neighbor);
                     return false;
                 }
                 lastValidLocation.x = startingX + i * distanceModifier;
@@ -212,13 +214,13 @@ public abstract class Liquid extends Element {
                     swapLiquidForDensities(matrix, liquidNeighbor, lastValidLocation);
                     return false;
                 }
-                if (isFirst) {
-                    return true;
-                }
-                if (isFinal) {
-                    moveToLastValid(matrix, lastValidLocation);
-                    return false;
-                }
+//                if (isFirst) {
+//                    return true;
+//                }
+//                if (isFinal) {
+//                    swapPositions(matrix, neighbor);
+//                    return false;
+//                }
                 lastValidLocation.x = startingX + i * distanceModifier;
                 lastValidLocation.y = startingY;
                 continue;
@@ -239,7 +241,7 @@ public abstract class Liquid extends Element {
     }
 
     private boolean compareDensities(Liquid neighbor) {
-        return density > neighbor.density && neighbor.matrixY <= matrixY;
+        return (density > neighbor.density && neighbor.matrixY <= matrixY) ||  (density < neighbor.density && neighbor.matrixY >= matrixY);
     }
 
     private void setAdjacentNeighborsFreeFalling(CellularMatrix matrix, int depth, Vector3 lastValidLocation) {
