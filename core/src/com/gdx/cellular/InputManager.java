@@ -33,6 +33,8 @@ public class InputManager {
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)) {
             elementType = ElementType.OIL;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
+            elementType = ElementType.ACID;
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_7)) {
             elementType = ElementType.EMPTY_CELL;
         }
         return elementType;

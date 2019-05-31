@@ -82,6 +82,7 @@ public abstract class MovableSolid extends Solid {
                 setAdjacentNeighborsFreeFalling(matrix, depth, lastValidLocation);
                 swapPositions(matrix, neighbor);
             } else {
+                isFreeFalling = true;
                 moveToLastValidAndSwap(matrix, neighbor, lastValidLocation);
                 return true;
             }
@@ -117,7 +118,7 @@ public abstract class MovableSolid extends Solid {
             }
 
             Element adjacentNeighbor = matrix.get(matrixX + additionalX, matrixY);
-            if (adjacentNeighbor != null) {
+            if (adjacentNeighbor != null  && adjacentNeighbor != diagonalNeighbor) {
                 boolean stoppedAdjacently = actOnNeighboringElement(adjacentNeighbor, matrix, true, false, lastValidLocation, depth + 1);
                 if (stoppedAdjacently) vel.x *= -1;
                 if (!stoppedAdjacently) {

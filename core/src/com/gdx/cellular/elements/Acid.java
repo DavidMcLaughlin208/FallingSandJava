@@ -3,16 +3,15 @@ package com.gdx.cellular.elements;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 
-public class Oil extends Liquid {
-
-    public Oil(int x, int y, boolean isPixel) {
+public class Acid extends Liquid {
+    public Acid(int x, int y, boolean isPixel) {
         super(x, y, isPixel);
         vel = new Vector3(0,-124f,0);
         inertialResistance = 0;
-        mass = 75;
+        mass = 50;
         frictionFactor = 1f;
-        density = 4;
-        dispersionRate = 2;
-        color = Color.DARK_GRAY;
+        density = 7;
+        dispersionRate = 6;
+        color = Color.GREEN;
     }
 }
