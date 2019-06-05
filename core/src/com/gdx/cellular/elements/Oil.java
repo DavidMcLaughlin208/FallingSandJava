@@ -14,5 +14,6 @@ public class Oil extends Liquid {
         density = 4;
         dispersionRate = 4;
         color = Color.DARK_GRAY;
+        flammabilityResistance = 25;
     }
 }

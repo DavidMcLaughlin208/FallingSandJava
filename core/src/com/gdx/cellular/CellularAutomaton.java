@@ -37,6 +37,7 @@ public class CellularAutomaton extends ApplicationAdapter {
     private InputManager inputManager;
 
 	private FPSLogger fpsLogger;
+	public static int frameCount = 0;
 
 	@Override
 	public void create () {
@@ -69,12 +70,14 @@ public class CellularAutomaton extends ApplicationAdapter {
         }
         fpsLogger.log();
         stepped.flip(0);
+        incrementFrameCount();
 
         // Detect and act on input
         currentlySelectedElement = inputManager.getNewlySelectedElementWithDefault(currentlySelectedElement);
         brushSize = inputManager.calculateNewBrushSize(brushSize);
         numThreads = inputManager.adjustThreadCount(numThreads);
         useMultiThreading = inputManager.toggleThreads(useMultiThreading);
+        inputManager.cycleMouseModes();
 		inputManager.clearMatrixIfInput(matrix);
 		inputManager.placeSpout(matrix, camera, currentlySelectedElement, brushSize);
 		inputManager.spawnElementByInput(matrix, camera, currentlySelectedElement, brushSize);
@@ -106,6 +109,10 @@ public class CellularAutomaton extends ApplicationAdapter {
 			matrix.drawAll(shapeRenderer);
 		}
 
+	}
+
+	private void incrementFrameCount() {
+		frameCount = frameCount == 3 ? 0 : frameCount + 1;
 	}
 
 	private void startAndWaitOnEvenThreads(List<Thread> threads) {

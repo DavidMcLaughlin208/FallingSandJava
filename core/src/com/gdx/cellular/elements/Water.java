@@ -2,6 +2,7 @@ package com.gdx.cellular.elements;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
+import com.gdx.cellular.CellularMatrix;
 
 public class Water extends Liquid {
 
@@ -15,4 +16,16 @@ public class Water extends Liquid {
         dispersionRate = 5;
         color = Color.BLUE;
     }
+
+    @Override
+    public boolean corrode(CellularMatrix matrix) {
+        return false;
+    }
+
+    @Override
+    public boolean applyHeat(int heat) {
+        return false;
+    }
+
+
 }

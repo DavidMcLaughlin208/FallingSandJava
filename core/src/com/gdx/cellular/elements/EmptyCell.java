@@ -20,4 +20,20 @@ public class EmptyCell extends Element {
 
     }
 
+    @Override
+    public boolean actOnOther(Element other, CellularMatrix matrix) {
+        return false;
+    }
+
+    @Override
+    public boolean corrode(CellularMatrix matrix) {
+        return false;
+    }
+
+    @Override
+    public boolean applyHeat(int heat) {
+        return false;
+    }
+
+
 }

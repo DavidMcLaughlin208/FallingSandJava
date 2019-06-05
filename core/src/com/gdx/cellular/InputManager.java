@@ -11,6 +11,7 @@ public class InputManager {
     private int maxBrushSize = 55;
     private int minBrushSize = 1;
     private int brushIncrements = 2;
+    private MouseMode mouseMode = MouseMode.SPAWN;
 
     private int maxThreads = 50;
 
@@ -35,6 +36,8 @@ public class InputManager {
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
             elementType = ElementType.ACID;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_7)) {
+            elementType = ElementType.WOOD;
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_8)) {
             elementType = ElementType.EMPTY_CELL;
         }
         return elementType;
@@ -68,6 +71,18 @@ public class InputManager {
         }
     }
 
+    public boolean cycleMouseModes() {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.M)) {
+            if (this.mouseMode == MouseMode.SPAWN) {
+                this.mouseMode = MouseMode.HEAT;
+            } else {
+                this.mouseMode = MouseMode.SPAWN;
+            }
+            return true;
+        }
+        return false;
+    }
+
     public void clearMatrixIfInput(CellularMatrix matrix) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.C)) {
             matrix.clearAll();
@@ -88,13 +103,21 @@ public class InputManager {
             Vector3 touchPos = new Vector3();
             touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touchPos);
-            if (touchedLastFrame) {
-                matrix.iterateAndSpawnBetweenTwoPoints(lastTouchPos, touchPos, currentlySelectedElement, brushSize);
-            } else {
-                matrix.spawnElementByPixelWithBrush((int) touchPos.x, (int) touchPos.y, currentlySelectedElement, brushSize);
+            if (mouseMode == MouseMode.SPAWN) {
+                if (touchedLastFrame) {
+                    matrix.iterateAndSpawnBetweenTwoPoints(lastTouchPos, touchPos, currentlySelectedElement, brushSize);
+                } else {
+                    matrix.spawnElementByPixelWithBrush((int) touchPos.x, (int) touchPos.y, currentlySelectedElement, brushSize);
+                }
+                lastTouchPos = touchPos;
+                touchedLastFrame = true;
+            } else if (mouseMode == MouseMode.HEAT) {
+                if (touchedLastFrame) {
+                    matrix.iterateAndHeatBetweenTwoPoints(lastTouchPos, touchPos, brushSize);
+                } else {
+                    matrix.applyHeatByBrush(matrix.toMatrix(touchPos.x), matrix.toMatrix(touchPos.y), brushSize);
+                }
             }
-            lastTouchPos = touchPos;
-            touchedLastFrame = true;
         } else {
             touchedLastFrame = false;
         }

@@ -14,4 +14,9 @@ public class Sand extends MovableSolid {
         color = Color.YELLOW;
     }
 
+    @Override
+    public boolean applyHeat(int heat) {
+        return false;
+    }
+
 }

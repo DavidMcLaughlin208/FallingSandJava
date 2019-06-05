@@ -1,7 +1,6 @@
 package com.gdx.cellular.elements;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularAutomaton;
 import com.gdx.cellular.CellularMatrix;
@@ -27,7 +26,6 @@ public abstract class Liquid extends Element {
 
         int yModifier = vel.y < 0 ? -1 : 1;
         int xModifier = vel.x < 0 ? -1 : 1;
-        // TODO: Don't need deltatime here
         int velYDeltaTime = (int) (Math.abs(vel.y) * Gdx.graphics.getDeltaTime());
         int velXDeltaTime = (int) (Math.abs(vel.x) * Gdx.graphics.getDeltaTime());
 
@@ -67,11 +65,16 @@ public abstract class Liquid extends Element {
 
             } else {
                 matrix.setElementAtIndex(matrixX, matrixY, ElementType.EMPTY_CELL.createElementByPixel(pixelX, pixelY));
+                return;
             }
         }
+        applyHeatToNeighborsIfIgnited(matrix);
+        takeEffectsDamage(matrix);
     }
 
     private boolean actOnNeighboringElement(Element neighbor, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth) {
+        boolean acted = actOnOther(neighbor, matrix);
+        if (acted) return true;
         if (neighbor instanceof EmptyCell) {
             setAdjacentNeighborsFreeFalling(matrix, depth, lastValidLocation);
             if (isFinal) {
@@ -198,6 +201,8 @@ public abstract class Liquid extends Element {
         Vector3 lastValidLocation = new Vector3(matrixX, matrixY, 0);
         for (int i = 0; i <= Math.abs(distance); i++) {
             Element neighbor = matrix.get(startingX + i * distanceModifier, startingY);
+            boolean acted = actOnOther(neighbor, matrix);
+            if (acted) return false;
             boolean isFirst = i == 0;
             boolean isFinal = i == Math.abs(distance);
             if (neighbor instanceof EmptyCell) {
@@ -221,8 +226,8 @@ public abstract class Liquid extends Element {
 //                    swapPositions(matrix, neighbor);
 //                    return false;
 //                }
-                lastValidLocation.x = startingX + i * distanceModifier;
-                lastValidLocation.y = startingY;
+//                lastValidLocation.x = startingX + i * distanceModifier;
+//                lastValidLocation.y = startingY;
                 continue;
             } else if (neighbor instanceof Solid) {
                 if (isFirst) {
@@ -236,12 +241,12 @@ public abstract class Liquid extends Element {
     }
 
     private void swapLiquidForDensities(CellularMatrix matrix, Liquid neighbor, Vector3 lastValidLocation) {
-        vel.y = -124;
+        vel.y = -62;
         moveToLastValidAndSwap(matrix, neighbor, lastValidLocation);
     }
 
     private boolean compareDensities(Liquid neighbor) {
-        return (density > neighbor.density && neighbor.matrixY <= matrixY) ||  (density < neighbor.density && neighbor.matrixY >= matrixY);
+        return (density > neighbor.density && neighbor.matrixY <= matrixY); // ||  (density < neighbor.density && neighbor.matrixY >= matrixY);
     }
 
     private void setAdjacentNeighborsFreeFalling(CellularMatrix matrix, int depth, Vector3 lastValidLocation) {

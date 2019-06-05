@@ -18,6 +18,7 @@ public abstract class ImmovableSolid extends Solid {
 
     @Override
     public void step(CellularMatrix matrix) {
-
+        applyHeatToNeighborsIfIgnited(matrix);
+        takeEffectsDamage(matrix);
     }
 }

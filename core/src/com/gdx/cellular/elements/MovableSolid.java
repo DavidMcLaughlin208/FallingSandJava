@@ -1,7 +1,6 @@
 package com.gdx.cellular.elements;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularAutomaton;
 import com.gdx.cellular.CellularMatrix;
@@ -63,8 +62,11 @@ public abstract class MovableSolid extends Solid {
 
             } else {
                 matrix.setElementAtIndex(matrixX, matrixY, ElementType.EMPTY_CELL.createElementByPixel(pixelX, pixelY));
+                return;
             }
         }
+        applyHeatToNeighborsIfIgnited(matrix);
+        takeEffectsDamage(matrix);
     }
 
     private boolean actOnNeighboringElement(Element neighbor, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth) {

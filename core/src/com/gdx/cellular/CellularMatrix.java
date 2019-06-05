@@ -307,7 +307,58 @@ public class CellularMatrix {
                 spawnElementByMatrixWithBrush(currentX, currentY, elementType, brushSize);
             }
         }
+    }
 
+    public void iterateAndHeatBetweenTwoPoints(Vector3 pos1, Vector3 pos2, int brushSize) {
+        int matrixX1 = toMatrix((int) pos1.x);
+        int matrixY1 = toMatrix((int) pos1.y);
+        int matrixX2 = toMatrix((int) pos2.x);
+        int matrixY2 = toMatrix((int) pos2.y);
 
+        if (pos1.epsilonEquals(pos2)) {
+            applyHeatByBrush((int) pos1.x, (int) pos1.y, brushSize);
+            return;
+        }
+
+        int xDiff = matrixX1 - matrixX2;
+        int yDiff = matrixY1 - matrixY2;
+        boolean xDiffIsLarger = Math.abs(xDiff) > Math.abs(yDiff);
+
+        int xModifier = xDiff < 0 ? 1 : -1;
+        int yModifier = yDiff < 0 ? 1 : -1;
+
+        int upperBound = Math.max(Math.abs(xDiff), Math.abs(yDiff));
+        int min = Math.min(Math.abs(xDiff), Math.abs(yDiff));
+        int freq = (min == 0 || upperBound == 0) ? 0 : (upperBound / min);
+
+        int smallerCount = 0;
+        for (int i = 1; i <= upperBound; i++) {
+            if (freq != 0 && i % freq == 0 && min != smallerCount) {
+                smallerCount += 1;
+            }
+            int yIncrease, xIncrease;
+            if (xDiffIsLarger) {
+                xIncrease = i;
+                yIncrease = smallerCount;
+            } else {
+                yIncrease = i;
+                xIncrease = smallerCount;
+            }
+            int currentY = matrixY1 + (yIncrease * yModifier);
+            int currentX = matrixX1 + (xIncrease * xModifier);
+            if (isWithinBounds(currentX, currentY)) {
+                applyHeatByBrush(currentX, currentY, brushSize);
+            }
+        }
+    }
+
+    public void applyHeatByBrush(int matrixX, int matrixY, int localBrushSize) {
+        int halfBrush = (int) Math.floor(localBrushSize / 2);
+        for (int x = matrixX - halfBrush; x <= matrixX + halfBrush; x++) {
+            for (int y = matrixY - halfBrush; y <= matrixY + halfBrush; y++) {
+                Element element = get(x, y);
+                if (element != null) element.applyHeat(5);
+            }
+        }
     }
 }
