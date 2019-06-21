@@ -1,8 +1,10 @@
-package com.gdx.cellular.elements;
+package com.gdx.cellular.elements.liquid;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularMatrix;
+import com.gdx.cellular.elements.Element;
+import com.gdx.cellular.elements.liquid.Liquid;
 
 public class Acid extends Liquid {
 
@@ -16,6 +18,7 @@ public class Acid extends Liquid {
         density = 2;
         dispersionRate = 2;
         color = Color.GREEN;
+        defaultColor = Color.GREEN;
     }
 
     @Override

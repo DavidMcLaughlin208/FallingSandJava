@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
@@ -24,6 +25,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 
     private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
+    private Pixmap pixmap;
     private CellularMatrix matrix;
     private OrthographicCamera camera;
 
@@ -50,6 +52,8 @@ public class CellularAutomaton extends ApplicationAdapter {
 		shapeRenderer = new ShapeRenderer();
 		shapeRenderer.setProjectionMatrix(camera.combined);
 		shapeRenderer.setAutoShapeType(true);
+
+		pixmap = new Pixmap(0,0, Pixmap.Format.fromGdx2DPixmapFormat(1));
 
         stepped.set(0, true);
 		matrix = new CellularMatrix(screenWidth, screenHeight, pixelSizeModifier);

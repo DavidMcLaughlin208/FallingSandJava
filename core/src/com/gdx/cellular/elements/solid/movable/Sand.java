@@ -1,7 +1,8 @@
-package com.gdx.cellular.elements;
+package com.gdx.cellular.elements.solid.movable;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
+import com.gdx.cellular.elements.solid.movable.MovableSolid;
 
 public class Sand extends MovableSolid {
 
@@ -12,6 +13,7 @@ public class Sand extends MovableSolid {
         inertialResistance = .1f;
         mass = 150;
         color = Color.YELLOW;
+        defaultColor = Color.YELLOW;
     }
 
     @Override

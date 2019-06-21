@@ -1,9 +1,14 @@
-package com.gdx.cellular.elements;
+package com.gdx.cellular.elements.solid.movable;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularAutomaton;
 import com.gdx.cellular.CellularMatrix;
+import com.gdx.cellular.elements.Element;
+import com.gdx.cellular.elements.ElementType;
+import com.gdx.cellular.elements.EmptyCell;
+import com.gdx.cellular.elements.solid.Solid;
+import com.gdx.cellular.elements.liquid.Liquid;
 
 public abstract class MovableSolid extends Solid {
 
@@ -67,6 +72,8 @@ public abstract class MovableSolid extends Solid {
         }
         applyHeatToNeighborsIfIgnited(matrix);
         takeEffectsDamage(matrix);
+        spawnSparkIfIgnited(matrix);
+        modifyColor();
     }
 
     private boolean actOnNeighboringElement(Element neighbor, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth) {

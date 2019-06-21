@@ -1,4 +1,4 @@
-package com.gdx.cellular.elements;
+package com.gdx.cellular.elements.liquid;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
@@ -14,6 +14,9 @@ public class Oil extends Liquid {
         density = 4;
         dispersionRate = 4;
         color = Color.DARK_GRAY;
+        defaultColor = Color.DARK_GRAY;
         flammabilityResistance = 25;
+        fireDamage = 10;
+        temperature = 10;
     }
 }

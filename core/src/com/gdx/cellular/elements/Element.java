@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularAutomaton;
 import com.gdx.cellular.CellularMatrix;
+import com.gdx.cellular.EffectColors;
 
 import java.util.BitSet;
 
@@ -21,10 +22,15 @@ public abstract class Element {
     public boolean isFreeFalling = true;
     public float inertialResistance;
     public int mass;
-    public int health = 100;
+    public int health = 500;
     public int flammabilityResistance = 100;
     public boolean isIgnited;
-    private int heatFactor = 2;
+    public int heatFactor = 10;
+    public int fireDamage = 3;
+    public boolean heated = false;
+    public int temperature = 0;
+    public int coolingFactor = 5;
+    public Color defaultColor;
 
     public Color color;
 
@@ -112,13 +118,13 @@ public abstract class Element {
     }
 
     public boolean corrode(CellularMatrix matrix) {
-        this.health -= 34;
+        this.health -= 170;
         checkIfDead(matrix);
         return true;
     }
 
     public boolean applyHeatToNeighborsIfIgnited(CellularMatrix matrix) {
-        if (!isIgnited) return false;
+        if (!shouldApplyHeat()) return false;
         for (int x = matrixX - 1; x <= matrixX + 1; x++) {
             for (int y = matrixY - 1; y <= matrixY + 1; y++) {
                 if (!(x == 0 && y == 0)) {
@@ -132,36 +138,76 @@ public abstract class Element {
         return true;
     }
 
+    public boolean shouldApplyHeat() {
+        return isIgnited || heated;
+    }
+
     public boolean applyHeat(int heat) {
         if (isIgnited) {
             return false;
         }
-        this.flammabilityResistance -= heat;
+        this.flammabilityResistance -= (int) (Math.random() * heat);
         checkIfIgnited();
         return true;
+    }
+
+    public boolean applyCooling(CellularMatrix matrix, int cooling) {
+        if (isIgnited) {
+            this.temperature -= cooling;
+            checkIfIgnited();
+            return true;
+        }
+        return false;
     }
 
     private void checkIfIgnited() {
         if (this.flammabilityResistance <= 0) {
             this.isIgnited = true;
             this.color = Color.RED;
+        } else {
+            this.isIgnited = false;
+            this.color = defaultColor;
         }
     }
 
-    private void checkIfDead(CellularMatrix matrix) {
+    public void checkIfDead(CellularMatrix matrix) {
         if (this.health <= 0) {
             die(matrix);
         }
     }
 
     public void die(CellularMatrix matrix) {
-        matrix.setElementAtIndex(matrixX, matrixY, ElementType.EMPTY_CELL.createElementByMatrix(matrixX, matrixY));
+        die(matrix, ElementType.EMPTY_CELL);
+    }
+
+    private void die(CellularMatrix matrix, ElementType type) {
+        matrix.setElementAtIndex(matrixX, matrixY, type.createElementByMatrix(matrixX, matrixY));
+    }
+
+    public void dieAndReplace(CellularMatrix matrix, ElementType type) {
+        die(matrix, type);
     }
 
     public void takeEffectsDamage(CellularMatrix matrix) {
         if (isIgnited) {
-            health -= heatFactor;
+            health -= fireDamage;
         }
         checkIfDead(matrix);
+    }
+
+    public void spawnSparkIfIgnited(CellularMatrix matrix) {
+        if (!isIgnited) return;
+        Element upNeighbor = matrix.get(matrixX, + matrixY + 1);
+        if (upNeighbor != null) {
+            if (upNeighbor instanceof EmptyCell) {
+                matrix.spawnElementByMatrix(matrixX, matrixY + 1, ElementType.SPARK);
+            }
+        }
+    }
+
+    public void modifyColor() {
+        if (isIgnited) {
+            color = EffectColors.getRandomFireColor();
+        }
     }
 }

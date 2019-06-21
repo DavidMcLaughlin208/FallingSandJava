@@ -1,8 +1,10 @@
-package com.gdx.cellular.elements;
+package com.gdx.cellular.elements.liquid;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularMatrix;
+import com.gdx.cellular.elements.Element;
+import com.gdx.cellular.elements.liquid.Liquid;
 
 public class Water extends Liquid {
 
@@ -15,6 +17,8 @@ public class Water extends Liquid {
         density = 5;
         dispersionRate = 5;
         color = Color.BLUE;
+        defaultColor = Color.BLUE;
+        coolingFactor = 5;
     }
 
     @Override
@@ -24,6 +28,20 @@ public class Water extends Liquid {
 
     @Override
     public boolean applyHeat(int heat) {
+        return false;
+    }
+
+    @Override
+    public boolean actOnOther(Element other, CellularMatrix matrix) {
+        if (other.shouldApplyHeat()) {
+            other.applyCooling(matrix, coolingFactor);
+            coolingFactor--;
+            if (coolingFactor <= 0) {
+                die(matrix);
+                return true;
+            }
+            return false;
+        }
         return false;
     }
 

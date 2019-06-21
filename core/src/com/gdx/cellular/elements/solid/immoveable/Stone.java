@@ -1,7 +1,8 @@
-package com.gdx.cellular.elements;
+package com.gdx.cellular.elements.solid.immoveable;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
+import com.gdx.cellular.elements.solid.immoveable.ImmovableSolid;
 
 public class Stone extends ImmovableSolid {
 

@@ -1,8 +1,7 @@
-package com.gdx.cellular.elements;
+package com.gdx.cellular.elements.solid.immoveable;
 
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.gdx.cellular.CellularAutomaton;
 import com.gdx.cellular.CellularMatrix;
+import com.gdx.cellular.elements.solid.Solid;
 
 public abstract class ImmovableSolid extends Solid {
 
@@ -20,5 +19,7 @@ public abstract class ImmovableSolid extends Solid {
     public void step(CellularMatrix matrix) {
         applyHeatToNeighborsIfIgnited(matrix);
         takeEffectsDamage(matrix);
+        spawnSparkIfIgnited(matrix);
+        modifyColor();
     }
 }

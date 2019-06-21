@@ -1,6 +1,7 @@
 package com.gdx.cellular;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
@@ -94,6 +95,28 @@ public class CellularMatrix {
             }
         }
         sr.end();
+    }
+
+    public void drawAll(Pixmap pixmap) {
+        for (int y = 0; y < outerArraySize; y++) {
+            Array<Element> row = getRow(y);
+            for (int x = 0; x < row.size; x++) {
+                Element element = row.get(x);
+                Color currentColor = element.color;
+                int toIndex = x;
+                for (int following = x; following < row.size; following++) {
+                    if (get(following, y).color != currentColor) {
+                        break;
+                    }
+                    toIndex = following;
+                }
+                x = toIndex;
+                if (element != null) {
+                    pixmap.setColor(element.color);
+                    pixmap.drawLine((int) element.pixelX, (int) element.pixelY, element.pixelX + toIndex, (int) element.pixelY);
+                }
+            }
+        }
     }
 
     private float rectDrawWidth(int index) {

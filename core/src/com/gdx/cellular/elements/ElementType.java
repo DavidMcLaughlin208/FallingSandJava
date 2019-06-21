@@ -1,5 +1,17 @@
 package com.gdx.cellular.elements;
 
+import com.gdx.cellular.elements.gas.Spark;
+import com.gdx.cellular.elements.liquid.Acid;
+import com.gdx.cellular.elements.liquid.Lava;
+import com.gdx.cellular.elements.liquid.Oil;
+import com.gdx.cellular.elements.liquid.Water;
+import com.gdx.cellular.elements.solid.immoveable.Stone;
+import com.gdx.cellular.elements.solid.immoveable.Titanium;
+import com.gdx.cellular.elements.solid.immoveable.Wood;
+import com.gdx.cellular.elements.solid.movable.Dirt;
+import com.gdx.cellular.elements.solid.movable.Ember;
+import com.gdx.cellular.elements.solid.movable.Sand;
+
 public enum ElementType {
     EMPTY_CELL(EmptyCell.class) {
         @Override
@@ -90,6 +102,54 @@ public enum ElementType {
         @Override
         public Element createElementByPixel(int x, int y) {
             return new Wood(x, y, true);
+        }
+
+    },
+    TITANIUM(Titanium.class) {
+        @Override
+        public Element createElementByMatrix(int x, int y) {
+            return new Titanium(x, y, false);
+        }
+
+        @Override
+        public Element createElementByPixel(int x, int y) {
+            return new Titanium(x, y, true);
+        }
+
+    },
+    SPARK(Titanium.class) {
+        @Override
+        public Element createElementByMatrix(int x, int y) {
+            return new Spark(x, y, false);
+        }
+
+        @Override
+        public Element createElementByPixel(int x, int y) {
+            return new Spark(x, y, true);
+        }
+
+    },
+    EMBER(Ember.class) {
+        @Override
+        public Element createElementByMatrix(int x, int y) {
+            return new Ember(x, y, false);
+        }
+
+        @Override
+        public Element createElementByPixel(int x, int y) {
+            return new Ember(x, y, true);
+        }
+
+    },
+    LAVA(Lava.class) {
+        @Override
+        public Element createElementByMatrix(int x, int y) {
+            return new Lava(x, y, false);
+        }
+
+        @Override
+        public Element createElementByPixel(int x, int y) {
+            return new Lava(x, y, true);
         }
 
     };

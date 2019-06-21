@@ -1,8 +1,7 @@
-package com.gdx.cellular.elements;
+package com.gdx.cellular.elements.solid.movable;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
-import com.gdx.cellular.CellularMatrix;
 
 public class Dirt extends MovableSolid {
 
@@ -13,6 +12,7 @@ public class Dirt extends MovableSolid {
         inertialResistance = .8f;
         mass = 200;
         color = Color.BROWN;
+        defaultColor = Color.BROWN;
     }
 
     @Override

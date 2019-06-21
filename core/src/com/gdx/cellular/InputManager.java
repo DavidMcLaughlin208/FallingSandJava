@@ -38,7 +38,15 @@ public class InputManager {
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_7)) {
             elementType = ElementType.WOOD;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_8)) {
+            elementType = ElementType.TITANIUM;
+        }  else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_9)) {
             elementType = ElementType.EMPTY_CELL;
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.F)) {
+            elementType = ElementType.SPARK;
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
+            elementType = ElementType.EMBER;
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
+            elementType = ElementType.LAVA;
         }
         return elementType;
     }
