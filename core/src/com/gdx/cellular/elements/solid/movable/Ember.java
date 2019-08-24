@@ -14,7 +14,7 @@ public class Ember extends MovableSolid {
         color = Color.BROWN;
         defaultColor = Color.BROWN;
         isIgnited = true;
-        health = 800;
+        health = getRandomInt(100) + 750;
         temperature = 5;
     }
 }

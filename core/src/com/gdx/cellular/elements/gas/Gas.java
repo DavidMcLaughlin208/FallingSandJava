@@ -10,11 +10,10 @@ import com.gdx.cellular.elements.EmptyCell;
 import com.gdx.cellular.elements.solid.Solid;
 import com.gdx.cellular.elements.liquid.Liquid;
 
-public class Gas extends Element {
+public abstract class Gas extends Element {
 
     public int density;
     public int dispersionRate;
-    public int lifeSpan;
 
     public Gas(int x, int y, boolean isPixel) {
         super(x, y, isPixel);
@@ -73,10 +72,12 @@ public class Gas extends Element {
         applyHeatToNeighborsIfIgnited(matrix);
         modifyColor();
         spawnSparkIfIgnited(matrix);
+        checkLifeSpan(matrix);
         takeEffectsDamage(matrix);
     }
 
-    private boolean actOnNeighboringElement(Element neighbor, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth) {
+    @Override
+    protected boolean actOnNeighboringElement(Element neighbor, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth) {
         boolean acted = actOnOther(neighbor, matrix);
         if (acted) return true;
         if (neighbor instanceof EmptyCell) {

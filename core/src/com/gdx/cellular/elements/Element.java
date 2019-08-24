@@ -30,6 +30,7 @@ public abstract class Element {
     public boolean heated = false;
     public int temperature = 0;
     public int coolingFactor = 5;
+    public Integer lifeSpan = null;
     public Color defaultColor;
 
     public Color color;
@@ -52,6 +53,8 @@ public abstract class Element {
     public boolean actOnOther(Element other, CellularMatrix matrix) {
         return false;
     }
+
+    protected abstract boolean actOnNeighboringElement(Element neighbor, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth);
 
     public void swapPositions(CellularMatrix matrix, Element toSwap) {
         int toSwapMatrixX = toSwap.matrixX;
@@ -209,5 +212,18 @@ public abstract class Element {
         if (isIgnited) {
             color = EffectColors.getRandomFireColor();
         }
+    }
+
+    public void checkLifeSpan(CellularMatrix matrix) {
+        if (lifeSpan != null) {
+            lifeSpan--;
+            if (lifeSpan <= 0) {
+                die(matrix);
+            }
+        }
+    }
+
+    public int getRandomInt(int limit) {
+        return (int) (Math.random() * limit);
     }
 }

@@ -15,7 +15,7 @@ public class Wood extends ImmovableSolid {
         defaultColor = Color.BROWN;
         inertialResistance = 1.1f;
         mass = 500;
-        health = 250;
+        health = getRandomInt(100) + 250;
     }
 
     @Override

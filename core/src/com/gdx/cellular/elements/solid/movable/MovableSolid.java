@@ -73,10 +73,12 @@ public abstract class MovableSolid extends Solid {
         applyHeatToNeighborsIfIgnited(matrix);
         takeEffectsDamage(matrix);
         spawnSparkIfIgnited(matrix);
+        checkLifeSpan(matrix);
         modifyColor();
     }
 
-    private boolean actOnNeighboringElement(Element neighbor, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth) {
+    @Override
+    protected boolean actOnNeighboringElement(Element neighbor, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth) {
         if (neighbor instanceof EmptyCell) {
             setAdjacentNeighborsFreeFalling(matrix, depth, lastValidLocation);
             if (isFinal) {

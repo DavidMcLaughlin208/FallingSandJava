@@ -75,10 +75,12 @@ public abstract class Liquid extends Element {
         applyHeatToNeighborsIfIgnited(matrix);
         modifyColor();
         spawnSparkIfIgnited(matrix);
+        checkLifeSpan(matrix);
         takeEffectsDamage(matrix);
     }
 
-    private boolean actOnNeighboringElement(Element neighbor, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth) {
+    @Override
+    protected boolean actOnNeighboringElement(Element neighbor, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth) {
         boolean acted = actOnOther(neighbor, matrix);
         if (acted) return true;
         if (neighbor instanceof EmptyCell) {
