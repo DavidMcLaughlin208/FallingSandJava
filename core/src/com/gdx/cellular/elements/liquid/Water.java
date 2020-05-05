@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.elements.Element;
-import com.gdx.cellular.elements.liquid.Liquid;
 
 public class Water extends Liquid {
 
@@ -34,7 +33,7 @@ public class Water extends Liquid {
     @Override
     public boolean actOnOther(Element other, CellularMatrix matrix) {
         if (other.shouldApplyHeat()) {
-            other.applyCooling(matrix, coolingFactor);
+            other.receiveCooling(matrix, coolingFactor);
             coolingFactor--;
             if (coolingFactor <= 0) {
                 die(matrix);

@@ -37,7 +37,7 @@ public class Lava extends Liquid {
     }
 
     @Override
-    public boolean applyCooling(CellularMatrix matrix, int cooling) {
+    public boolean receiveCooling(CellularMatrix matrix, int cooling) {
         this.temperature -= cooling;
         checkIfDead(matrix);
         return true;

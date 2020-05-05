@@ -22,11 +22,6 @@ public class EmptyCell extends Element {
     }
 
     @Override
-    public boolean actOnOther(Element other, CellularMatrix matrix) {
-        return false;
-    }
-
-    @Override
     protected boolean actOnNeighboringElement(Element neighbor, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth) {
         return true;
     }

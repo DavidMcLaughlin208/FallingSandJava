@@ -154,7 +154,7 @@ public abstract class Element {
         return true;
     }
 
-    public boolean applyCooling(CellularMatrix matrix, int cooling) {
+    public boolean receiveCooling(CellularMatrix matrix, int cooling) {
         if (isIgnited) {
             this.temperature -= cooling;
             checkIfIgnited();
