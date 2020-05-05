@@ -16,5 +16,7 @@ public class Ember extends MovableSolid {
         isIgnited = true;
         health = getRandomInt(100) + 750;
         temperature = 5;
+        flammabilityResistance = 0;
+        resetFlammabilityResistance = 20;
     }
 }

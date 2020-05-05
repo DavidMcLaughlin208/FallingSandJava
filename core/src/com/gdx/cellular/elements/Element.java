@@ -24,6 +24,7 @@ public abstract class Element {
     public int mass;
     public int health = 500;
     public int flammabilityResistance = 100;
+    public int resetFlammabilityResistance = flammabilityResistance / 2;
     public boolean isIgnited;
     public int heatFactor = 10;
     public int fireDamage = 3;
@@ -166,7 +167,7 @@ public abstract class Element {
     private void checkIfIgnited() {
         if (this.flammabilityResistance <= 0) {
             this.isIgnited = true;
-            this.color = Color.RED;
+            modifyColor();
         } else {
             this.isIgnited = false;
             this.color = defaultColor;
@@ -194,8 +195,25 @@ public abstract class Element {
     public void takeEffectsDamage(CellularMatrix matrix) {
         if (isIgnited) {
             health -= fireDamage;
+            if (isSurrounded(matrix)) {
+                flammabilityResistance = resetFlammabilityResistance;
+            }
+            checkIfIgnited();
         }
         checkIfDead(matrix);
+    }
+
+    private boolean isSurrounded(CellularMatrix matrix) {
+        if (matrix.get(this.matrixX, this.matrixY + 1) instanceof EmptyCell) {
+            return false;
+        } else if (matrix.get(this.matrixX + 1, this.matrixY) instanceof EmptyCell) {
+            return false;
+        } else if (matrix.get(this.matrixX - 1, this.matrixY) instanceof EmptyCell) {
+            return false;
+        } else if (matrix.get(this.matrixX, this.matrixY - 1) instanceof EmptyCell) {
+            return false;
+        }
+        return true;
     }
 
     public void spawnSparkIfIgnited(CellularMatrix matrix) {

@@ -15,8 +15,10 @@ public class Oil extends Liquid {
         dispersionRate = 4;
         color = Color.DARK_GRAY;
         defaultColor = Color.DARK_GRAY;
-        flammabilityResistance = 25;
+        flammabilityResistance = 15;
+        resetFlammabilityResistance = 5;
         fireDamage = 10;
         temperature = 10;
+        health = 1000;
     }
 }

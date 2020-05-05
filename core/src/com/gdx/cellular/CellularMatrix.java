@@ -222,7 +222,10 @@ public class CellularMatrix {
         int halfBrush = (int) Math.floor(localBrushSize / 2);
         for (int x = matrixX - halfBrush; x <= matrixX + halfBrush; x++) {
             for (int y = matrixY - halfBrush; y <= matrixY + halfBrush; y++) {
-                spawnElementByMatrix(x, y, elementType);
+                int distance = distanceBetweenTwoPoints(matrixX, x, matrixY, y);
+                if (distance < halfBrush) {
+                    spawnElementByMatrix(x, y, elementType);
+                }
             }
         }
     }
@@ -235,6 +238,10 @@ public class CellularMatrix {
 
     public boolean isWithinBounds(int matrixX, int matrixY) {
         return matrixX >= 0 && matrixY >= 0 && matrixX < innerArraySize && matrixY < outerArraySize;
+    }
+
+    public int distanceBetweenTwoPoints(int x1, int x2, int y1, int y2) {
+        return (int) Math.ceil(Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)));
     }
 
     public boolean isWithinXBounds(int matrixX) {

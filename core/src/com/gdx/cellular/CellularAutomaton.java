@@ -31,7 +31,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 
     private ElementType currentlySelectedElement = ElementType.SAND;
 
-    private int brushSize = 3;
+    private int brushSize = 5;
 
     private int numThreads = 12;
     private boolean useMultiThreading = false;

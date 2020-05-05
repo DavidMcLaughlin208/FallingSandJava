@@ -9,7 +9,7 @@ import com.gdx.cellular.elements.ElementType;
 public class InputManager {
 
     private int maxBrushSize = 55;
-    private int minBrushSize = 1;
+    private int minBrushSize = 3;
     private int brushIncrements = 2;
     private MouseMode mouseMode = MouseMode.SPAWN;
 
@@ -125,6 +125,7 @@ public class InputManager {
                 } else {
                     matrix.applyHeatByBrush(matrix.toMatrix(touchPos.x), matrix.toMatrix(touchPos.y), brushSize);
                 }
+                touchedLastFrame = true;
             }
         } else {
             touchedLastFrame = false;
