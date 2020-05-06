@@ -387,7 +387,7 @@ public class CellularMatrix {
         for (int x = matrixX - halfBrush; x <= matrixX + halfBrush; x++) {
             for (int y = matrixY - halfBrush; y <= matrixY + halfBrush; y++) {
                 Element element = get(x, y);
-                if (element != null) element.applyHeat(5);
+                if (element != null) element.receiveHeat(5);
             }
         }
     }

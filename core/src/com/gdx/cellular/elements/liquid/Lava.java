@@ -22,7 +22,7 @@ public class Lava extends Liquid {
     }
 
     @Override
-    public boolean applyHeat(int heat) {
+    public boolean receiveHeat(int heat) {
         return false;
     }
 

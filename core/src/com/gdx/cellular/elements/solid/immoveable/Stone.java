@@ -16,7 +16,7 @@ public class Stone extends ImmovableSolid {
     }
 
     @Override
-    public boolean applyHeat(int heat) {
+    public boolean receiveHeat(int heat) {
         return false;
     }
 

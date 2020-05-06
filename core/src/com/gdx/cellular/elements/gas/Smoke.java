@@ -47,7 +47,7 @@ public class Smoke extends Gas{
     public void spawnSparkIfIgnited(CellularMatrix matrix) {}
 
     @Override
-    public boolean applyHeat(int heat) {
+    public boolean receiveHeat(int heat) {
         return false;
     }
 }

@@ -1,12 +1,9 @@
 package com.gdx.cellular.elements.gas;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
-import com.gdx.cellular.CellularAutomaton;
 import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.elements.Element;
-import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.elements.EmptyCell;
 import com.gdx.cellular.elements.solid.Solid;
 import com.gdx.cellular.elements.liquid.Liquid;
@@ -42,7 +39,7 @@ public class Spark extends Gas {
         } else if (neighbor instanceof Spark) {
             return false;
         } else if (neighbor instanceof Liquid || neighbor instanceof Solid || neighbor instanceof Gas) {
-            neighbor.applyHeat(heatFactor);
+            neighbor.receiveHeat(heatFactor);
             die(matrix);
             return true;
         }

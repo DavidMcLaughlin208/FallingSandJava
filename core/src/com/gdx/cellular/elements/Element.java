@@ -139,7 +139,7 @@ public abstract class Element {
                 if (!(x == 0 && y == 0)) {
                     Element neighbor = matrix.get(x, y);
                     if (neighbor != null) {
-                        neighbor.applyHeat(heatFactor);
+                        neighbor.receiveHeat(heatFactor);
                     }
                 }
             }
@@ -151,7 +151,7 @@ public abstract class Element {
         return isIgnited || heated;
     }
 
-    public boolean applyHeat(int heat) {
+    public boolean receiveHeat(int heat) {
         if (isIgnited) {
             return false;
         }

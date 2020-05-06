@@ -16,7 +16,7 @@ public class Dirt extends MovableSolid {
     }
 
     @Override
-    public boolean applyHeat(int heat) {
+    public boolean receiveHeat(int heat) {
         return false;
     }
 

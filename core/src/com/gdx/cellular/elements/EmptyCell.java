@@ -32,7 +32,7 @@ public class EmptyCell extends Element {
     }
 
     @Override
-    public boolean applyHeat(int heat) {
+    public boolean receiveHeat(int heat) {
         return false;
     }
 
