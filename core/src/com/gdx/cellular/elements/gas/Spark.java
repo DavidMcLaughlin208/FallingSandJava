@@ -49,6 +49,7 @@ public class Spark extends Gas {
         return false;
     }
 
+    @Override
     public void spawnSparkIfIgnited(CellularMatrix matrix) {}
 
 

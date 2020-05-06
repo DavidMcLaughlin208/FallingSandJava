@@ -1,5 +1,6 @@
 package com.gdx.cellular.elements;
 
+import com.gdx.cellular.elements.gas.Smoke;
 import com.gdx.cellular.elements.gas.Spark;
 import com.gdx.cellular.elements.liquid.Acid;
 import com.gdx.cellular.elements.liquid.Lava;
@@ -8,6 +9,7 @@ import com.gdx.cellular.elements.liquid.Water;
 import com.gdx.cellular.elements.solid.immoveable.Stone;
 import com.gdx.cellular.elements.solid.immoveable.Titanium;
 import com.gdx.cellular.elements.solid.immoveable.Wood;
+import com.gdx.cellular.elements.solid.movable.Coal;
 import com.gdx.cellular.elements.solid.movable.Dirt;
 import com.gdx.cellular.elements.solid.movable.Ember;
 import com.gdx.cellular.elements.solid.movable.Sand;
@@ -150,6 +152,30 @@ public enum ElementType {
         @Override
         public Element createElementByPixel(int x, int y) {
             return new Lava(x, y, true);
+        }
+
+    },
+    COAL(Coal.class) {
+        @Override
+        public Element createElementByMatrix(int x, int y) {
+            return new Coal(x, y, false);
+        }
+
+        @Override
+        public Element createElementByPixel(int x, int y) {
+            return new Coal(x, y, true);
+        }
+
+    },
+    SMOKE(Smoke.class) {
+        @Override
+        public Element createElementByMatrix(int x, int y) {
+            return new Smoke(x, y, false);
+        }
+
+        @Override
+        public Element createElementByPixel(int x, int y) {
+            return new Smoke(x, y, true);
         }
 
     };

@@ -23,7 +23,7 @@ public abstract class Gas extends Element {
     public void step(CellularMatrix matrix) {
         if (stepped.get(0) == CellularAutomaton.stepped.get(0)) return;
         stepped.flip(0);
-        vel.add(CellularAutomaton.gravity);
+//        vel.sub(CellularAutomaton.gravity);
 
         int yModifier = vel.y < 0 ? -1 : 1;
         int xModifier = vel.x < 0 ? -1 : 1;
@@ -88,12 +88,61 @@ public abstract class Gas extends Element {
             } else {
                 return false;
             }
-        } else if (neighbor instanceof Liquid) {
-            Liquid liquidNeighbor = (Liquid) neighbor;
-            if (compareDensities(liquidNeighbor)) {
-                swapLiquidForDensities(matrix, liquidNeighbor, lastValidLocation);
+        } else if (neighbor instanceof Gas) {
+            Gas gasNeighbor = (Gas) neighbor;
+            if (compareGasDensities(gasNeighbor)) {
+                swapGasForDensities(matrix, gasNeighbor, lastValidLocation);
                 return false;
             }
+            if (depth > 0) {
+                return true;
+            }
+            if (isFinal) {
+                moveToLastValid(matrix, lastValidLocation);
+                return true;
+            }
+            if (isFreeFalling) {
+                float absY = Math.max(Math.abs(vel.y) / 31, 105);
+                vel.x = vel.x < 0 ? -62 : 62;
+            }
+            Vector3 normalizedVel = vel.cpy().nor();
+            int additionalX = getAdditional(normalizedVel.x);
+            int additionalY = getAdditional(normalizedVel.y);
+
+            int distance = additionalX * (Math.random() > 0.5 ? dispersionRate + 2 : dispersionRate - 1);
+
+            Element diagonalNeighbor = matrix.get(matrixX + additionalX, matrixY + additionalY);
+            if (isFirst) {
+                vel.y = getAverageVelOrGravity(vel.y, neighbor.vel.y);
+            } else {
+                vel.y = 124;
+            }
+
+            neighbor.vel.y = vel.y;
+            vel.x *= frictionFactor;
+            if (diagonalNeighbor != null) {
+                boolean stoppedDiagonally = iterateToAdditional(matrix, diagonalNeighbor.matrixX, diagonalNeighbor.matrixY, distance);
+                if (!stoppedDiagonally) {
+                    isFreeFalling = true;
+                    return true;
+                }
+            }
+
+            Element adjacentNeighbor = matrix.get(matrixX + additionalX, matrixY);
+            if (adjacentNeighbor != null && adjacentNeighbor != diagonalNeighbor) {
+                boolean stoppedAdjacently = iterateToAdditional(matrix, adjacentNeighbor.matrixX, adjacentNeighbor.matrixY, distance);
+                if (stoppedAdjacently) vel.x *= -1;
+                if (!stoppedAdjacently) {
+                    isFreeFalling = false;
+                    return true;
+                }
+            }
+
+            isFreeFalling = false;
+
+            moveToLastValid(matrix, lastValidLocation);
+            return true;
+        } else if (neighbor instanceof Liquid) {
             if (depth > 0) {
                 return true;
             }
@@ -115,7 +164,7 @@ public abstract class Gas extends Element {
             if (isFirst) {
                 vel.y = getAverageVelOrGravity(vel.y, neighbor.vel.y);
             } else {
-                vel.y = -124;
+                vel.y = 124;
             }
 
             neighbor.vel.y = vel.y;
@@ -164,7 +213,7 @@ public abstract class Gas extends Element {
             if (isFirst) {
                 vel.y = getAverageVelOrGravity(vel.y, neighbor.vel.y);
             } else {
-                vel.y = -124;
+                vel.y = 124;
             }
 
             neighbor.vel.y = vel.y;
@@ -214,14 +263,13 @@ public abstract class Gas extends Element {
                 lastValidLocation.y = startingY;
                 continue;
             } else if (neighbor instanceof Liquid) {
-                Liquid liquidNeighbor = (Liquid) neighbor;
-                if (compareDensities(liquidNeighbor)) {
-                    swapLiquidForDensities(matrix, liquidNeighbor, lastValidLocation);
-                    return false;
-                }
                 continue;
             } else if (neighbor instanceof Gas) {
-
+                Gas gasNeighbor = (Gas) neighbor;
+                if (compareGasDensities(gasNeighbor)) {
+                    swapGasForDensities(matrix, gasNeighbor, lastValidLocation);
+                    return false;
+                }
             } else if (neighbor instanceof Solid) {
                 if (isFirst) {
                     return true;
@@ -233,14 +281,15 @@ public abstract class Gas extends Element {
         return true;
     }
 
-    private void swapLiquidForDensities(CellularMatrix matrix, Liquid neighbor, Vector3 lastValidLocation) {
-        vel.y = -62;
+    private void swapGasForDensities(CellularMatrix matrix, Gas neighbor, Vector3 lastValidLocation) {
+        vel.y = 62;
         moveToLastValidAndSwap(matrix, neighbor, lastValidLocation);
     }
 
-    private boolean compareDensities(Liquid neighbor) {
+    private boolean compareGasDensities(Gas neighbor) {
         return (density > neighbor.density && neighbor.matrixY <= matrixY); // ||  (density < neighbor.density && neighbor.matrixY >= matrixY);
     }
+
 
     private void setAdjacentNeighborsFreeFalling(CellularMatrix matrix, int depth, Vector3 lastValidLocation) {
         if (depth > 0) return;
@@ -253,7 +302,7 @@ public abstract class Gas extends Element {
     }
 
     private void setElementFreeFalling(Element element) {
-        element.isFreeFalling = Math.random() > element.inertialResistance || element.isFreeFalling;
+        element.isFreeFalling = element.isFreeFalling || Math.random() > element.inertialResistance;
     }
 
 
@@ -269,14 +318,14 @@ public abstract class Gas extends Element {
     }
 
     private float getAverageVelOrGravity(float vel, float otherVel) {
-        if (otherVel > -125f) {
-            return -124f;
+        if (otherVel > 125f) {
+            return 124f;
         }
         float avg = (vel + otherVel) / 2;
         if (avg > 0) {
             return avg;
         } else {
-            return Math.min(avg, -124f);
+            return Math.min(avg, 124f);
         }
     }
 }

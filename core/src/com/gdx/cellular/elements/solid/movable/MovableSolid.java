@@ -7,6 +7,7 @@ import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.elements.EmptyCell;
+import com.gdx.cellular.elements.gas.Gas;
 import com.gdx.cellular.elements.solid.Solid;
 import com.gdx.cellular.elements.liquid.Liquid;
 
@@ -87,7 +88,7 @@ public abstract class MovableSolid extends Solid {
             } else {
                 return false;
             }
-        } else if (neighbor instanceof Liquid) {
+        } else if (neighbor instanceof Liquid || neighbor instanceof Gas) {
             if (depth > 0) {
                 isFreeFalling = true;
                 setAdjacentNeighborsFreeFalling(matrix, depth, lastValidLocation);

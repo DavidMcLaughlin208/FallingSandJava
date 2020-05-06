@@ -88,10 +88,10 @@ public class CellularMatrix {
                     toIndex = following;
                 }
                 x = toIndex;
-                if (element != null) {
-                    sr.setColor(element.color);
-                    sr.rect(element.pixelX, element.pixelY, rectDrawWidth(toIndex), pixelSizeModifier);
-                }
+
+                sr.setColor(element.color);
+                sr.rect(element.pixelX, element.pixelY, rectDrawWidth(toIndex), pixelSizeModifier);
+
             }
         }
         sr.end();
@@ -152,8 +152,8 @@ public class CellularMatrix {
     }
 
     private int calculateIndexWithOffset(int x) {
-        if (x + threadedIndexOffset >= innerArraySize - 1) {
-            return (x + threadedIndexOffset) - (innerArraySize - 1);
+        if (x + threadedIndexOffset >= innerArraySize) {
+            return (x + threadedIndexOffset) - (innerArraySize);
         } else {
             return x + threadedIndexOffset;
         }

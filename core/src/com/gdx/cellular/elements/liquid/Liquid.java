@@ -59,6 +59,9 @@ public abstract class Liquid extends Element {
             int modifiedMatrixX = matrixX + (xIncrease * xModifier);
             if (matrix.isWithinBounds(modifiedMatrixX, modifiedMatrixY)) {
                 Element neighbor = matrix.get(modifiedMatrixX, modifiedMatrixY);
+                if (neighbor == null) {
+                    System.out.println("The fuck");
+                }
                 if (neighbor == this) continue;
                 boolean stopped = actOnNeighboringElement(neighbor, matrix, i == upperBound, i == 1, lastValidLocation, 0);
                 if (stopped) {
@@ -203,6 +206,9 @@ public abstract class Liquid extends Element {
         Vector3 lastValidLocation = new Vector3(matrixX, matrixY, 0);
         for (int i = 0; i <= Math.abs(distance); i++) {
             Element neighbor = matrix.get(startingX + i * distanceModifier, startingY);
+            if (neighbor == null) {
+                return true;
+            }
             boolean acted = actOnOther(neighbor, matrix);
             if (acted) return false;
             boolean isFirst = i == 0;

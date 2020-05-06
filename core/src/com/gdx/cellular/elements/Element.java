@@ -11,6 +11,7 @@ import java.util.BitSet;
 public abstract class Element {
 
     private static final int REACTION_FRAME = 3;
+    public static final int EFFECTS_FRAME = 1;
     public int pixelX;
     public int pixelY;
 
@@ -121,6 +122,10 @@ public abstract class Element {
         return CellularAutomaton.frameCount == REACTION_FRAME;
     }
 
+    public boolean isEffectsFrame() {
+        return CellularAutomaton.frameCount == EFFECTS_FRAME;
+    }
+
     public boolean corrode(CellularMatrix matrix) {
         this.health -= 170;
         checkIfDead(matrix);
@@ -128,7 +133,7 @@ public abstract class Element {
     }
 
     public boolean applyHeatToNeighborsIfIgnited(CellularMatrix matrix) {
-        if (!shouldApplyHeat()) return false;
+        if (!isEffectsFrame() || !shouldApplyHeat()) return false;
         for (int x = matrixX - 1; x <= matrixX + 1; x++) {
             for (int y = matrixY - 1; y <= matrixY + 1; y++) {
                 if (!(x == 0 && y == 0)) {
@@ -157,7 +162,7 @@ public abstract class Element {
 
     public boolean receiveCooling(CellularMatrix matrix, int cooling) {
         if (isIgnited) {
-            this.temperature -= cooling;
+            this.flammabilityResistance += cooling;
             checkIfIgnited();
             return true;
         }
@@ -193,6 +198,9 @@ public abstract class Element {
     }
 
     public void takeEffectsDamage(CellularMatrix matrix) {
+        if (!isEffectsFrame()) {
+            return;
+        }
         if (isIgnited) {
             health -= fireDamage;
             if (isSurrounded(matrix)) {
@@ -217,11 +225,12 @@ public abstract class Element {
     }
 
     public void spawnSparkIfIgnited(CellularMatrix matrix) {
-        if (!isIgnited) return;
+        if (!isEffectsFrame() || !isIgnited) return;
         Element upNeighbor = matrix.get(matrixX, + matrixY + 1);
         if (upNeighbor != null) {
             if (upNeighbor instanceof EmptyCell) {
-                matrix.spawnElementByMatrix(matrixX, matrixY + 1, ElementType.SPARK);
+                ElementType elementToSpawn = getRandomInt(2) == 1 ? ElementType.SPARK : ElementType.SMOKE;
+                matrix.spawnElementByMatrix(matrixX, matrixY + 1, elementToSpawn);
             }
         }
     }

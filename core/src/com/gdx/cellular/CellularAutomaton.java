@@ -34,7 +34,7 @@ public class CellularAutomaton extends ApplicationAdapter {
     private int brushSize = 5;
 
     private int numThreads = 12;
-    private boolean useMultiThreading = false;
+    private boolean useMultiThreading = true;
 
     private InputManager inputManager;
 
@@ -92,7 +92,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 
 		matrix.spawnFromSpouts();
 
-		if (useMultiThreading) {
+		if (!useMultiThreading) {
 			matrix.stepAndDrawAll(shapeRenderer);
 		} else {
 			matrix.reshuffleThreadXIndexes(numThreads);
