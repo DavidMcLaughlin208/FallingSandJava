@@ -20,31 +20,8 @@ public class Smoke extends Gas{
         dispersionRate = 4;
         color = Color.WHITE;
         defaultColor = Color.WHITE;
-        lifeSpan = getRandomInt(1000);
+        lifeSpan = getRandomInt(250) + 450;
     }
-
-//    @Override
-//    protected boolean actOnNeighboringElement(Element neighbor, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth) {
-//        boolean acted = actOnOther(neighbor, matrix);
-//        if (acted) return true;
-//        if (neighbor instanceof EmptyCell) {
-//            if (isFinal) {
-//                swapPositions(matrix, neighbor);
-//            } else {
-//                return false;
-//            }
-//        } else if (neighbor instanceof Spark) {
-//            return false;
-//        } else if (neighbor instanceof Liquid || neighbor instanceof Solid || neighbor instanceof Gas) {
-//            neighbor.applyHeat(heatFactor);
-//            die(matrix);
-//            return true;
-//        }
-//        return false;
-//    }
-
-    @Override
-    public void spawnSparkIfIgnited(CellularMatrix matrix) {}
 
     @Override
     public boolean receiveHeat(int heat) {

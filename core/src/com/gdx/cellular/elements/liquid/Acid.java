@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.elements.Element;
+import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.elements.liquid.Liquid;
 
 public class Acid extends Liquid {
@@ -27,7 +28,7 @@ public class Acid extends Liquid {
         boolean corroded = other.corrode(matrix);
         if (corroded) corrosionCount -= 1;
         if (corrosionCount <= 0) {
-            die(matrix);
+            dieAndReplace(matrix, ElementType.FLAMMMABLEGAS);
             return true;
         }
         return false;

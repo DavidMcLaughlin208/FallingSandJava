@@ -49,6 +49,8 @@ public class InputManager {
             elementType = ElementType.LAVA;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.O)) {
             elementType = ElementType.COAL;
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.G)) {
+            elementType = ElementType.FLAMMMABLEGAS;
         }
         return elementType;
     }

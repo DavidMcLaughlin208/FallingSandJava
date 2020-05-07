@@ -20,10 +20,19 @@ public abstract class Gas extends Element {
     }
 
     @Override
+    public void spawnSparkIfIgnited(CellularMatrix matrix) {}
+
+    @Override
+    public boolean corrode(CellularMatrix matrix) {
+        return false;
+    }
+
+    @Override
     public void step(CellularMatrix matrix) {
         if (stepped.get(0) == CellularAutomaton.stepped.get(0)) return;
         stepped.flip(0);
-//        vel.sub(CellularAutomaton.gravity);
+        vel.sub(CellularAutomaton.gravity);
+        vel.y = Math.min(vel.y, 124);
 
         int yModifier = vel.y < 0 ? -1 : 1;
         int xModifier = vel.x < 0 ? -1 : 1;

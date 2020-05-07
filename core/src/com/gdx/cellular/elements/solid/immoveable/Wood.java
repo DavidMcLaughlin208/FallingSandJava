@@ -22,7 +22,7 @@ public class Wood extends ImmovableSolid {
     @Override
     public void checkIfDead(CellularMatrix matrix) {
         if (this.health <= 0) {
-            if (isIgnited && Math.random() > .9f) {
+            if (isIgnited && Math.random() > .95f) {
                 dieAndReplace(matrix, ElementType.EMBER);
             } else {
                 die(matrix);

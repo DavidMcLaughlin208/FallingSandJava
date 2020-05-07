@@ -1,5 +1,6 @@
 package com.gdx.cellular.elements;
 
+import com.gdx.cellular.elements.gas.FlammableGas;
 import com.gdx.cellular.elements.gas.Smoke;
 import com.gdx.cellular.elements.gas.Spark;
 import com.gdx.cellular.elements.liquid.Acid;
@@ -176,6 +177,18 @@ public enum ElementType {
         @Override
         public Element createElementByPixel(int x, int y) {
             return new Smoke(x, y, true);
+        }
+
+    },
+    FLAMMMABLEGAS(FlammableGas.class) {
+        @Override
+        public Element createElementByMatrix(int x, int y) {
+            return new FlammableGas(x, y, false);
+        }
+
+        @Override
+        public Element createElementByPixel(int x, int y) {
+            return new FlammableGas(x, y, true);
         }
 
     };
