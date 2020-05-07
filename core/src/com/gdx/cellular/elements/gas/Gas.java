@@ -81,9 +81,9 @@ public abstract class Gas extends Element {
         boolean acted = actOnOther(neighbor, matrix);
         if (acted) return true;
         if (neighbor instanceof EmptyCell) {
-            setAdjacentNeighborsFreeFalling(matrix, depth, lastValidLocation);
+//            setAdjacentNeighborsFreeFalling(matrix, depth, lastValidLocation);
             if (isFinal) {
-                isFreeFalling = true;
+//                isFreeFalling = true;
                 swapPositions(matrix, neighbor);
             } else {
                 return false;
@@ -123,7 +123,7 @@ public abstract class Gas extends Element {
             if (diagonalNeighbor != null) {
                 boolean stoppedDiagonally = iterateToAdditional(matrix, diagonalNeighbor.matrixX, diagonalNeighbor.matrixY, distance);
                 if (!stoppedDiagonally) {
-                    isFreeFalling = true;
+//                    isFreeFalling = true;
                     return true;
                 }
             }
@@ -133,12 +133,12 @@ public abstract class Gas extends Element {
                 boolean stoppedAdjacently = iterateToAdditional(matrix, adjacentNeighbor.matrixX, adjacentNeighbor.matrixY, distance);
                 if (stoppedAdjacently) vel.x *= -1;
                 if (!stoppedAdjacently) {
-                    isFreeFalling = false;
+//                    isFreeFalling = false;
                     return true;
                 }
             }
 
-            isFreeFalling = false;
+//            isFreeFalling = false;
 
             moveToLastValid(matrix, lastValidLocation);
             return true;
@@ -150,6 +150,9 @@ public abstract class Gas extends Element {
                 moveToLastValid(matrix, lastValidLocation);
                 return true;
             }
+            if (neighbor.isFreeFalling) {
+                return true;
+            }
             if (isFreeFalling) {
                 float absY = Math.max(Math.abs(vel.y) / 31, 105);
                 vel.x = vel.x < 0 ? -absY : absY;
@@ -172,7 +175,7 @@ public abstract class Gas extends Element {
             if (diagonalNeighbor != null) {
                 boolean stoppedDiagonally = iterateToAdditional(matrix, diagonalNeighbor.matrixX, diagonalNeighbor.matrixY, distance);
                 if (!stoppedDiagonally) {
-                    isFreeFalling = true;
+//                    isFreeFalling = true;
                     return true;
                 }
             }
@@ -182,12 +185,12 @@ public abstract class Gas extends Element {
                 boolean stoppedAdjacently = iterateToAdditional(matrix, adjacentNeighbor.matrixX, adjacentNeighbor.matrixY, distance);
                 if (stoppedAdjacently) vel.x *= -1;
                 if (!stoppedAdjacently) {
-                    isFreeFalling = false;
+//                    isFreeFalling = false;
                     return true;
                 }
             }
 
-            isFreeFalling = false;
+//            isFreeFalling = false;
 
             moveToLastValid(matrix, lastValidLocation);
             return true;
@@ -199,6 +202,9 @@ public abstract class Gas extends Element {
                 moveToLastValid(matrix, lastValidLocation);
                 return true;
             }
+            if (neighbor.isFreeFalling) {
+                return true;
+            }
             if (isFreeFalling) {
                 float absY = Math.max(Math.abs(vel.y) / 31, 105);
                 vel.x = vel.x < 0 ? -absY : absY;
@@ -221,7 +227,7 @@ public abstract class Gas extends Element {
             if (diagonalNeighbor != null) {
                 boolean stoppedDiagonally = iterateToAdditional(matrix, diagonalNeighbor.matrixX, diagonalNeighbor.matrixY, distance);
                 if (!stoppedDiagonally) {
-                    isFreeFalling = true;
+//                    isFreeFalling = true;
                     return true;
                 }
             }
@@ -231,12 +237,12 @@ public abstract class Gas extends Element {
                 boolean stoppedAdjacently = iterateToAdditional(matrix, adjacentNeighbor.matrixX, adjacentNeighbor.matrixY, distance);
                 if (stoppedAdjacently) vel.x *= -1;
                 if (!stoppedAdjacently) {
-                    isFreeFalling = false;
+//                    isFreeFalling = false;
                     return true;
                 }
             }
 
-            isFreeFalling = false;
+//            isFreeFalling = false;
 
             moveToLastValid(matrix, lastValidLocation);
             return true;
@@ -262,15 +268,13 @@ public abstract class Gas extends Element {
                 lastValidLocation.x = startingX + i * distanceModifier;
                 lastValidLocation.y = startingY;
                 continue;
-            } else if (neighbor instanceof Liquid) {
-                continue;
             } else if (neighbor instanceof Gas) {
                 Gas gasNeighbor = (Gas) neighbor;
                 if (compareGasDensities(gasNeighbor)) {
                     swapGasForDensities(matrix, gasNeighbor, lastValidLocation);
                     return false;
                 }
-            } else if (neighbor instanceof Solid) {
+            } else if (neighbor instanceof Solid || neighbor instanceof Liquid) {
                 if (isFirst) {
                     return true;
                 }

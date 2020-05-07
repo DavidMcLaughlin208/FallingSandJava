@@ -88,7 +88,7 @@ public abstract class MovableSolid extends Solid {
             } else {
                 return false;
             }
-        } else if (neighbor instanceof Liquid || neighbor instanceof Gas) {
+        } else if (neighbor instanceof Liquid) {
             if (depth > 0) {
                 isFreeFalling = true;
                 setAdjacentNeighborsFreeFalling(matrix, depth, lastValidLocation);
@@ -143,6 +143,12 @@ public abstract class MovableSolid extends Solid {
 
             moveToLastValid(matrix, lastValidLocation);
             return true;
+        } else if (neighbor instanceof Gas) {
+            if (isFinal) {
+                moveToLastValidAndSwap(matrix, neighbor, lastValidLocation);
+                return true;
+            }
+            return false;
         }
         return false;
     }

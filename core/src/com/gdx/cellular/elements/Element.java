@@ -229,7 +229,8 @@ public abstract class Element {
         Element upNeighbor = matrix.get(matrixX, + matrixY + 1);
         if (upNeighbor != null) {
             if (upNeighbor instanceof EmptyCell) {
-                ElementType elementToSpawn = getRandomInt(2) == 1 ? ElementType.SPARK : ElementType.SMOKE;
+                ElementType elementToSpawn = Math.random() > .1 ? ElementType.SPARK : ElementType.SMOKE;
+//                ElementType elementToSpawn = ElementType.SPARK;
                 matrix.spawnElementByMatrix(matrixX, matrixY + 1, elementToSpawn);
             }
         }

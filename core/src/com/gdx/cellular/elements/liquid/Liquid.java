@@ -7,6 +7,7 @@ import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.elements.EmptyCell;
+import com.gdx.cellular.elements.gas.Gas;
 import com.gdx.cellular.elements.solid.Solid;
 
 public abstract class Liquid extends Element {
@@ -197,6 +198,12 @@ public abstract class Liquid extends Element {
 
             moveToLastValid(matrix, lastValidLocation);
             return true;
+        } else if (neighbor instanceof Gas) {
+            if (isFinal) {
+                moveToLastValidAndSwap(matrix, neighbor, lastValidLocation);
+                return true;
+            }
+            return false;
         }
         return false;
     }
