@@ -13,7 +13,7 @@ import com.gdx.cellular.elements.solid.movable.Ember;
 import com.gdx.cellular.elements.solid.movable.Sand;
 
 public enum ElementType {
-    EMPTY_CELL(EmptyCell.class) {
+    EMPTYCELL(EmptyCell.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {
             return new EmptyCell(x, y, false);

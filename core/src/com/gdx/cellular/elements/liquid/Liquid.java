@@ -1,7 +1,6 @@
 package com.gdx.cellular.elements.liquid;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularAutomaton;
 import com.gdx.cellular.CellularMatrix;
@@ -10,6 +9,7 @@ import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.elements.EmptyCell;
 import com.gdx.cellular.elements.gas.Gas;
 import com.gdx.cellular.elements.solid.Solid;
+import com.gdx.cellular.elements.solid.movable.MovableSolid;
 
 public abstract class Liquid extends Element {
 
@@ -73,7 +73,7 @@ public abstract class Liquid extends Element {
                 lastValidLocation.y = modifiedMatrixY;
 
             } else {
-                matrix.setElementAtIndex(matrixX, matrixY, ElementType.EMPTY_CELL.createElementByPixel(pixelX, pixelY));
+                matrix.setElementAtIndex(matrixX, matrixY, ElementType.EMPTYCELL.createElementByPixel(pixelX, pixelY));
                 return;
             }
         }
@@ -261,10 +261,10 @@ public abstract class Liquid extends Element {
         if (depth > 0) return;
 
         Element adjacentNeighbor1 = matrix.get(lastValidLocation.x + 1, lastValidLocation.y);
-        if (adjacentNeighbor1 instanceof Solid) setElementFreeFalling(adjacentNeighbor1);
+        if (adjacentNeighbor1 instanceof MovableSolid) setElementFreeFalling(adjacentNeighbor1);
 
         Element adjacentNeighbor2 = matrix.get(lastValidLocation.x - 1, lastValidLocation.y);
-        if (adjacentNeighbor2 instanceof Solid) setElementFreeFalling(adjacentNeighbor2);
+        if (adjacentNeighbor2 instanceof MovableSolid) setElementFreeFalling(adjacentNeighbor2);
     }
 
     private void setElementFreeFalling(Element element) {

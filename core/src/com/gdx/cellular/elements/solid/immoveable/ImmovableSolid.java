@@ -9,6 +9,7 @@ public abstract class ImmovableSolid extends Solid {
 
     public ImmovableSolid(int x, int y, boolean isPixel) {
         super(x, y, isPixel);
+        isFreeFalling = false;
     }
 
 //    @Override

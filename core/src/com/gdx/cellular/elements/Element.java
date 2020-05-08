@@ -190,7 +190,7 @@ public abstract class Element {
     }
 
     public void die(CellularMatrix matrix) {
-        die(matrix, ElementType.EMPTY_CELL);
+        die(matrix, ElementType.EMPTYCELL);
     }
 
     private void die(CellularMatrix matrix, ElementType type) {

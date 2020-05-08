@@ -67,11 +67,6 @@ public class CellularAutomaton extends ApplicationAdapter {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        boolean isPaused = inputManager.getIsPaused();
-        if (isPaused) {
-            matrix.drawAll(shapeRenderer);
-            return;
-        }
         fpsLogger.log();
         stepped.flip(0);
         incrementFrameCount();
@@ -86,10 +81,17 @@ public class CellularAutomaton extends ApplicationAdapter {
 		inputManager.placeSpout(matrix, camera, currentlySelectedElement, brushSize);
 		inputManager.spawnElementByInput(matrix, camera, currentlySelectedElement, brushSize);
 		inputManager.save(matrix);
+		inputManager.load(matrix);
 
 		matrix.reshuffleXIndexes();
 		matrix.reshuffleThreadXIndexes(numThreads);
 		matrix.calculateAndSetThreadedXIndexOffset();
+
+		boolean isPaused = inputManager.getIsPaused();
+		if (isPaused) {
+			matrix.drawAll(shapeRenderer);
+			return;
+		}
 
 		matrix.spawnFromSpouts();
 
@@ -125,10 +127,6 @@ public class CellularAutomaton extends ApplicationAdapter {
 			for (int t = 0; t < threads.size(); t++) {
 				if (t % 2 == 0) {
 					threads.get(t).start();
-				}
-			}
-			for (int t = 0; t < threads.size(); t++) {
-				if (t % 2 == 0) {
 					threads.get(t).join();
 				}
 			}
@@ -142,10 +140,6 @@ public class CellularAutomaton extends ApplicationAdapter {
 			for (int t = 0; t < threads.size(); t++) {
 				if (t % 2 != 0) {
 					threads.get(t).start();
-				}
-			}
-			for (int t = 0; t < threads.size(); t++) {
-				if (t % 2 != 0) {
 					threads.get(t).join();
 				}
 			}

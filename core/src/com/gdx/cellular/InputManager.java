@@ -4,9 +4,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
+import com.gdx.cellular.util.TextInputHandler;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -17,18 +22,23 @@ import java.nio.file.Paths;
 
 public class InputManager {
 
-    private int maxBrushSize = 55;
-    private int minBrushSize = 3;
-    private int brushIncrements = 2;
+    private final int maxBrushSize = 55;
+    private final int minBrushSize = 3;
+    private final int brushIncrements = 2;
     private MouseMode mouseMode = MouseMode.SPAWN;
 
-    private int maxThreads = 50;
+    private final int maxThreads = 50;
 
     private Vector3 lastTouchPos = new Vector3();
     private boolean touchedLastFrame = false;
 
     private boolean paused = false;
-    private Path path = Paths.get("save/file.ser");
+    private TextInputHandler listener = new TextInputHandler(this);
+    private Path path = Paths.get("save/");
+    private String fileNameForSave;
+    private boolean readyToSave = false;
+    private boolean readyToOverride = false;
+    private boolean showingOverrideConfirmation = false;
 
     public ElementType getNewlySelectedElementWithDefault(ElementType defaultElement) {
         ElementType elementType = defaultElement;
@@ -50,7 +60,7 @@ public class InputManager {
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_8)) {
             elementType = ElementType.TITANIUM;
         }  else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_9)) {
-            elementType = ElementType.EMPTY_CELL;
+            elementType = ElementType.EMPTYCELL;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.F)) {
             elementType = ElementType.SPARK;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
@@ -160,17 +170,56 @@ public class InputManager {
         return paused && !stepOneFrame;
     }
 
+    public void setIsPaused(boolean isPaused) {
+        this.paused = isPaused;
+    }
+
     public void save(CellularMatrix matrix) {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.S)) {
-            if (!Files.exists(path)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.S) && !readyToSave) {
+            paused = true;
+            Gdx.input.getTextInput(listener, "Save Level", "File Name", "");
+        }
+        if (readyToSave) {
+            Path newPath = path.resolve(fileNameForSave);
+            if (!Files.exists(newPath)) {
                 try {
-                    Files.createDirectories(path.getParent());
-                    Files.createFile(path);
+                    Files.createDirectories(newPath.getParent());
+                    Files.createFile(newPath);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            } else {
+                if (!showingOverrideConfirmation) {
+                    Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+
+                    Stage confirmation = new Stage();
+
+                    Gdx.input.setInputProcessor(confirmation);
+
+                    Dialog confirmationDialog = new Dialog("File already exists, do you want to override?", skin) {
+                        protected void result(Object object) {
+                            readyToOverride = (boolean) object;
+                            if (!readyToOverride) {
+                                showingOverrideConfirmation = false;
+                                readyToSave = false;
+                            }
+                            System.out.println("Option: " + object);
+                        }
+                    };
+
+                    confirmationDialog.button("Confirm", true);
+                    confirmationDialog.button("Cancel", false);
+                    showingOverrideConfirmation = true;
+                }
+                if (!readyToOverride) {
+                    return;
+                }
             }
-            try (Writer out = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+            showingOverrideConfirmation = false;
+            readyToSave = false;
+            readyToOverride = false;
+            setIsPaused(false);
+            try (Writer out = Files.newBufferedWriter(newPath, StandardCharsets.UTF_8)) {
                 String lastClass;
                 String currentClass;
                 int currentClassCount;
@@ -200,12 +249,52 @@ public class InputManager {
                         currentClassCount = 1;
                         lastClass = currentClass;
                     }
-                    builder.append("|,");
+                    builder.append("0,|,");
                 }
                 out.write(builder.toString());
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void load(CellularMatrix matrix) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.D)) {
+            try {
+                String level = Files.readAllLines(path, StandardCharsets.UTF_8).get(0);
+                String[] splitLevel = level.split(",");
+                Array<Element> row = matrix.getRow(0);
+                int lastElementIndex = 0;
+                int rowIndex = 0;
+                for (int i = 0; i < splitLevel.length; i += 2) {
+                    int count = Integer.parseInt((String) java.lang.reflect.Array.get(splitLevel, i));
+                    String clazz = ((String) java.lang.reflect.Array.get(splitLevel, i + 1)).toUpperCase();
+                    if (clazz.equals("|")) {
+                        rowIndex++;
+                        lastElementIndex = 0;
+                        if (rowIndex > matrix.outerArraySize - 1) {
+                            continue;
+                        }
+                        row = matrix.getRow(rowIndex);
+                        continue;
+                    }
+                    for (int k = 0; k < count; k++) {
+                        row.set(k + lastElementIndex, ElementType.valueOf(clazz).createElementByMatrix(k + lastElementIndex, rowIndex));
+                    }
+                    lastElementIndex += count;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    public void setFileNameForSave(String sane) {
+        this.fileNameForSave = sane;
+        this.readyToSave = true;
+    }
+
+    public void setReadyToOverride(boolean readyToOverride) {
+        this.readyToOverride = readyToOverride;
     }
 }

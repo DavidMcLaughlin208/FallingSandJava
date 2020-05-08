@@ -48,7 +48,7 @@ public class CellularMatrix {
         for (int y = 0; y < outerArraySize; y++) {
             Array<Element> innerArr = new Array<>(true, innerArraySize);
             for (int x = 0; x < innerArraySize; x++) {
-                innerArr.add(ElementType.EMPTY_CELL.createElementByMatrix(x, y));
+                innerArr.add(ElementType.EMPTYCELL.createElementByMatrix(x, y));
             }
             outerArray.add(innerArr);
         }
@@ -82,7 +82,11 @@ public class CellularMatrix {
                 Color currentColor = element.color;
                 int toIndex = x;
                 for (int following = x; following < row.size; following++) {
-                    if (get(following, y).color != currentColor) {
+                    Element followingElement = get(following, y);
+                    if (followingElement == null) {
+                        System.out.println("HMMMM");
+                    }
+                    if (followingElement.color != currentColor) {
                         break;
                     }
                     toIndex = following;
