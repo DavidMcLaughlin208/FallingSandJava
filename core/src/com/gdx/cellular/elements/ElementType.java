@@ -3,10 +3,7 @@ package com.gdx.cellular.elements;
 import com.gdx.cellular.elements.gas.FlammableGas;
 import com.gdx.cellular.elements.gas.Smoke;
 import com.gdx.cellular.elements.gas.Spark;
-import com.gdx.cellular.elements.liquid.Acid;
-import com.gdx.cellular.elements.liquid.Lava;
-import com.gdx.cellular.elements.liquid.Oil;
-import com.gdx.cellular.elements.liquid.Water;
+import com.gdx.cellular.elements.liquid.*;
 import com.gdx.cellular.elements.solid.immoveable.Stone;
 import com.gdx.cellular.elements.solid.immoveable.Titanium;
 import com.gdx.cellular.elements.solid.immoveable.Wood;
@@ -189,6 +186,18 @@ public enum ElementType {
         @Override
         public Element createElementByPixel(int x, int y) {
             return new FlammableGas(x, y, true);
+        }
+
+    },
+    BLOOD(Blood.class) {
+        @Override
+        public Element createElementByMatrix(int x, int y) {
+            return new Blood(x, y, false);
+        }
+
+        @Override
+        public Element createElementByPixel(int x, int y) {
+            return new Blood(x, y, true);
         }
 
     };

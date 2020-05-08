@@ -13,7 +13,7 @@ public class FlammableGas extends Gas {
         mass = 1;
         frictionFactor = 1f;
         density = 1;
-        dispersionRate = 4;
+        dispersionRate = 2;
         color = Color.GREEN;
         defaultColor = Color.GREEN;
         lifeSpan = getRandomInt(500) + 1000;

@@ -16,8 +16,8 @@ public class Smoke extends Gas{
         inertialResistance = 0;
         mass = 1;
         frictionFactor = 1f;
-        density = 1;
-        dispersionRate = 4;
+        density = 2;
+        dispersionRate = 2;
         color = Color.WHITE;
         defaultColor = Color.WHITE;
         lifeSpan = getRandomInt(250) + 450;

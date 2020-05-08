@@ -16,6 +16,7 @@ public class Wood extends ImmovableSolid {
         inertialResistance = 1.1f;
         mass = 500;
         health = getRandomInt(100) + 100;
+        flammabilityResistance = 40;
         resetFlammabilityResistance = 25;
     }
 

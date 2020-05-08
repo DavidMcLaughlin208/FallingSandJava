@@ -11,7 +11,7 @@ public class Coal extends MovableSolid {
         super(x, y, isPixel);
         vel = new Vector3(0f, -124f,0f);
         frictionFactor = .4f;
-        inertialResistance = .9f;
+        inertialResistance = .8f;
         mass = 200;
         color = Color.DARK_GRAY;
         defaultColor = Color.DARK_GRAY;

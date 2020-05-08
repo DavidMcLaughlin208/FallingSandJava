@@ -33,6 +33,12 @@ public abstract class Gas extends Element {
         stepped.flip(0);
         vel.sub(CellularAutomaton.gravity);
         vel.y = Math.min(vel.y, 124);
+        if (vel.y == 124 && Math.random() > .5) {
+            vel.y = 64;
+        }
+        if (vel.x == 0 && Math.random() > .8) {
+            vel.x = 64;
+        }
 
         int yModifier = vel.y < 0 ? -1 : 1;
         int xModifier = vel.x < 0 ? -1 : 1;
@@ -90,9 +96,7 @@ public abstract class Gas extends Element {
         boolean acted = actOnOther(neighbor, matrix);
         if (acted) return true;
         if (neighbor instanceof EmptyCell) {
-//            setAdjacentNeighborsFreeFalling(matrix, depth, lastValidLocation);
             if (isFinal) {
-//                isFreeFalling = true;
                 swapPositions(matrix, neighbor);
             } else {
                 return false;
@@ -110,10 +114,9 @@ public abstract class Gas extends Element {
                 moveToLastValid(matrix, lastValidLocation);
                 return true;
             }
-            if (isFreeFalling) {
-                float absY = Math.max(Math.abs(vel.y) / 31, 105);
-                vel.x = vel.x < 0 ? -62 : 62;
-            }
+
+            vel.x = vel.x < 0 ? -62 : 62;
+
             Vector3 normalizedVel = vel.cpy().nor();
             int additionalX = getAdditional(normalizedVel.x);
             int additionalY = getAdditional(normalizedVel.y);
@@ -132,7 +135,6 @@ public abstract class Gas extends Element {
             if (diagonalNeighbor != null) {
                 boolean stoppedDiagonally = iterateToAdditional(matrix, diagonalNeighbor.matrixX, diagonalNeighbor.matrixY, distance);
                 if (!stoppedDiagonally) {
-//                    isFreeFalling = true;
                     return true;
                 }
             }
@@ -142,12 +144,9 @@ public abstract class Gas extends Element {
                 boolean stoppedAdjacently = iterateToAdditional(matrix, adjacentNeighbor.matrixX, adjacentNeighbor.matrixY, distance);
                 if (stoppedAdjacently) vel.x *= -1;
                 if (!stoppedAdjacently) {
-//                    isFreeFalling = false;
                     return true;
                 }
             }
-
-//            isFreeFalling = false;
 
             moveToLastValid(matrix, lastValidLocation);
             return true;
@@ -162,10 +161,9 @@ public abstract class Gas extends Element {
             if (neighbor.isFreeFalling) {
                 return true;
             }
-            if (isFreeFalling) {
-                float absY = Math.max(Math.abs(vel.y) / 31, 105);
-                vel.x = vel.x < 0 ? -absY : absY;
-            }
+            float absY = Math.max(Math.abs(vel.y) / 31, 105);
+            vel.x = vel.x < 0 ? -absY : absY;
+
             Vector3 normalizedVel = vel.cpy().nor();
             int additionalX = getAdditional(normalizedVel.x);
             int additionalY = getAdditional(normalizedVel.y);
@@ -184,7 +182,6 @@ public abstract class Gas extends Element {
             if (diagonalNeighbor != null) {
                 boolean stoppedDiagonally = iterateToAdditional(matrix, diagonalNeighbor.matrixX, diagonalNeighbor.matrixY, distance);
                 if (!stoppedDiagonally) {
-//                    isFreeFalling = true;
                     return true;
                 }
             }
@@ -194,12 +191,9 @@ public abstract class Gas extends Element {
                 boolean stoppedAdjacently = iterateToAdditional(matrix, adjacentNeighbor.matrixX, adjacentNeighbor.matrixY, distance);
                 if (stoppedAdjacently) vel.x *= -1;
                 if (!stoppedAdjacently) {
-//                    isFreeFalling = false;
                     return true;
                 }
             }
-
-//            isFreeFalling = false;
 
             moveToLastValid(matrix, lastValidLocation);
             return true;
@@ -214,10 +208,10 @@ public abstract class Gas extends Element {
             if (neighbor.isFreeFalling) {
                 return true;
             }
-            if (isFreeFalling) {
-                float absY = Math.max(Math.abs(vel.y) / 31, 105);
-                vel.x = vel.x < 0 ? -absY : absY;
-            }
+
+            float absY = Math.max(Math.abs(vel.y) / 31, 105);
+            vel.x = vel.x < 0 ? -absY : absY;
+
             Vector3 normalizedVel = vel.cpy().nor();
             int additionalX = getAdditional(normalizedVel.x);
             int additionalY = getAdditional(normalizedVel.y);
@@ -236,7 +230,6 @@ public abstract class Gas extends Element {
             if (diagonalNeighbor != null) {
                 boolean stoppedDiagonally = iterateToAdditional(matrix, diagonalNeighbor.matrixX, diagonalNeighbor.matrixY, distance);
                 if (!stoppedDiagonally) {
-//                    isFreeFalling = true;
                     return true;
                 }
             }
@@ -246,12 +239,9 @@ public abstract class Gas extends Element {
                 boolean stoppedAdjacently = iterateToAdditional(matrix, adjacentNeighbor.matrixX, adjacentNeighbor.matrixY, distance);
                 if (stoppedAdjacently) vel.x *= -1;
                 if (!stoppedAdjacently) {
-//                    isFreeFalling = false;
                     return true;
                 }
             }
-
-//            isFreeFalling = false;
 
             moveToLastValid(matrix, lastValidLocation);
             return true;
@@ -302,23 +292,6 @@ public abstract class Gas extends Element {
     private boolean compareGasDensities(Gas neighbor) {
         return (density > neighbor.density && neighbor.matrixY <= matrixY); // ||  (density < neighbor.density && neighbor.matrixY >= matrixY);
     }
-
-
-    private void setAdjacentNeighborsFreeFalling(CellularMatrix matrix, int depth, Vector3 lastValidLocation) {
-        if (depth > 0) return;
-
-        Element adjacentNeighbor1 = matrix.get(lastValidLocation.x + 1, lastValidLocation.y);
-        if (adjacentNeighbor1 instanceof Solid) setElementFreeFalling(adjacentNeighbor1);
-
-        Element adjacentNeighbor2 = matrix.get(lastValidLocation.x - 1, lastValidLocation.y);
-        if (adjacentNeighbor2 instanceof Solid) setElementFreeFalling(adjacentNeighbor2);
-    }
-
-    private void setElementFreeFalling(Element element) {
-        element.isFreeFalling = element.isFreeFalling || Math.random() > element.inertialResistance;
-    }
-
-
 
     private int getAdditional(float val) {
         if (val < -.1f) {

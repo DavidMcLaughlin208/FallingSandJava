@@ -85,6 +85,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 		inputManager.clearMatrixIfInput(matrix);
 		inputManager.placeSpout(matrix, camera, currentlySelectedElement, brushSize);
 		inputManager.spawnElementByInput(matrix, camera, currentlySelectedElement, brushSize);
+		inputManager.save(matrix);
 
 		matrix.reshuffleXIndexes();
 		matrix.reshuffleThreadXIndexes(numThreads);

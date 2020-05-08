@@ -4,7 +4,16 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
+import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class InputManager {
 
@@ -19,6 +28,7 @@ public class InputManager {
     private boolean touchedLastFrame = false;
 
     private boolean paused = false;
+    private Path path = Paths.get("save/file.ser");
 
     public ElementType getNewlySelectedElementWithDefault(ElementType defaultElement) {
         ElementType elementType = defaultElement;
@@ -51,6 +61,8 @@ public class InputManager {
             elementType = ElementType.COAL;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.G)) {
             elementType = ElementType.FLAMMMABLEGAS;
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.B)) {
+            elementType = ElementType.BLOOD;
         }
         return elementType;
     }
@@ -146,5 +158,54 @@ public class InputManager {
             paused = !paused;
         }
         return paused && !stepOneFrame;
+    }
+
+    public void save(CellularMatrix matrix) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.S)) {
+            if (!Files.exists(path)) {
+                try {
+                    Files.createDirectories(path.getParent());
+                    Files.createFile(path);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            try (Writer out = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+                String lastClass;
+                String currentClass;
+                int currentClassCount;
+                StringBuilder builder = new StringBuilder();
+                for (int r = 0; r < matrix.outerArraySize; r++) {
+                    Array<Element> row = matrix.getRow(r);
+                    lastClass = row.get(0).getClass().getSimpleName();
+                    currentClassCount = 0;
+                    for (int e = 0; e < row.size; e++) {
+                        Element element = row.get(e);
+                        currentClass = element.getClass().getSimpleName();
+                        if (currentClass.equals(lastClass)) {
+                            currentClassCount++;
+                            lastClass = currentClass;
+                            if (e == row.size - 1) {
+                                builder.append(currentClassCount);
+                                builder.append(",");
+                                builder.append(lastClass);
+                                builder.append(",");
+                            }
+                            continue;
+                        }
+                        builder.append(currentClassCount);
+                        builder.append(",");
+                        builder.append(lastClass);
+                        builder.append(",");
+                        currentClassCount = 1;
+                        lastClass = currentClass;
+                    }
+                    builder.append("|,");
+                }
+                out.write(builder.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

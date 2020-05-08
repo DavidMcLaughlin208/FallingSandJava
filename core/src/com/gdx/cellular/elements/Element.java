@@ -50,6 +50,10 @@ public abstract class Element {
 
 //    public abstract void draw(ShapeRenderer sr);
 
+    public void setVelocity(Vector3 vel) {
+        this.vel = vel;
+    }
+
     public abstract void step(CellularMatrix matrix);
 
     public boolean actOnOther(Element other, CellularMatrix matrix) {
