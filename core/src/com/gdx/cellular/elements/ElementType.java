@@ -177,7 +177,7 @@ public enum ElementType {
         }
 
     },
-    FLAMMMABLEGAS(FlammableGas.class) {
+    FLAMMABLEGAS(FlammableGas.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {
             return new FlammableGas(x, y, false);

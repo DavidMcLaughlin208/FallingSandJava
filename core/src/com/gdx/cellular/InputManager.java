@@ -4,11 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Timer;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.util.TextInputHandler;
@@ -33,10 +29,12 @@ public class InputManager {
     private boolean touchedLastFrame = false;
 
     private boolean paused = false;
-    private TextInputHandler listener = new TextInputHandler(this);
-    private Path path = Paths.get("save/");
-    private String fileNameForSave;
+    private final TextInputHandler saveLevelNameListener = new TextInputHandler(this, this::setFileNameForSave);
+    private final TextInputHandler loadLevelNameListener = new TextInputHandler(this, this::setFileNameForLoad);
+    private final Path path = Paths.get("save/");
+    private String fileNameForLevel;
     private boolean readyToSave = false;
+    private boolean readyToLoad = false;
     private boolean readyToOverride = false;
     private boolean showingOverrideConfirmation = false;
 
@@ -70,7 +68,7 @@ public class InputManager {
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.O)) {
             elementType = ElementType.COAL;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.G)) {
-            elementType = ElementType.FLAMMMABLEGAS;
+            elementType = ElementType.FLAMMABLEGAS;
         } else if (Gdx.input.isKeyJustPressed(Input.Keys.B)) {
             elementType = ElementType.BLOOD;
         }
@@ -177,10 +175,10 @@ public class InputManager {
     public void save(CellularMatrix matrix) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.S) && !readyToSave) {
             paused = true;
-            Gdx.input.getTextInput(listener, "Save Level", "File Name", "");
+            Gdx.input.getTextInput(saveLevelNameListener, "Save Level", "File Name", "");
         }
         if (readyToSave) {
-            Path newPath = path.resolve(fileNameForSave);
+            Path newPath = path.resolve(fileNameForLevel + ".ser");
             if (!Files.exists(newPath)) {
                 try {
                     Files.createDirectories(newPath.getParent());
@@ -188,32 +186,32 @@ public class InputManager {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            } else {
-                if (!showingOverrideConfirmation) {
-                    Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
-
-                    Stage confirmation = new Stage();
-
-                    Gdx.input.setInputProcessor(confirmation);
-
-                    Dialog confirmationDialog = new Dialog("File already exists, do you want to override?", skin) {
-                        protected void result(Object object) {
-                            readyToOverride = (boolean) object;
-                            if (!readyToOverride) {
-                                showingOverrideConfirmation = false;
-                                readyToSave = false;
-                            }
-                            System.out.println("Option: " + object);
-                        }
-                    };
-
-                    confirmationDialog.button("Confirm", true);
-                    confirmationDialog.button("Cancel", false);
-                    showingOverrideConfirmation = true;
-                }
-                if (!readyToOverride) {
-                    return;
-                }
+//            } else {
+//                if (!showingOverrideConfirmation) {
+//                    Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
+//
+//                    Stage confirmation = new Stage();
+//
+//                    Gdx.input.setInputProcessor(confirmation);
+//
+//                    Dialog confirmationDialog = new Dialog("File already exists, do you want to override?", skin) {
+//                        protected void result(Object object) {
+//                            readyToOverride = (boolean) object;
+//                            if (!readyToOverride) {
+//                                showingOverrideConfirmation = false;
+//                                readyToSave = false;
+//                            }
+//                            System.out.println("Option: " + object);
+//                        }
+//                    };
+//
+//                    confirmationDialog.button("Confirm", true);
+//                    confirmationDialog.button("Cancel", false);
+//                    showingOverrideConfirmation = true;
+//                }
+//                if (!readyToOverride) {
+//                    return;
+//                }
             }
             showingOverrideConfirmation = false;
             readyToSave = false;
@@ -260,8 +258,15 @@ public class InputManager {
 
     public void load(CellularMatrix matrix) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.D)) {
+            paused = true;
+            Gdx.input.getTextInput(loadLevelNameListener, "Load Level", "File Name", "");
+        }
+        if (readyToLoad) {
             try {
-                String level = Files.readAllLines(path, StandardCharsets.UTF_8).get(0);
+                readyToLoad = false;
+                setIsPaused(false);
+                Path newPath = path.resolve(fileNameForLevel + ".ser");
+                String level = Files.readAllLines(newPath, StandardCharsets.UTF_8).get(0);
                 String[] splitLevel = level.split(",");
                 Array<Element> row = matrix.getRow(0);
                 int lastElementIndex = 0;
@@ -289,12 +294,19 @@ public class InputManager {
         }
     }
 
-    public void setFileNameForSave(String sane) {
-        this.fileNameForSave = sane;
+    public boolean setFileNameForSave(String sane) {
+        this.fileNameForLevel = sane;
         this.readyToSave = true;
+        return true;
     }
 
-    public void setReadyToOverride(boolean readyToOverride) {
-        this.readyToOverride = readyToOverride;
+    public boolean setFileNameForLoad(String sane) {
+        this.fileNameForLevel = sane;
+        this.readyToLoad = true;
+        return true;
     }
+
+//    public void setReadyToOverride(boolean readyToOverride) {
+//        this.readyToOverride = readyToOverride;
+//    }
 }

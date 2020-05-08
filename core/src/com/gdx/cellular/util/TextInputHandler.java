@@ -3,18 +3,23 @@ package com.gdx.cellular.util;
 import com.badlogic.gdx.Input;
 import com.gdx.cellular.InputManager;
 
-public class TextInputHandler implements Input.TextInputListener {
-    private InputManager inputManager;
+import java.lang.reflect.Method;
+import java.util.function.Function;
 
-    public TextInputHandler(InputManager inputManager) {
+public class TextInputHandler implements Input.TextInputListener {
+    private final Function<String, Boolean> function;
+    private final InputManager inputManager;
+
+    public TextInputHandler(InputManager inputManager, Function<String, Boolean> function) {
         this.inputManager = inputManager;
+        this.function = function;
 
     }
 
     @Override
     public void input (String text) {
-        String sane = text.replaceAll("[^a-zA-Z0-9\\._]+", "_");
-        inputManager.setFileNameForSave(sane);
+        String sanitizedInput = text.replaceAll("[^a-zA-Z0-9_]+", "_");
+        function.apply(sanitizedInput);
     }
 
     @Override
