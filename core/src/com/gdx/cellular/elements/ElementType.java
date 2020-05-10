@@ -1,5 +1,7 @@
 package com.gdx.cellular.elements;
 
+import com.badlogic.gdx.math.Vector3;
+import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.elements.gas.FlammableGas;
 import com.gdx.cellular.elements.gas.Smoke;
 import com.gdx.cellular.elements.gas.Spark;
@@ -11,6 +13,8 @@ import com.gdx.cellular.elements.solid.movable.Coal;
 import com.gdx.cellular.elements.solid.movable.Dirt;
 import com.gdx.cellular.elements.solid.movable.Ember;
 import com.gdx.cellular.elements.solid.movable.Sand;
+import com.gdx.cellular.particles.Particle;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public enum ElementType {
     EMPTYCELL(EmptyCell.class) {
@@ -200,11 +204,23 @@ public enum ElementType {
             return new Blood(x, y, true);
         }
 
+    },
+    PARTICLE(Particle.class) {
+        @Override
+        public Element createElementByMatrix(int x, int y) {
+            throw new NotImplementedException();
+        }
+
+        @Override
+        public Element createElementByPixel(int x, int y) {
+            throw new NotImplementedException();
+        }
+
     };
 
-    public final Class clazz;
+    public final Class<? extends Element> clazz;
 
-    ElementType(Class clazz) {
+    ElementType(Class<? extends Element> clazz) {
         this.clazz = clazz;
     }
 
@@ -212,4 +228,7 @@ public enum ElementType {
 
     public abstract Element createElementByPixel(int x, int y);
 
+    public void createParticleByMatrix(CellularMatrix matrix, int x, int y, Vector3 vector3, ElementType elementType) {
+        matrix.setElementAtIndex(x, y, new Particle(x, y, false, vector3, elementType));
+    }
 }

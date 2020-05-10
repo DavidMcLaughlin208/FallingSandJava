@@ -10,6 +10,7 @@ import com.gdx.cellular.elements.EmptyCell;
 import com.gdx.cellular.elements.gas.Gas;
 import com.gdx.cellular.elements.solid.Solid;
 import com.gdx.cellular.elements.liquid.Liquid;
+import com.gdx.cellular.particles.Particle;
 
 public abstract class MovableSolid extends Solid {
 
@@ -80,7 +81,7 @@ public abstract class MovableSolid extends Solid {
 
     @Override
     protected boolean actOnNeighboringElement(Element neighbor, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth) {
-        if (neighbor instanceof EmptyCell) {
+        if (neighbor instanceof EmptyCell || neighbor instanceof Particle) {
             setAdjacentNeighborsFreeFalling(matrix, depth, lastValidLocation);
             if (isFinal) {
                 isFreeFalling = true;

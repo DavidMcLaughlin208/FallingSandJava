@@ -9,6 +9,7 @@ import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.elements.EmptyCell;
 import com.gdx.cellular.elements.solid.Solid;
 import com.gdx.cellular.elements.liquid.Liquid;
+import com.gdx.cellular.particles.Particle;
 
 public abstract class Gas extends Element {
 
@@ -95,7 +96,7 @@ public abstract class Gas extends Element {
     protected boolean actOnNeighboringElement(Element neighbor, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth) {
         boolean acted = actOnOther(neighbor, matrix);
         if (acted) return true;
-        if (neighbor instanceof EmptyCell) {
+        if (neighbor instanceof EmptyCell || neighbor instanceof Particle) {
             if (isFinal) {
                 swapPositions(matrix, neighbor);
             } else {
@@ -259,7 +260,7 @@ public abstract class Gas extends Element {
             boolean isFirst = i == 0;
             boolean isFinal = i == Math.abs(distance);
             if (neighbor == null) continue;
-            if (neighbor instanceof EmptyCell) {
+            if (neighbor instanceof EmptyCell || neighbor instanceof Particle) {
                 if (isFinal) {
                     swapPositions(matrix, neighbor);
                     return false;

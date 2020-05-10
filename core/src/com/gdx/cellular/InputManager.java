@@ -35,8 +35,6 @@ public class InputManager {
     private String fileNameForLevel;
     private boolean readyToSave = false;
     private boolean readyToLoad = false;
-    private boolean readyToOverride = false;
-    private boolean showingOverrideConfirmation = false;
 
     public ElementType getNewlySelectedElementWithDefault(ElementType defaultElement) {
         ElementType elementType = defaultElement;
@@ -107,7 +105,9 @@ public class InputManager {
         if (Gdx.input.isKeyJustPressed(Input.Keys.M)) {
             if (this.mouseMode == MouseMode.SPAWN) {
                 this.mouseMode = MouseMode.HEAT;
-            } else {
+            } else if (this.mouseMode == MouseMode.HEAT) {
+                this.mouseMode = MouseMode.PARTICLE;
+            } else if (this.mouseMode == MouseMode.PARTICLE) {
                 this.mouseMode = MouseMode.SPAWN;
             }
             return true;
@@ -130,14 +130,14 @@ public class InputManager {
         }
     }
 
-    public void spawnElementByInput(CellularMatrix matrix, OrthographicCamera camera, ElementType currentlySelectedElement, int brushSize) {
+    public void spawnElementByInput(CellularMatrix matrix, OrthographicCamera camera, ElementType currentlySelectedElement, int brushSize, Vector3 velocity) {
         if (Gdx.input.isTouched()) {
             Vector3 touchPos = new Vector3();
             touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touchPos);
             if (mouseMode == MouseMode.SPAWN) {
                 if (touchedLastFrame) {
-                    matrix.iterateAndSpawnBetweenTwoPoints(lastTouchPos, touchPos, currentlySelectedElement, brushSize);
+                    matrix.spawnElementBetweenTwoPoints(lastTouchPos, touchPos, currentlySelectedElement, brushSize);
                 } else {
                     matrix.spawnElementByPixelWithBrush((int) touchPos.x, (int) touchPos.y, currentlySelectedElement, brushSize);
                 }
@@ -145,11 +145,18 @@ public class InputManager {
                 touchedLastFrame = true;
             } else if (mouseMode == MouseMode.HEAT) {
                 if (touchedLastFrame) {
-                    matrix.iterateAndHeatBetweenTwoPoints(lastTouchPos, touchPos, brushSize);
+                    matrix.applyHeatBetweenTwoPoints(lastTouchPos, touchPos, brushSize);
                 } else {
-                    matrix.applyHeatByBrush(matrix.toMatrix(touchPos.x), matrix.toMatrix(touchPos.y), brushSize);
+                    CellularMatrix.FunctionInput input = new CellularMatrix.FunctionInput(matrix.toMatrix(touchPos.x), matrix.toMatrix(touchPos.y), brushSize);
+                    matrix.applyHeatByBrush(input);
                 }
                 touchedLastFrame = true;
+            } else if (mouseMode == MouseMode.PARTICLE) {
+                if (touchedLastFrame) {
+                    matrix.spawnParticleBetweenTwoPoints(lastTouchPos, touchPos, currentlySelectedElement, brushSize, velocity);
+                } else {
+                    matrix.spawnParticleByPixelWithBrush((int) touchPos.x, (int) touchPos.y, currentlySelectedElement, brushSize, velocity);
+                }
             }
         } else {
             touchedLastFrame = false;
@@ -186,36 +193,8 @@ public class InputManager {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-//            } else {
-//                if (!showingOverrideConfirmation) {
-//                    Skin skin = new Skin(Gdx.files.internal("uiskin.json"));
-//
-//                    Stage confirmation = new Stage();
-//
-//                    Gdx.input.setInputProcessor(confirmation);
-//
-//                    Dialog confirmationDialog = new Dialog("File already exists, do you want to override?", skin) {
-//                        protected void result(Object object) {
-//                            readyToOverride = (boolean) object;
-//                            if (!readyToOverride) {
-//                                showingOverrideConfirmation = false;
-//                                readyToSave = false;
-//                            }
-//                            System.out.println("Option: " + object);
-//                        }
-//                    };
-//
-//                    confirmationDialog.button("Confirm", true);
-//                    confirmationDialog.button("Cancel", false);
-//                    showingOverrideConfirmation = true;
-//                }
-//                if (!readyToOverride) {
-//                    return;
-//                }
             }
-            showingOverrideConfirmation = false;
             readyToSave = false;
-            readyToOverride = false;
             setIsPaused(false);
             try (Writer out = Files.newBufferedWriter(newPath, StandardCharsets.UTF_8)) {
                 String lastClass;
@@ -306,7 +285,4 @@ public class InputManager {
         return true;
     }
 
-//    public void setReadyToOverride(boolean readyToOverride) {
-//        this.readyToOverride = readyToOverride;
-//    }
 }
