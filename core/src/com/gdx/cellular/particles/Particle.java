@@ -35,6 +35,7 @@ public class Particle extends Element {
         if (stepped.get(0) == CellularAutomaton.stepped.get(0)) return;
         stepped.flip(0);
         vel.add(CellularAutomaton.gravity);
+        vel.y = vel.y < 0 ? Math.max(-124, vel.y) : vel.y;
 
         int yModifier = vel.y < 0 ? -1 : 1;
         int xModifier = vel.x < 0 ? -1 : 1;
@@ -90,15 +91,9 @@ public class Particle extends Element {
             } else {
                 return false;
             }
-        } else if (neighbor instanceof Liquid) {
-            if (depth > 0) {
-                swapPositions(matrix, neighbor);
-            } else {
-                moveToLastValidAndSwap(matrix, neighbor, lastValidLocation);
-                return true;
-            }
-        } else if (neighbor instanceof Solid) {
-            dieAndReplace(matrix, elementType);
+        } else if (neighbor instanceof Liquid || neighbor instanceof Solid) {
+            moveToLastValidDieAndReplace(matrix, lastValidLocation, containedElementType);
+            return true;
         } else if (neighbor instanceof Gas) {
             if (isFinal) {
                 moveToLastValidAndSwap(matrix, neighbor, lastValidLocation);

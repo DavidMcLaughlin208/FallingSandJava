@@ -77,6 +77,15 @@ public abstract class Element {
         swapPositions(matrix, toSwap);
     }
 
+    public void moveToLastValidDieAndReplace(CellularMatrix matrix, Vector3 moveToLocation) {
+        moveToLastValidDieAndReplace(matrix, moveToLocation, this.elementType);
+    }
+
+    public void moveToLastValidDieAndReplace(CellularMatrix matrix, Vector3 moveToLocation, ElementType elementType) {
+        matrix.setElementAtIndex((int) moveToLocation.x, (int) moveToLocation.y, elementType.createElementByMatrix((int) moveToLocation.x, (int) moveToLocation.y));
+        die(matrix);
+    }
+
     public void moveToLastValidAndSwap(CellularMatrix matrix, Element toSwap, Vector3 moveToLocation) {
         int moveToLocationMatrixX = (int) moveToLocation.x;
         int moveToLocationMatrixY = (int) moveToLocation.y;
