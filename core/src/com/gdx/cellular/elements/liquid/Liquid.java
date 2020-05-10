@@ -30,9 +30,7 @@ public abstract class Liquid extends Element {
         if (stepped.get(0) == CellularAutomaton.stepped.get(0)) return;
         stepped.flip(0);
         vel.add(CellularAutomaton.gravity);
-
-        int startX = matrixX;
-        int startY = matrixY;
+        if (isFreeFalling) vel.x *= .9;
 
         int yModifier = vel.y < 0 ? -1 : 1;
         int xModifier = vel.x < 0 ? -1 : 1;
@@ -48,7 +46,7 @@ public abstract class Liquid extends Element {
         int smallerCount = 0;
         Vector3 lastValidLocation = new Vector3(matrixX, matrixY, 0);
         for (int i = 1; i <= upperBound; i++) {
-            if (freq != 0 && i % freq == 0 && min <= smallerCount) {
+            if (freq != 0 && i % freq == 0 && min >= smallerCount) {
                 smallerCount += 1;
             }
 

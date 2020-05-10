@@ -27,6 +27,7 @@ public abstract class MovableSolid extends Solid {
         if (stepped.get(0) == CellularAutomaton.stepped.get(0)) return;
         stepped.flip(0);
         vel.add(CellularAutomaton.gravity);
+        if (isFreeFalling) vel.x *= .9;
 
         int yModifier = vel.y < 0 ? -1 : 1;
         int xModifier = vel.x < 0 ? -1 : 1;
@@ -42,7 +43,7 @@ public abstract class MovableSolid extends Solid {
         int smallerCount = 0;
         Vector3 lastValidLocation = new Vector3(matrixX, matrixY, 0);
         for (int i = 1; i <= upperBound; i++) {
-            if (freq != 0 && i % freq == 0 && min <= smallerCount) {
+            if (freq != 0 && i % freq == 0 && min >= smallerCount) {
                 smallerCount += 1;
             }
 
@@ -165,7 +166,7 @@ public abstract class MovableSolid extends Solid {
     }
 
     private void setElementFreeFalling(Element element) {
-        element.isFreeFalling = Math.random() > element.inertialResistance ? true : element.isFreeFalling;
+        element.isFreeFalling = Math.random() > element.inertialResistance || element.isFreeFalling;
     }
 
 

@@ -56,7 +56,7 @@ public abstract class Gas extends Element {
         int smallerCount = 0;
         Vector3 lastValidLocation = new Vector3(matrixX, matrixY, 0);
         for (int i = 1; i <= upperBound; i++) {
-            if (freq != 0 && i % freq == 0 && min <= smallerCount) {
+            if (freq != 0 && i % freq == 0 && min >= smallerCount) {
                 smallerCount += 1;
             }
 
