@@ -11,8 +11,6 @@ public class Titanium extends ImmovableSolid {
         super(x, y, isPixel);
         vel = new Vector3(0f, 0f,0f);
         frictionFactor = 0.5f;
-        color = EffectColors.TITANIUM_COLOR;
-        defaultColor = EffectColors.TITANIUM_COLOR;
         inertialResistance = 1.1f;
         mass = 1000;
     }

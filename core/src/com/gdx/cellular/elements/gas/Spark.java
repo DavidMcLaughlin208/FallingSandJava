@@ -18,8 +18,6 @@ public class Spark extends Gas {
         frictionFactor = 1f;
         density = 4;
         dispersionRate = 4;
-        color = Color.RED;
-        defaultColor = Color.RED;
         flammabilityResistance = 25;
         isIgnited = true;
         lifeSpan = getRandomInt(20);

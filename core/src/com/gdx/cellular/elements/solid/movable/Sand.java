@@ -12,8 +12,6 @@ public class Sand extends MovableSolid {
         frictionFactor = 0.9f;
         inertialResistance = .1f;
         mass = 150;
-        color = Color.YELLOW;
-        defaultColor = Color.YELLOW;
     }
 
     @Override

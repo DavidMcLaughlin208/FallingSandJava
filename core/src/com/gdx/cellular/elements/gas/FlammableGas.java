@@ -1,6 +1,6 @@
 package com.gdx.cellular.elements.gas;
 
-import com.badlogic.gdx.graphics.Color;
+
 import com.badlogic.gdx.math.Vector3;
 
 public class FlammableGas extends Gas {
@@ -14,8 +14,6 @@ public class FlammableGas extends Gas {
         frictionFactor = 1f;
         density = 1;
         dispersionRate = 2;
-        color = Color.GREEN;
-        defaultColor = Color.GREEN;
         lifeSpan = getRandomInt(500) + 1000;
         flammabilityResistance = 10;
         resetFlammabilityResistance = 10;

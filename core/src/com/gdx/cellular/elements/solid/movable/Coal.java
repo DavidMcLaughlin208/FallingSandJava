@@ -13,8 +13,6 @@ public class Coal extends MovableSolid {
         frictionFactor = .4f;
         inertialResistance = .8f;
         mass = 200;
-        color = Color.DARK_GRAY;
-        defaultColor = Color.DARK_GRAY;
         flammabilityResistance = 100;
         resetFlammabilityResistance = 35;
     }

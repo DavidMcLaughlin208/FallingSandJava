@@ -34,12 +34,15 @@ public abstract class Element {
     public int coolingFactor = 5;
     public Integer lifeSpan = null;
     public Color defaultColor;
+    public ElementType elementType;
 
     public Color color;
 
     public BitSet stepped = new BitSet(1);
 
     public Element(int x, int y, boolean isPixel) {
+        this.elementType = getEnumType();
+        this.color = ColorConstants.getColorForElementType(this.elementType);
         if (isPixel) {
             setCoordinatesByPixel(x, y);
         } else {
@@ -179,7 +182,7 @@ public abstract class Element {
             modifyColor();
         } else {
             this.isIgnited = false;
-            this.color = defaultColor;
+            this.color = ColorConstants.getColorForElementType(elementType);
         }
     }
 
@@ -193,7 +196,7 @@ public abstract class Element {
         die(matrix, ElementType.EMPTYCELL);
     }
 
-    private void die(CellularMatrix matrix, ElementType type) {
+    protected void die(CellularMatrix matrix, ElementType type) {
         matrix.setElementAtIndex(matrixX, matrixY, type.createElementByMatrix(matrixX, matrixY));
     }
 
@@ -257,5 +260,9 @@ public abstract class Element {
 
     public int getRandomInt(int limit) {
         return (int) (Math.random() * limit);
+    }
+
+    public ElementType getEnumType() {
+        return ElementType.valueOf(this.getClass().getSimpleName().toUpperCase());
     }
 }

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularAutomaton;
 import com.gdx.cellular.CellularMatrix;
+import com.gdx.cellular.elements.ColorConstants;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.elements.EmptyCell;
@@ -15,12 +16,18 @@ import java.util.Optional;
 
 public class Particle extends Element {
 
-    public ElementType elementType;
+    public ElementType containedElementType;
 
     public Particle(int x, int y, boolean isPixel, Vector3 vel, ElementType elementType) {
         super(x, y, isPixel);
-        this.elementType = elementType;
+        this.containedElementType = elementType;
         this.vel = Optional.ofNullable(vel).orElse(new Vector3(0, -124f, 0));
+        this.color = ColorConstants.getColorForElementType(elementType);
+    }
+
+    @Override
+    public void dieAndReplace(CellularMatrix matrix, ElementType elementType) {
+        die(matrix, containedElementType);
     }
 
     @Override

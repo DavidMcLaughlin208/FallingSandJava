@@ -1,12 +1,6 @@
 package com.gdx.cellular.elements.gas;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
-import com.gdx.cellular.CellularMatrix;
-import com.gdx.cellular.elements.Element;
-import com.gdx.cellular.elements.EmptyCell;
-import com.gdx.cellular.elements.liquid.Liquid;
-import com.gdx.cellular.elements.solid.Solid;
 
 public class Smoke extends Gas{
 
@@ -18,8 +12,6 @@ public class Smoke extends Gas{
         frictionFactor = 1f;
         density = 2;
         dispersionRate = 2;
-        color = Color.WHITE;
-        defaultColor = Color.WHITE;
         lifeSpan = getRandomInt(250) + 450;
     }
 

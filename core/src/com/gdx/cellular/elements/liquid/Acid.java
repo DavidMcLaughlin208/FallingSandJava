@@ -17,8 +17,6 @@ public class Acid extends Liquid {
         frictionFactor = 1f;
         density = 2;
         dispersionRate = 2;
-        color = Color.GREEN;
-        defaultColor = Color.GREEN;
     }
 
     @Override

@@ -37,9 +37,10 @@ public abstract class Gas extends Element {
         if (vel.y == 124 && Math.random() > .5) {
             vel.y = 64;
         }
-        if (vel.x == 0 && Math.random() > .8) {
-            vel.x = 64;
-        }
+        vel.x *= .9;
+//        if (vel.x == 0 && Math.random() > .8) {
+//            vel.x = 64;
+//        }
 
         int yModifier = vel.y < 0 ? -1 : 1;
         int xModifier = vel.x < 0 ? -1 : 1;

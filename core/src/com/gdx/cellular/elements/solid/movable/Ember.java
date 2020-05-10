@@ -11,8 +11,6 @@ public class Ember extends MovableSolid {
         frictionFactor = .9f;
         inertialResistance = .99f;
         mass = 200;
-        color = Color.BROWN;
-        defaultColor = Color.BROWN;
         isIgnited = true;
         health = getRandomInt(100) + 250;
         temperature = 5;

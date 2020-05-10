@@ -11,8 +11,6 @@ public class Dirt extends MovableSolid {
         frictionFactor = .6f;
         inertialResistance = .8f;
         mass = 200;
-        color = Color.BROWN;
-        defaultColor = Color.BROWN;
     }
 
     @Override

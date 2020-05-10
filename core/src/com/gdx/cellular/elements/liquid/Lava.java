@@ -15,8 +15,6 @@ public class Lava extends Liquid {
         frictionFactor = 1f;
         density = 10;
         dispersionRate = 1;
-        color = Color.ORANGE;
-        defaultColor = Color.ORANGE;
         temperature = 10;
         heated = true;
     }

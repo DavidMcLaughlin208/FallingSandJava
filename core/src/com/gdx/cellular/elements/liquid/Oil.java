@@ -13,8 +13,6 @@ public class Oil extends Liquid {
         frictionFactor = 1f;
         density = 4;
         dispersionRate = 4;
-        color = Color.DARK_GRAY;
-        defaultColor = Color.DARK_GRAY;
         flammabilityResistance = 5;
         resetFlammabilityResistance = 2;
         fireDamage = 10;

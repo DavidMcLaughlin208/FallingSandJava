@@ -15,8 +15,6 @@ public class Water extends Liquid {
         frictionFactor = 1f;
         density = 5;
         dispersionRate = 5;
-        color = Color.BLUE;
-        defaultColor = Color.BLUE;
         coolingFactor = 5;
     }
 

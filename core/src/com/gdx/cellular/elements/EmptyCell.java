@@ -10,7 +10,6 @@ public class EmptyCell extends Element {
 
     public EmptyCell(int x, int y, boolean isPixel) {
         super(x, y, isPixel);
-        color = Color.CLEAR;
     }
 
 //    @Override
