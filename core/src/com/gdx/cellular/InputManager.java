@@ -101,6 +101,14 @@ public class InputManager {
         }
     }
 
+    public boolean toggleChunks(boolean toggleChunks) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.H)) {
+            return !toggleChunks;
+        } else {
+            return toggleChunks;
+        }
+    }
+
     public boolean cycleMouseModes() {
         if (Gdx.input.isKeyJustPressed(Input.Keys.M)) {
             if (this.mouseMode == MouseMode.SPAWN) {

@@ -36,9 +36,6 @@ public class ColorConstants {
     private static final Color TITANIUM = new Color(234/255f, 234/255f, 234/255f, 1);
 
 
-
-
-
     // Liquids
     private static final Color WATER = new Color(28/255f, 86/255f, 234/255f, .8f);
 
@@ -64,11 +61,9 @@ public class ColorConstants {
     private static final Color FIRE_2 = new Color(100/255f, 27/255f, 7/255f, 1);
     private static final Color FIRE_3 = new Color(77/255f, 10/255f, 20/255f, 1);
 
-
+    // Others
     private static final Color PARTICLE = new Color(0/255f, 0/255f, 0/255f, 0);
     private static final Color EMPTY_CELL = new Color(0/255f, 0/255f, 0/255f, 0);
-
-
 
     static {
         Arrays.stream(ElementType.values()).forEach(type -> elementColorMap.put(type, new ArrayList<>()));

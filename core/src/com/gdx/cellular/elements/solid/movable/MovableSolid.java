@@ -26,7 +26,7 @@ public abstract class MovableSolid extends Solid {
     public void step(CellularMatrix matrix) {
         if (stepped.get(0) == CellularAutomaton.stepped.get(0)) return;
         stepped.flip(0);
-        if (!matrix.shouldElementInChunkStep(this)) {
+        if (matrix.useChunks && !matrix.shouldElementInChunkStep(this)) {
             return;
         }
         vel.add(CellularAutomaton.gravity);
@@ -82,8 +82,10 @@ public abstract class MovableSolid extends Solid {
         spawnSparkIfIgnited(matrix);
         checkLifeSpan(matrix);
         modifyColor();
-        if (isFreeFalling || isIgnited || formerLocation.x != matrixX || formerLocation.y != matrixY) {
-            matrix.reportToChunkActive(this);
+        if (matrix.useChunks) {
+            if (isFreeFalling || isIgnited || formerLocation.x != matrixX || formerLocation.y != matrixY) {
+                matrix.reportToChunkActive(this);
+            }
         }
     }
 

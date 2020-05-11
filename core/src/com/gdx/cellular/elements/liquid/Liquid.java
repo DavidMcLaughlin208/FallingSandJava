@@ -30,7 +30,7 @@ public abstract class Liquid extends Element {
         if (stepped.get(0) == CellularAutomaton.stepped.get(0)) return;
         stepped.flip(0);
 
-        if (!matrix.shouldElementInChunkStep(this)) {
+        if (matrix.useChunks && !matrix.shouldElementInChunkStep(this)) {
             return;
         }
 
@@ -87,8 +87,10 @@ public abstract class Liquid extends Element {
         spawnSparkIfIgnited(matrix);
         checkLifeSpan(matrix);
         takeEffectsDamage(matrix);
-        if (isFreeFalling || isIgnited || formerLocation.x != matrixX || formerLocation.y != matrixY) {
-            matrix.reportToChunkActive(this);
+        if (matrix.useChunks) {
+            if (matrix.useChunks && (isIgnited || formerLocation.x != matrixX || formerLocation.y != matrixY)) {
+                matrix.reportToChunkActive(this);
+            }
         }
     }
 

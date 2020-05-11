@@ -27,6 +27,7 @@ public class CellularMatrix {
     public int outerArraySize;
     public int pixelSizeModifier;
     private final List<Integer> shuffledXIndexes;
+    public boolean useChunks = true;
     private List<List<Integer>> shuffledXIndexesForThreads;
     private int threadedIndexOffset = 0;
 
@@ -39,7 +40,9 @@ public class CellularMatrix {
         innerArraySize = toMatrix(width);
         outerArraySize = toMatrix(height);
         matrix = generateMatrix();
-        chunks = generateChunks();
+        if (useChunks) {
+            chunks = generateChunks();
+        }
         shuffledXIndexes = generateShuffledIndexes(innerArraySize);
 
         calculateAndSetThreadedXIndexOffset();
@@ -464,7 +467,17 @@ public class CellularMatrix {
     }
 
     public void reportToChunkActive(Element element) {
-        getChunkForElement(element).setShouldStepNextFrame(true);
+        if (useChunks) {
+            if (element.matrixX % Chunk.size == 0) {
+                Chunk chunk = getChunkForCoordinates(element.matrixX - 1 , element.matrixY);
+                chunk.setShouldStepNextFrame(true);
+            }
+            if (element.matrixY % Chunk.size == Chunk.size - 1) {
+                Chunk chunk = getChunkForCoordinates(element.matrixX, element.matrixY + 1);
+                if (chunk != null) chunk.setShouldStepNextFrame(true);
+            }
+            getChunkForElement(element).setShouldStepNextFrame(true);
+        }
     }
 
     public boolean shouldElementInChunkStep(Element element) {
@@ -472,9 +485,16 @@ public class CellularMatrix {
     }
 
     public Chunk getChunkForElement(Element element) {
-        int chunkY = element.matrixY / Chunk.size;
-        int chunkX = element.matrixX / Chunk.size;
-        return chunks.get(chunkY).get(chunkX);
+        return getChunkForCoordinates(element.matrixX, element.matrixY);
+    }
+
+    public Chunk getChunkForCoordinates(int x, int y) {
+        if (isWithinBounds(x, y)) {
+            int chunkY = y / Chunk.size;
+            int chunkX = x / Chunk.size;
+            return chunks.get(chunkY).get(chunkX);
+        }
+        return null;
     }
 
     public void resetChunks() {

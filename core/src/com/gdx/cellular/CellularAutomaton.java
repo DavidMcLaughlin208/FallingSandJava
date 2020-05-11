@@ -44,6 +44,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 
 	private FPSLogger fpsLogger;
 	public static int frameCount = 0;
+	public boolean useChunks = true;
 
 	@Override
 	public void create () {
@@ -75,13 +76,16 @@ public class CellularAutomaton extends ApplicationAdapter {
         stepped.flip(0);
         incrementFrameCount();
 
-        matrix.resetChunks();
+        if (useChunks) {
+			matrix.resetChunks();
+		}
 
         // Detect and act on input
         currentlySelectedElement = inputManager.getNewlySelectedElementWithDefault(currentlySelectedElement);
         brushSize = inputManager.calculateNewBrushSize(brushSize);
         numThreads = inputManager.adjustThreadCount(numThreads);
         useMultiThreading = inputManager.toggleThreads(useMultiThreading);
+        useChunks = inputManager.toggleChunks(useChunks);
         inputManager.cycleMouseModes();
 		inputManager.clearMatrixIfInput(matrix);
 		inputManager.placeSpout(matrix, camera, currentlySelectedElement, brushSize);
@@ -100,6 +104,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 		}
 
 		matrix.spawnFromSpouts();
+		matrix.useChunks = useChunks;
 
 		if (!useMultiThreading) {
 			matrix.stepAndDrawAll(shapeRenderer);
