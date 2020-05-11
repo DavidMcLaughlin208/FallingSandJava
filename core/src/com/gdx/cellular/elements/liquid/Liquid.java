@@ -29,6 +29,11 @@ public abstract class Liquid extends Element {
     public void step(CellularMatrix matrix) {
         if (stepped.get(0) == CellularAutomaton.stepped.get(0)) return;
         stepped.flip(0);
+
+        if (!matrix.shouldElementInChunkStep(this)) {
+            return;
+        }
+
         vel.add(CellularAutomaton.gravity);
         if (isFreeFalling) vel.x *= .8;
 
@@ -44,6 +49,7 @@ public abstract class Liquid extends Element {
         int freq = (min == 0 || upperBound == 0) ? 0 : (upperBound / min);
 
         int smallerCount = 0;
+        Vector3 formerLocation = new Vector3(matrixX, matrixY, 0);
         Vector3 lastValidLocation = new Vector3(matrixX, matrixY, 0);
         for (int i = 1; i <= upperBound; i++) {
             if (freq != 0 && i % freq == 0 && min >= smallerCount) {
@@ -81,6 +87,9 @@ public abstract class Liquid extends Element {
         spawnSparkIfIgnited(matrix);
         checkLifeSpan(matrix);
         takeEffectsDamage(matrix);
+        if (isFreeFalling || isIgnited || formerLocation.x != matrixX || formerLocation.y != matrixY) {
+            matrix.reportToChunkActive(this);
+        }
     }
 
     @Override
@@ -260,14 +269,25 @@ public abstract class Liquid extends Element {
         if (depth > 0) return;
 
         Element adjacentNeighbor1 = matrix.get(lastValidLocation.x + 1, lastValidLocation.y);
-        if (adjacentNeighbor1 instanceof MovableSolid) setElementFreeFalling(adjacentNeighbor1);
+        if (adjacentNeighbor1 instanceof Solid) {
+            boolean wasSet = setElementFreeFalling(adjacentNeighbor1);
+            if (wasSet) {
+                matrix.reportToChunkActive(adjacentNeighbor1);
+            }
+        }
 
         Element adjacentNeighbor2 = matrix.get(lastValidLocation.x - 1, lastValidLocation.y);
-        if (adjacentNeighbor2 instanceof MovableSolid) setElementFreeFalling(adjacentNeighbor2);
+        if (adjacentNeighbor2 instanceof Solid) {
+            boolean wasSet = setElementFreeFalling(adjacentNeighbor2);
+            if (wasSet) {
+                matrix.reportToChunkActive(adjacentNeighbor2);
+            }
+        }
     }
 
-    private void setElementFreeFalling(Element element) {
+    private boolean setElementFreeFalling(Element element) {
         element.isFreeFalling = Math.random() > element.inertialResistance || element.isFreeFalling;
+        return element.isFreeFalling;
     }
 
 

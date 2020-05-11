@@ -5,12 +5,15 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.gdx.cellular.elements.ColorConstants;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.elements.EmptyCell;
+import com.gdx.cellular.elements.liquid.Lava;
 import com.gdx.cellular.spouts.ElementSpout;
 import com.gdx.cellular.spouts.ParticleSpout;
 import com.gdx.cellular.spouts.Spout;
+import com.gdx.cellular.util.Chunk;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -28,6 +31,7 @@ public class CellularMatrix {
     private int threadedIndexOffset = 0;
 
     private Array<Array<Element>> matrix;
+    private Array<Array<Chunk>> chunks;
     public Array<Spout> spoutArray;
 
     public CellularMatrix(int width, int height, int pixelSizeModifier) {
@@ -35,10 +39,29 @@ public class CellularMatrix {
         innerArraySize = toMatrix(width);
         outerArraySize = toMatrix(height);
         matrix = generateMatrix();
+        chunks = generateChunks();
         shuffledXIndexes = generateShuffledIndexes(innerArraySize);
 
         calculateAndSetThreadedXIndexOffset();
         spoutArray = new Array<>();
+    }
+
+    private Array<Array<Chunk>> generateChunks() {
+        Array<Array<Chunk>> chunks = new Array<>();
+        int rows = (int) Math.ceil((double) outerArraySize / Chunk.size);
+        int columns = (int) Math.ceil((double) innerArraySize / Chunk.size);
+        for (int r = 0; r < rows; r++) {
+            chunks.add(new Array<>());
+            for (int c = 0; c < columns; c++) {
+                int xPos = c * Chunk.size;
+                int yPos = r * Chunk.size;
+                Chunk newChunk = new Chunk();
+                chunks.get(r).add(newChunk);
+                newChunk.setTopLeft(new Vector3(Math.min(xPos, innerArraySize), Math.min(yPos, outerArraySize), 0));
+                newChunk.setBottomRight(new Vector3(Math.min(xPos + Chunk.size, innerArraySize), Math.min(yPos + Chunk.size, outerArraySize), 0));
+            }
+        }
+        return chunks;
     }
 
     public void calculateAndSetThreadedXIndexOffset() {
@@ -89,9 +112,6 @@ public class CellularMatrix {
                 int toIndex = x;
                 for (int following = x; following < row.size; following++) {
                     Element followingElement = get(following, y);
-                    if (followingElement == null) {
-                        System.out.println("HMMMM");
-                    }
                     if (followingElement.color != currentColor) {
                         break;
                     }
@@ -102,6 +122,18 @@ public class CellularMatrix {
                 sr.setColor(element.color);
                 sr.rect(element.pixelX, element.pixelY, rectDrawWidth(toIndex), pixelSizeModifier);
 
+            }
+        }
+        sr.end();
+        sr.setColor(ColorConstants.getColorForElementType(ElementType.LAVA));
+        sr.begin(ShapeRenderer.ShapeType.Line);
+        for (int y = 0; y < chunks.size; y++) {
+            Array<Chunk> chunkRow = chunks.get(y);
+            for (int x = 0; x < chunkRow.size; x++) {
+                Chunk chunk = chunkRow.get(x);
+                if (chunk.getShouldStep()) {
+                    sr.rect(chunk.getTopLeft().x * pixelSizeModifier, chunk.getTopLeft().y * pixelSizeModifier, Chunk.size * pixelSizeModifier, Chunk.size * pixelSizeModifier);
+                }
             }
         }
         sr.end();
@@ -252,7 +284,9 @@ public class CellularMatrix {
 
     public void spawnElementByMatrix(int matrixX, int matrixY, ElementType elementType) {
         if (isWithinBounds(matrixX, matrixY) && get(matrixX, matrixY).getClass() != elementType.clazz) {
+            Element newElement = elementType.createElementByMatrix(matrixX, matrixY);
             setElementAtIndex(matrixX, matrixY, elementType.createElementByMatrix(matrixX, matrixY));
+            reportToChunkActive(newElement);
         }
     }
 
@@ -412,7 +446,10 @@ public class CellularMatrix {
 
     private void spawnParticleByMatrix(int x, int y, ElementType elementType, Vector3 velocity) {
         if (get(x, y) instanceof EmptyCell) {
-            ElementType.createParticleByMatrix(this, x, y, velocity, elementType);
+            Element newElement = ElementType.createParticleByMatrix(this, x, y, velocity, elementType);
+            if (newElement != null) {
+                reportToChunkActive(newElement);
+            }
         }
     }
 
@@ -424,6 +461,30 @@ public class CellularMatrix {
 
     private Vector3 generateRandomVelocityWithBounds(int lower, int upper) {
         return generateRandomVelocityWithBounds(lower, upper, lower, upper);
+    }
+
+    public void reportToChunkActive(Element element) {
+        getChunkForElement(element).setShouldStepNextFrame(true);
+    }
+
+    public boolean shouldElementInChunkStep(Element element) {
+        return getChunkForElement(element).getShouldStep();
+    }
+
+    public Chunk getChunkForElement(Element element) {
+        int chunkY = element.matrixY / Chunk.size;
+        int chunkX = element.matrixX / Chunk.size;
+        return chunks.get(chunkY).get(chunkX);
+    }
+
+    public void resetChunks() {
+        for (int r = 0; r < chunks.size; r++) {
+            Array<Chunk> chunkRow = chunks.get(r);
+            for (int c = 0; c < chunkRow.size; c++) {
+                Chunk chunk = chunkRow.get(c);
+                chunk.shiftShouldStepAndReset();
+            }
+        }
     }
 
     public static class FunctionInput {

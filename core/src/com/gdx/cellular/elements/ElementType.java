@@ -228,9 +228,12 @@ public enum ElementType {
 
     public abstract Element createElementByPixel(int x, int y);
 
-    public static void createParticleByMatrix(CellularMatrix matrix, int x, int y, Vector3 vector3, ElementType elementType) {
+    public static Element createParticleByMatrix(CellularMatrix matrix, int x, int y, Vector3 vector3, ElementType elementType) {
         if (matrix.isWithinBounds(x, y)) {
-            matrix.setElementAtIndex(x, y, new Particle(x, y, false, vector3, elementType));
+            Element newElement = new Particle(x, y, false, vector3, elementType);
+            matrix.setElementAtIndex(x, y, newElement);
+            return newElement;
         }
+        return null;
     }
 }

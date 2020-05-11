@@ -75,6 +75,8 @@ public class CellularAutomaton extends ApplicationAdapter {
         stepped.flip(0);
         incrementFrameCount();
 
+        matrix.resetChunks();
+
         // Detect and act on input
         currentlySelectedElement = inputManager.getNewlySelectedElementWithDefault(currentlySelectedElement);
         brushSize = inputManager.calculateNewBrushSize(brushSize);
