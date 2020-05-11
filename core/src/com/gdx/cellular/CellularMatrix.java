@@ -9,7 +9,6 @@ import com.gdx.cellular.elements.ColorConstants;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.elements.EmptyCell;
-import com.gdx.cellular.elements.liquid.Lava;
 import com.gdx.cellular.spouts.ElementSpout;
 import com.gdx.cellular.spouts.ParticleSpout;
 import com.gdx.cellular.spouts.Spout;
@@ -114,7 +113,7 @@ public class CellularMatrix {
                 Color currentColor = element.color;
                 int toIndex = x;
                 for (int following = x; following < row.size; following++) {
-                    Element followingElement = get(following, y);
+                    Element followingElement = row.get(following);
                     if (followingElement.color != currentColor) {
                         break;
                     }
@@ -467,16 +466,20 @@ public class CellularMatrix {
     }
 
     public void reportToChunkActive(Element element) {
+        reportToChunkActive(element.matrixX, element.matrixY);
+    }
+
+    public void reportToChunkActive(int x, int y) {
         if (useChunks) {
-            if (element.matrixX % Chunk.size == 0) {
-                Chunk chunk = getChunkForCoordinates(element.matrixX - 1 , element.matrixY);
+            if (x % Chunk.size == 0) {
+                Chunk chunk = getChunkForCoordinates(x - 1 , y);
                 chunk.setShouldStepNextFrame(true);
             }
-            if (element.matrixY % Chunk.size == Chunk.size - 1) {
-                Chunk chunk = getChunkForCoordinates(element.matrixX, element.matrixY + 1);
+            if (y % Chunk.size == Chunk.size - 1) {
+                Chunk chunk = getChunkForCoordinates(x, y + 1);
                 if (chunk != null) chunk.setShouldStepNextFrame(true);
             }
-            getChunkForElement(element).setShouldStepNextFrame(true);
+            getChunkForCoordinates(x, y).setShouldStepNextFrame(true);
         }
     }
 

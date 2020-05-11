@@ -88,7 +88,7 @@ public abstract class Liquid extends Element {
         checkLifeSpan(matrix);
         takeEffectsDamage(matrix);
         if (matrix.useChunks) {
-            if (matrix.useChunks && (isIgnited || formerLocation.x != matrixX || formerLocation.y != matrixY)) {
+            if (movedPreviousFrame || isIgnited || formerLocation.x != matrixX || formerLocation.y != matrixY) {
                 matrix.reportToChunkActive(this);
             }
         }
@@ -151,12 +151,12 @@ public abstract class Liquid extends Element {
                 boolean stoppedAdjacently = iterateToAdditional(matrix, adjacentNeighbor.matrixX, adjacentNeighbor.matrixY, distance);
                 if (stoppedAdjacently) vel.x *= -1;
                 if (!stoppedAdjacently) {
-                    isFreeFalling = false;
+//                    isFreeFalling = false;
                     return true;
                 }
             }
 
-            isFreeFalling = false;
+//            isFreeFalling = false;
 
             moveToLastValid(matrix, lastValidLocation);
             return true;
@@ -200,12 +200,12 @@ public abstract class Liquid extends Element {
                 boolean stoppedAdjacently = iterateToAdditional(matrix, adjacentNeighbor.matrixX, adjacentNeighbor.matrixY, distance);
                 if (stoppedAdjacently) vel.x *= -1;
                 if (!stoppedAdjacently) {
-                    isFreeFalling = false;
+//                    isFreeFalling = false;
                     return true;
                 }
             }
 
-            isFreeFalling = false;
+//            isFreeFalling = false;
 
             moveToLastValid(matrix, lastValidLocation);
             return true;

@@ -207,6 +207,7 @@ public abstract class Element {
 
     protected void die(CellularMatrix matrix, ElementType type) {
         matrix.setElementAtIndex(matrixX, matrixY, type.createElementByMatrix(matrixX, matrixY));
+        matrix.reportToChunkActive(matrixX, matrixY);
     }
 
     public void dieAndReplace(CellularMatrix matrix, ElementType type) {
