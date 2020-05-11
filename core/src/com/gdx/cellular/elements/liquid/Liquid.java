@@ -88,7 +88,7 @@ public abstract class Liquid extends Element {
         checkLifeSpan(matrix);
         takeEffectsDamage(matrix);
         if (matrix.useChunks) {
-            if (movedPreviousFrame || isIgnited || formerLocation.x != matrixX || formerLocation.y != matrixY) {
+            if (isIgnited || formerLocation.x != matrixX || formerLocation.y != matrixY) {
                 matrix.reportToChunkActive(this);
             }
         }

@@ -138,6 +138,10 @@ public class CellularAutomaton extends ApplicationAdapter {
 			for (int t = 0; t < threads.size(); t++) {
 				if (t % 2 == 0) {
 					threads.get(t).start();
+				}
+			}
+			for (int t = 0; t < threads.size(); t++) {
+				if (t % 2 == 0) {
 					threads.get(t).join();
 				}
 			}
@@ -151,6 +155,10 @@ public class CellularAutomaton extends ApplicationAdapter {
 			for (int t = 0; t < threads.size(); t++) {
 				if (t % 2 != 0) {
 					threads.get(t).start();
+				}
+			}
+			for (int t = 0; t < threads.size(); t++) {
+				if (t % 2 == 0) {
 					threads.get(t).join();
 				}
 			}
