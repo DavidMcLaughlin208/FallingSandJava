@@ -7,22 +7,28 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
+import com.gdx.cellular.elements.EmptyCell;
+import com.gdx.cellular.spouts.ElementSpout;
+import com.gdx.cellular.spouts.ParticleSpout;
+import com.gdx.cellular.spouts.Spout;
 
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
-import java.util.function.Function;
+
+
 
 public class CellularMatrix {
 
     public int innerArraySize;
     public int outerArraySize;
     public int pixelSizeModifier;
-    private List<Integer> shuffledXIndexes;
+    private final List<Integer> shuffledXIndexes;
     private List<List<Integer>> shuffledXIndexesForThreads;
     private int threadedIndexOffset = 0;
 
     private Array<Array<Element>> matrix;
-    private Array<Spout> spoutArray;
+    public Array<Spout> spoutArray;
 
     public CellularMatrix(int width, int height, int pixelSizeModifier) {
         this.pixelSizeModifier = pixelSizeModifier;
@@ -117,7 +123,7 @@ public class CellularMatrix {
                 x = toIndex;
                 if (element != null) {
                     pixmap.setColor(element.color);
-                    pixmap.drawLine((int) element.pixelX, (int) element.pixelY, element.pixelX + toIndex, (int) element.pixelY);
+                    pixmap.drawLine(element.pixelX, element.pixelY, element.pixelX + toIndex, element.pixelY);
                 }
             }
         }
@@ -163,13 +169,19 @@ public class CellularMatrix {
         }
     }
 
-    public void addSpout(ElementType elementType, Vector3 touchPos, int brushSize) {
-        spoutArray.add(new Spout(elementType, toMatrix(touchPos.x), toMatrix(touchPos.y), brushSize));
+    public void addSpout(ElementType elementType, Vector3 touchPos, int brushSize, boolean isParticle) {
+        if (isParticle) {
+            spoutArray.add(new ParticleSpout(elementType, toMatrix(touchPos.x), toMatrix(touchPos.y), brushSize, this::spawnParticleByMatrixWithBrush));
+        } else {
+            spoutArray.add(new ElementSpout(elementType, toMatrix(touchPos.x), toMatrix(touchPos.y), brushSize, this::spawnElementByMatrixWithBrush));
+        }
+
     }
 
     public void spawnFromSpouts() {
         for (Spout spout : spoutArray) {
-            spawnElementByMatrixWithBrush(new FunctionInput(spout.matrixX, spout.matrixY, spout.brushSize, spout.sourceElement));
+            FunctionInput functionInput = spout.setFunctionInputs(new FunctionInput());
+            spout.getFunction().accept(functionInput);
         }
     }
 
@@ -361,93 +373,6 @@ public class CellularMatrix {
         }
     }
 
-//    public void iterateAndSpawnElementBetweenTwoPoints(Vector3 pos1, Vector3 pos2, ElementType elementType, int brushSize) {
-//
-//        int matrixX1 = toMatrix((int) pos1.x);
-//        int matrixY1 = toMatrix((int) pos1.y);
-//        int matrixX2 = toMatrix((int) pos2.x);
-//        int matrixY2 = toMatrix((int) pos2.y);
-//
-//        if (pos1.epsilonEquals(pos2)) {
-//            spawnElementByMatrixWithBrush(matrixX1, matrixY1, elementType, brushSize);
-//            return;
-//        }
-//
-//        int xDiff = matrixX1 - matrixX2;
-//        int yDiff = matrixY1 - matrixY2;
-//        boolean xDiffIsLarger = Math.abs(xDiff) > Math.abs(yDiff);
-//
-//        int xModifier = xDiff < 0 ? 1 : -1;
-//        int yModifier = yDiff < 0 ? 1 : -1;
-//
-//        int upperBound = Math.max(Math.abs(xDiff), Math.abs(yDiff));
-//        int min = Math.min(Math.abs(xDiff), Math.abs(yDiff));
-//        int freq = (min == 0 || upperBound == 0) ? 0 : (upperBound / min);
-//
-//        int smallerCount = 0;
-//        for (int i = 1; i <= upperBound; i++) {
-//            if (freq != 0 && i % freq == 0 && min != smallerCount) {
-//                smallerCount += 1;
-//            }
-//            int yIncrease, xIncrease;
-//            if (xDiffIsLarger) {
-//                xIncrease = i;
-//                yIncrease = smallerCount;
-//            } else {
-//                yIncrease = i;
-//                xIncrease = smallerCount;
-//            }
-//            int currentY = matrixY1 + (yIncrease * yModifier);
-//            int currentX = matrixX1 + (xIncrease * xModifier);
-//            if (isWithinBounds(currentX, currentY)) {
-//                spawnElementByMatrixWithBrush(currentX, currentY, elementType, brushSize);
-//            }
-//        }
-//    }
-
-//    public void iterateAndHeatBetweenTwoPoints(Vector3 pos1, Vector3 pos2, int brushSize) {
-//        int matrixX1 = toMatrix((int) pos1.x);
-//        int matrixY1 = toMatrix((int) pos1.y);
-//        int matrixX2 = toMatrix((int) pos2.x);
-//        int matrixY2 = toMatrix((int) pos2.y);
-//
-//        if (pos1.epsilonEquals(pos2)) {
-//            applyHeatByBrush((int) pos1.x, (int) pos1.y, brushSize);
-//            return;
-//        }
-//
-//        int xDiff = matrixX1 - matrixX2;
-//        int yDiff = matrixY1 - matrixY2;
-//        boolean xDiffIsLarger = Math.abs(xDiff) > Math.abs(yDiff);
-//
-//        int xModifier = xDiff < 0 ? 1 : -1;
-//        int yModifier = yDiff < 0 ? 1 : -1;
-//
-//        int upperBound = Math.max(Math.abs(xDiff), Math.abs(yDiff));
-//        int min = Math.min(Math.abs(xDiff), Math.abs(yDiff));
-//        int freq = (min == 0 || upperBound == 0) ? 0 : (upperBound / min);
-//
-//        int smallerCount = 0;
-//        for (int i = 1; i <= upperBound; i++) {
-//            if (freq != 0 && i % freq == 0 && min != smallerCount) {
-//                smallerCount += 1;
-//            }
-//            int yIncrease, xIncrease;
-//            if (xDiffIsLarger) {
-//                xIncrease = i;
-//                yIncrease = smallerCount;
-//            } else {
-//                yIncrease = i;
-//                xIncrease = smallerCount;
-//            }
-//            int currentY = matrixY1 + (yIncrease * yModifier);
-//            int currentX = matrixX1 + (xIncrease * xModifier);
-//            if (isWithinBounds(currentX, currentY)) {
-//                applyHeatByBrush(currentX, currentY, brushSize);
-//            }
-//        }
-//    }
-
     public void applyHeatByBrush(FunctionInput input) {
         int localBrushSize = input.getBrushSize();
         int matrixX = input.getMatrixX();
@@ -474,11 +399,11 @@ public class CellularMatrix {
         int matrixY = input.getMatrixY();
         int halfBrush = input.getBrushSize()/2;
         ElementType elementType = input.getElementType();
-        Vector3 velocity = input.getVelocity();
         for (int x = matrixX - halfBrush; x <= matrixX + halfBrush; x++) {
             for (int y = matrixY - halfBrush; y <= matrixY + halfBrush; y++) {
                 int distance = distanceBetweenTwoPoints(matrixX, x, matrixY, y);
                 if (distance < halfBrush) {
+                    Vector3 velocity = generateRandomVelocityWithBounds(-300, 300);
                     spawnParticleByMatrix(x, y, elementType, velocity);
                 }
             }
@@ -486,7 +411,19 @@ public class CellularMatrix {
     }
 
     private void spawnParticleByMatrix(int x, int y, ElementType elementType, Vector3 velocity) {
-        ElementType.PARTICLE.createParticleByMatrix(this, x, y, velocity, elementType);
+        if (get(x, y) instanceof EmptyCell) {
+            ElementType.createParticleByMatrix(this, x, y, velocity, elementType);
+        }
+    }
+
+    private Vector3 generateRandomVelocityWithBounds(int lowerX, int upperX, int lowerY, int upperY) {
+        int x = ThreadLocalRandom.current().nextInt(lowerX, upperX);
+        int y = ThreadLocalRandom.current().nextInt(lowerY, upperY);
+        return new Vector3(x, y, 0);
+    }
+
+    private Vector3 generateRandomVelocityWithBounds(int lower, int upper) {
+        return generateRandomVelocityWithBounds(lower, upper, lower, upper);
     }
 
     public static class FunctionInput {

@@ -126,7 +126,11 @@ public class InputManager {
             Vector3 touchPos = new Vector3();
             touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touchPos);
-            matrix.addSpout(currentlySelectedElement, touchPos, brushSize);
+            if (mouseMode == MouseMode.SPAWN) {
+                matrix.addSpout(currentlySelectedElement, touchPos, brushSize, false);
+            } else if (mouseMode == MouseMode.PARTICLE) {
+                matrix.addSpout(currentlySelectedElement, touchPos, brushSize, true);
+            }
         }
     }
 
@@ -157,6 +161,8 @@ public class InputManager {
                 } else {
                     matrix.spawnParticleByPixelWithBrush((int) touchPos.x, (int) touchPos.y, currentlySelectedElement, brushSize, velocity);
                 }
+                lastTouchPos = touchPos;
+                touchedLastFrame = true;
             }
         } else {
             touchedLastFrame = false;

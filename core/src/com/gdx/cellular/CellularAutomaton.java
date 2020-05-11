@@ -9,11 +9,15 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
+import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
+import com.gdx.cellular.spouts.Spout;
 
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 public class CellularAutomaton extends ApplicationAdapter {
@@ -79,8 +83,7 @@ public class CellularAutomaton extends ApplicationAdapter {
         inputManager.cycleMouseModes();
 		inputManager.clearMatrixIfInput(matrix);
 		inputManager.placeSpout(matrix, camera, currentlySelectedElement, brushSize);
-//		inputManager.spawnElementByInput(matrix, camera, currentlySelectedElement, brushSize, new Vector3( (float) Math.random() * 186, (float) Math.random() * 186, 0));
-		inputManager.spawnElementByInput(matrix, camera, currentlySelectedElement, brushSize, new Vector3( 124f, 124f, 0));
+		inputManager.spawnElementByInput(matrix, camera, currentlySelectedElement, brushSize, new Vector3(ThreadLocalRandom.current().nextInt(-500, 500), ThreadLocalRandom.current().nextInt(-500, 500), 0));
 		inputManager.save(matrix);
 		inputManager.load(matrix);
 

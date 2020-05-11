@@ -12,8 +12,6 @@ import com.gdx.cellular.elements.gas.Gas;
 import com.gdx.cellular.elements.liquid.Liquid;
 import com.gdx.cellular.elements.solid.Solid;
 
-import java.util.Optional;
-
 public class Particle extends Element {
 
     public ElementType containedElementType;
@@ -21,7 +19,10 @@ public class Particle extends Element {
     public Particle(int x, int y, boolean isPixel, Vector3 vel, ElementType elementType) {
         super(x, y, isPixel);
         this.containedElementType = elementType;
-        this.vel = Optional.ofNullable(vel).orElse(new Vector3(0, -124f, 0));
+        this.vel = new Vector3();
+        Vector3 localVel = vel == null ? new Vector3(0, -124, 0) : vel;
+        this.vel.x = localVel.x;
+        this.vel.y = localVel.y;
         this.color = ColorConstants.getColorForElementType(elementType);
     }
 
