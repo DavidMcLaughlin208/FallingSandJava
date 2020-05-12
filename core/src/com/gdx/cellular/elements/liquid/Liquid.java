@@ -16,6 +16,8 @@ public abstract class Liquid extends Element {
 
     public int density;
     public int dispersionRate;
+    public int stoppedMovingCount;
+    public int stoppedMovingThreshold = 5;
 
     public Liquid(int x, int y, boolean isPixel) {
         super(x, y, isPixel);
@@ -87,11 +89,23 @@ public abstract class Liquid extends Element {
         spawnSparkIfIgnited(matrix);
         checkLifeSpan(matrix);
         takeEffectsDamage(matrix);
+        stoppedMovingCount = didNotMove(formerLocation) ? stoppedMovingCount + 1 : 0;
+        if (stoppedMovingCount > stoppedMovingThreshold) {
+            stoppedMovingCount = stoppedMovingThreshold;
+        }
         if (matrix.useChunks) {
-            if (isIgnited || formerLocation.x != matrixX || formerLocation.y != matrixY) {
+            if (isIgnited || !hasNotMovedBeyondThreshold()) {
                 matrix.reportToChunkActive(this);
             }
         }
+    }
+
+    private boolean didNotMove(Vector3 formerLocation) {
+        return formerLocation.x == matrixX && formerLocation.y == matrixY;
+    }
+
+    private boolean hasNotMovedBeyondThreshold() {
+        return stoppedMovingCount >= stoppedMovingThreshold;
     }
 
     @Override

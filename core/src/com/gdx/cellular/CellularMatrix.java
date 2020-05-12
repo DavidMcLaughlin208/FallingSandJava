@@ -520,6 +520,14 @@ public class CellularMatrix {
                 Chunk chunk = getChunkForCoordinates(x - 1 , y);
                 if (chunk != null) chunk.setShouldStepNextFrame(true);
             }
+            if (x % Chunk.size == Chunk.size - 1) {
+                Chunk chunk = getChunkForCoordinates(x + 1 , y);
+                if (chunk != null) chunk.setShouldStepNextFrame(true);
+            }
+            if (y % Chunk.size == 0) {
+                Chunk chunk = getChunkForCoordinates(x, y - 1);
+                if (chunk != null) chunk.setShouldStepNextFrame(true);
+            }
             if (y % Chunk.size == Chunk.size - 1) {
                 Chunk chunk = getChunkForCoordinates(x, y + 1);
                 if (chunk != null) chunk.setShouldStepNextFrame(true);
