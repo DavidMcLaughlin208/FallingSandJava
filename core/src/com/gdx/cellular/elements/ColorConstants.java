@@ -68,24 +68,24 @@ public class ColorConstants {
     static {
         Arrays.stream(ElementType.values()).forEach(type -> elementColorMap.put(type, new ArrayList<>()));
         elementColorMap.get(ElementType.SAND).add(SAND_1);
-//        elementColorMap.get(ElementType.SAND).add(SAND_2);
-//        elementColorMap.get(ElementType.SAND).add(SAND_3);
+        elementColorMap.get(ElementType.SAND).add(SAND_2);
+        elementColorMap.get(ElementType.SAND).add(SAND_3);
 
         elementColorMap.get(ElementType.DIRT).add(DIRT_1);
-//        elementColorMap.get(ElementType.DIRT).add(DIRT_2);
-//        elementColorMap.get(ElementType.DIRT).add(DIRT_3);
+        elementColorMap.get(ElementType.DIRT).add(DIRT_2);
+        elementColorMap.get(ElementType.DIRT).add(DIRT_3);
 
         elementColorMap.get(ElementType.COAL).add(COAL_1);
-//        elementColorMap.get(ElementType.COAL).add(COAL_2);
-//        elementColorMap.get(ElementType.COAL).add(COAL_3);
+        elementColorMap.get(ElementType.COAL).add(COAL_2);
+        elementColorMap.get(ElementType.COAL).add(COAL_3);
 
         elementColorMap.get(ElementType.EMBER).add(EMBER);
 
         elementColorMap.get(ElementType.STONE).add(STONE);
 
         elementColorMap.get(ElementType.WOOD).add(WOOD_1);
-//        elementColorMap.get(ElementType.WOOD).add(WOOD_2);
-//        elementColorMap.get(ElementType.WOOD).add(WOOD_3);
+        elementColorMap.get(ElementType.WOOD).add(WOOD_2);
+        elementColorMap.get(ElementType.WOOD).add(WOOD_3);
 
         elementColorMap.get(ElementType.TITANIUM).add(TITANIUM);
 

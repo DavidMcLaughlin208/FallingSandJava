@@ -9,6 +9,11 @@ import com.gdx.cellular.elements.ColorConstants;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.elements.EmptyCell;
+import com.gdx.cellular.elements.gas.Gas;
+import com.gdx.cellular.elements.liquid.Liquid;
+import com.gdx.cellular.elements.solid.immoveable.ImmovableSolid;
+import com.gdx.cellular.elements.solid.movable.MovableSolid;
+import com.gdx.cellular.particles.Particle;
 import com.gdx.cellular.spouts.ElementSpout;
 import com.gdx.cellular.spouts.ParticleSpout;
 import com.gdx.cellular.spouts.Spout;
@@ -104,6 +109,11 @@ public class CellularMatrix {
     }
 
     public void drawAll(ShapeRenderer sr) {
+        drawElements(sr);
+        drawChunks(sr);
+    }
+
+    private void drawElements(ShapeRenderer sr) {
         sr.begin();
         sr.set(ShapeRenderer.ShapeType.Filled);
         for (int y = 0; y < outerArraySize; y++) {
@@ -127,8 +137,11 @@ public class CellularMatrix {
             }
         }
         sr.end();
-        sr.setColor(ColorConstants.getColorForElementType(ElementType.LAVA));
+    }
+
+    private void drawChunks(ShapeRenderer sr) {
         sr.begin(ShapeRenderer.ShapeType.Line);
+        sr.setColor(ColorConstants.getColorForElementType(ElementType.LAVA));
         for (int y = 0; y < chunks.size; y++) {
             Array<Chunk> chunkRow = chunks.get(y);
             for (int x = 0; x < chunkRow.size; x++) {
@@ -359,8 +372,12 @@ public class CellularMatrix {
         iterateAndApplyMethodBetweenTwoPoints(pos1, pos2, elementType, brushSize, null, this::spawnElementByMatrixWithBrush);
     }
 
-    public void spawnParticleBetweenTwoPoints(Vector3 pos1, Vector3 pos2, ElementType elementType, int brushSize, Vector3 velocity) {
-        iterateAndApplyMethodBetweenTwoPoints(pos1, pos2, elementType, brushSize, velocity, this::spawnParticleByMatrixWithBrush);
+    public void spawnParticleBetweenTwoPoints(Vector3 pos1, Vector3 pos2, ElementType elementType, int brushSize) {
+        iterateAndApplyMethodBetweenTwoPoints(pos1, pos2, elementType, brushSize, null, this::spawnParticleByMatrixWithBrush);
+    }
+
+    public void particalizeBetweenTwoPoints(Vector3 pos1, Vector3 pos2, int brushSize) {
+        iterateAndApplyMethodBetweenTwoPoints(pos1, pos2, null, brushSize, null, this::particalizeByMatrixWithBrush);
     }
 
     public void iterateAndApplyMethodBetweenTwoPoints(Vector3 pos1, Vector3 pos2, ElementType elementType, int brushSize, Vector3 velocity, Consumer<FunctionInput> function) {
@@ -426,8 +443,8 @@ public class CellularMatrix {
         return new FunctionInput(matrixX, matrixY, elementType, brushSize, velocity);
     }
 
-    public void spawnParticleByPixelWithBrush(int pixelX, int pixelY, ElementType elementType, int brushSize, Vector3 velocity) {
-        spawnParticleByMatrixWithBrush(createFunctionInput(toMatrix(pixelX), toMatrix(pixelY), elementType, brushSize, velocity));
+    public void spawnParticleByPixelWithBrush(int pixelX, int pixelY, ElementType elementType, int brushSize) {
+        spawnParticleByMatrixWithBrush(createFunctionInput(toMatrix(pixelX), toMatrix(pixelY), elementType, brushSize, null));
     }
 
     public void spawnParticleByMatrixWithBrush(FunctionInput input) {
@@ -439,8 +456,23 @@ public class CellularMatrix {
             for (int y = matrixY - halfBrush; y <= matrixY + halfBrush; y++) {
                 int distance = distanceBetweenTwoPoints(matrixX, x, matrixY, y);
                 if (distance < halfBrush) {
-                    Vector3 velocity = generateRandomVelocityWithBounds(-300, 300);
+                    Vector3 velocity = generateRandomVelocityWithBounds(-200, 200);
                     spawnParticleByMatrix(x, y, elementType, velocity);
+                }
+            }
+        }
+    }
+
+    public void particalizeByMatrixWithBrush(FunctionInput input) {
+        int matrixX = input.getMatrixX();
+        int matrixY = input.getMatrixY();
+        int halfBrush = input.getBrushSize()/2;
+        for (int x = matrixX - halfBrush; x <= matrixX + halfBrush; x++) {
+            for (int y = matrixY - halfBrush; y <= matrixY + halfBrush; y++) {
+                int distance = distanceBetweenTwoPoints(matrixX, x, matrixY, y);
+                if (distance < halfBrush) {
+                    Vector3 velocity = generateRandomVelocityWithBounds(-300, 300);
+                    particalizeByMatrix(x, y, velocity);
                 }
             }
         }
@@ -452,6 +484,19 @@ public class CellularMatrix {
             if (newElement != null) {
                 reportToChunkActive(newElement);
             }
+        }
+    }
+
+    public void particalizeByPixelWithBrush(int x, int y, int brushSize) {
+        int matrixX = toMatrix(x);
+        int matrixY = toMatrix(y);
+        particalizeByMatrixWithBrush(createFunctionInput(matrixX, matrixY, null, brushSize, new Vector3(0, -124, 0)));
+    }
+
+    public void particalizeByMatrix(int x, int y, Vector3 velocity) {
+        Element element = get(x, y);
+        if (element instanceof MovableSolid || element instanceof Liquid) {
+            element.dieAndReplaceWithParticle(this, velocity);
         }
     }
 
@@ -473,7 +518,7 @@ public class CellularMatrix {
         if (useChunks) {
             if (x % Chunk.size == 0) {
                 Chunk chunk = getChunkForCoordinates(x - 1 , y);
-                chunk.setShouldStepNextFrame(true);
+                if (chunk != null) chunk.setShouldStepNextFrame(true);
             }
             if (y % Chunk.size == Chunk.size - 1) {
                 Chunk chunk = getChunkForCoordinates(x, y + 1);

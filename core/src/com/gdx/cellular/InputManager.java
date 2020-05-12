@@ -116,6 +116,8 @@ public class InputManager {
             } else if (this.mouseMode == MouseMode.HEAT) {
                 this.mouseMode = MouseMode.PARTICLE;
             } else if (this.mouseMode == MouseMode.PARTICLE) {
+                this.mouseMode = MouseMode.PARTICALIZE;
+            } else if (this.mouseMode == MouseMode.PARTICALIZE) {
                 this.mouseMode = MouseMode.SPAWN;
             }
             return true;
@@ -142,7 +144,7 @@ public class InputManager {
         }
     }
 
-    public void spawnElementByInput(CellularMatrix matrix, OrthographicCamera camera, ElementType currentlySelectedElement, int brushSize, Vector3 velocity) {
+    public void spawnElementByInput(CellularMatrix matrix, OrthographicCamera camera, ElementType currentlySelectedElement, int brushSize) {
         if (Gdx.input.isTouched()) {
             Vector3 touchPos = new Vector3();
             touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
@@ -153,8 +155,6 @@ public class InputManager {
                 } else {
                     matrix.spawnElementByPixelWithBrush((int) touchPos.x, (int) touchPos.y, currentlySelectedElement, brushSize);
                 }
-                lastTouchPos = touchPos;
-                touchedLastFrame = true;
             } else if (mouseMode == MouseMode.HEAT) {
                 if (touchedLastFrame) {
                     matrix.applyHeatBetweenTwoPoints(lastTouchPos, touchPos, brushSize);
@@ -162,16 +162,21 @@ public class InputManager {
                     CellularMatrix.FunctionInput input = new CellularMatrix.FunctionInput(matrix.toMatrix(touchPos.x), matrix.toMatrix(touchPos.y), brushSize);
                     matrix.applyHeatByBrush(input);
                 }
-                touchedLastFrame = true;
             } else if (mouseMode == MouseMode.PARTICLE) {
                 if (touchedLastFrame) {
-                    matrix.spawnParticleBetweenTwoPoints(lastTouchPos, touchPos, currentlySelectedElement, brushSize, velocity);
+                    matrix.spawnParticleBetweenTwoPoints(lastTouchPos, touchPos, currentlySelectedElement, brushSize);
                 } else {
-                    matrix.spawnParticleByPixelWithBrush((int) touchPos.x, (int) touchPos.y, currentlySelectedElement, brushSize, velocity);
+                    matrix.spawnParticleByPixelWithBrush((int) touchPos.x, (int) touchPos.y, currentlySelectedElement, brushSize);
                 }
-                lastTouchPos = touchPos;
-                touchedLastFrame = true;
+            } else if (mouseMode == MouseMode.PARTICALIZE) {
+                if (touchedLastFrame) {
+                    matrix.particalizeBetweenTwoPoints(lastTouchPos, touchPos, brushSize);
+                } else {
+                    matrix.particalizeByPixelWithBrush((int) touchPos.x, (int) touchPos.y, brushSize);
+                }
             }
+            lastTouchPos = touchPos;
+            touchedLastFrame = true;
         } else {
             touchedLastFrame = false;
         }

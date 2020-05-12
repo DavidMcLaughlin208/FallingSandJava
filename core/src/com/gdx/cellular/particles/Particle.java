@@ -18,6 +18,9 @@ public class Particle extends Element {
 
     public Particle(int x, int y, boolean isPixel, Vector3 vel, ElementType elementType) {
         super(x, y, isPixel);
+        if (ElementType.PARTICLE.equals(elementType)) {
+            throw new IllegalStateException("Containing element cannot be particle");
+        }
         this.containedElementType = elementType;
         this.vel = new Vector3();
         Vector3 localVel = vel == null ? new Vector3(0, -124, 0) : vel;
@@ -36,11 +39,9 @@ public class Particle extends Element {
         if (stepped.get(0) == CellularAutomaton.stepped.get(0)) return;
         stepped.flip(0);
         vel.add(CellularAutomaton.gravity);
-        if (vel.y > -64 && vel.y < 64) {
+        if (vel.y > -64 && vel.y < 0) {
             vel.y = -64;
         }
-
-//        vel.y = vel.y < 0 ? Math.max(-124, vel.y) : vel.y;
 
         int yModifier = vel.y < 0 ? -1 : 1;
         int xModifier = vel.x < 0 ? -1 : 1;
@@ -97,7 +98,8 @@ public class Particle extends Element {
                 return false;
             }
         } else if (neighbor instanceof Liquid || neighbor instanceof Solid) {
-            moveToLastValidDieAndReplace(matrix, lastValidLocation, containedElementType);
+            moveToLastValid(matrix, lastValidLocation);
+            dieAndReplace(matrix, containedElementType);
             return true;
         } else if (neighbor instanceof Gas) {
             if (isFinal) {

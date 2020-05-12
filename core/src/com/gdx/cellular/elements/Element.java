@@ -214,6 +214,11 @@ public abstract class Element {
         die(matrix, type);
     }
 
+    public void dieAndReplaceWithParticle(CellularMatrix matrix, Vector3 velocty) {
+        matrix.setElementAtIndex(matrixX, matrixY, ElementType.createParticleByMatrix(matrix, matrixX, matrixY, velocty, elementType));
+        matrix.reportToChunkActive(matrixX, matrixY);
+    }
+
     public void takeEffectsDamage(CellularMatrix matrix) {
         if (!isEffectsFrame()) {
             return;

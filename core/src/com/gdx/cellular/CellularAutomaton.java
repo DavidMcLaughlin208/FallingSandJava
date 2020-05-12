@@ -89,7 +89,7 @@ public class CellularAutomaton extends ApplicationAdapter {
         inputManager.cycleMouseModes();
 		inputManager.clearMatrixIfInput(matrix);
 		inputManager.placeSpout(matrix, camera, currentlySelectedElement, brushSize);
-		inputManager.spawnElementByInput(matrix, camera, currentlySelectedElement, brushSize, new Vector3(ThreadLocalRandom.current().nextInt(-500, 500), ThreadLocalRandom.current().nextInt(-500, 500), 0));
+		inputManager.spawnElementByInput(matrix, camera, currentlySelectedElement, brushSize);
 		inputManager.save(matrix);
 		inputManager.load(matrix);
 
