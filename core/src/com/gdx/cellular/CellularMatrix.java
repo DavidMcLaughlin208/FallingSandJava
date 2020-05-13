@@ -3,7 +3,12 @@ package com.gdx.cellular;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.Shape;
 import com.badlogic.gdx.utils.Array;
 import com.gdx.cellular.elements.ColorConstants;
 import com.gdx.cellular.elements.Element;
@@ -110,7 +115,7 @@ public class CellularMatrix {
 
     public void drawAll(ShapeRenderer sr) {
         drawElements(sr);
-        drawChunks(sr);
+//        drawChunks(sr);
     }
 
     private void drawElements(ShapeRenderer sr) {
@@ -148,6 +153,51 @@ public class CellularMatrix {
                 Chunk chunk = chunkRow.get(x);
                 if (chunk.getShouldStep()) {
                     sr.rect(chunk.getTopLeft().x * pixelSizeModifier, chunk.getTopLeft().y * pixelSizeModifier, Chunk.size * pixelSizeModifier, Chunk.size * pixelSizeModifier);
+                }
+            }
+        }
+        sr.end();
+    }
+
+    public void drawBox2d(Array<Body> bodies, ShapeRenderer sr) {
+        sr.setColor(Color.RED);
+        sr.begin();
+        int mod = CellularAutomaton.box2dSizeModifier;
+        for (Body body : bodies) {
+            for (Fixture fixture : body.getFixtureList()) {
+                Shape.Type shapeType = fixture.getShape().getType();
+                switch (shapeType) {
+                    case Circle:
+                        Vector2 position = body.getPosition();
+                        sr.set(ShapeRenderer.ShapeType.Line);
+                        sr.circle(position.x * mod, position.y * mod, fixture.getShape().getRadius() * mod);
+                        break;
+                    case Polygon:
+                        PolygonShape polygon = (PolygonShape) fixture.getShape();
+                        int vertexCount = polygon.getVertexCount();
+
+                        Vector2 previousVertex = new Vector2();
+
+                        for (int i = 0; i < vertexCount; i++) {
+                            Vector2 currentVertex = new Vector2();
+                            polygon.getVertex(i, currentVertex);
+                            if (i == 0) {
+                                polygon.getVertex(vertexCount - 1, previousVertex);
+                            } else {
+                                polygon.getVertex(i - 1, previousVertex);
+                            }
+
+                            previousVertex = body.getWorldPoint(previousVertex);
+                            previousVertex.x *= mod;
+                            previousVertex.y *= mod;
+                            Vector2 prevVertCopy = previousVertex.cpy();
+                            currentVertex = body.getWorldPoint(currentVertex);
+                            currentVertex.x *= mod;
+                            currentVertex.y *= mod;
+                            Vector2 curVertCopy = previousVertex.cpy();
+                            sr.line(curVertCopy, prevVertCopy);
+                        }
+                        break;
                 }
             }
         }

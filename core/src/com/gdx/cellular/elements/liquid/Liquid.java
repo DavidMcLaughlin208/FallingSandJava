@@ -80,7 +80,7 @@ public abstract class Liquid extends Element {
                 lastValidLocation.y = modifiedMatrixY;
 
             } else {
-                matrix.setElementAtIndex(matrixX, matrixY, ElementType.EMPTYCELL.createElementByPixel(pixelX, pixelY));
+                matrix.setElementAtIndex(matrixX, matrixY, ElementType.EMPTYCELL.createElementByMatrix(matrixX, matrixY));
                 return;
             }
         }
@@ -93,15 +93,11 @@ public abstract class Liquid extends Element {
         if (stoppedMovingCount > stoppedMovingThreshold) {
             stoppedMovingCount = stoppedMovingThreshold;
         }
-        if (matrix.useChunks) {
+        if (matrix.useChunks)  {
             if (isIgnited || !hasNotMovedBeyondThreshold()) {
                 matrix.reportToChunkActive(this);
             }
         }
-    }
-
-    private boolean didNotMove(Vector3 formerLocation) {
-        return formerLocation.x == matrixX && formerLocation.y == matrixY;
     }
 
     private boolean hasNotMovedBeyondThreshold() {

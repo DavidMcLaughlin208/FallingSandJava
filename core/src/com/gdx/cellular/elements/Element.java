@@ -219,6 +219,10 @@ public abstract class Element {
         matrix.reportToChunkActive(matrixX, matrixY);
     }
 
+    public boolean didNotMove(Vector3 formerLocation) {
+        return formerLocation.x == matrixX && formerLocation.y == matrixY;
+    }
+
     public void takeEffectsDamage(CellularMatrix matrix) {
         if (!isEffectsFrame()) {
             return;

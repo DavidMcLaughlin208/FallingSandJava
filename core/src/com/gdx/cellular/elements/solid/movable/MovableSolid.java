@@ -73,7 +73,7 @@ public abstract class MovableSolid extends Solid {
                 lastValidLocation.y = modifiedMatrixY;
 
             } else {
-                matrix.setElementAtIndex(matrixX, matrixY, ElementType.EMPTYCELL.createElementByPixel(pixelX, pixelY));
+                matrix.setElementAtIndex(matrixX, matrixY, ElementType.EMPTYCELL.createElementByMatrix(matrixX, matrixY));
                 return;
             }
         }
@@ -83,7 +83,7 @@ public abstract class MovableSolid extends Solid {
         checkLifeSpan(matrix);
         modifyColor();
         if (matrix.useChunks) {
-            if (isFreeFalling || isIgnited || formerLocation.x != matrixX || formerLocation.y != matrixY) {
+            if (isFreeFalling || isIgnited || !didNotMove(formerLocation)) {
                 matrix.reportToChunkActive(this);
             }
         }

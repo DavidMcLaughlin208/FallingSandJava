@@ -4,7 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.gdx.cellular.box2d.ShapeFactory;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.util.TextInputHandler;
@@ -111,14 +113,21 @@ public class InputManager {
 
     public boolean cycleMouseModes() {
         if (Gdx.input.isKeyJustPressed(Input.Keys.M)) {
-            if (this.mouseMode == MouseMode.SPAWN) {
-                this.mouseMode = MouseMode.HEAT;
-            } else if (this.mouseMode == MouseMode.HEAT) {
-                this.mouseMode = MouseMode.PARTICLE;
-            } else if (this.mouseMode == MouseMode.PARTICLE) {
-                this.mouseMode = MouseMode.PARTICALIZE;
-            } else if (this.mouseMode == MouseMode.PARTICALIZE) {
-                this.mouseMode = MouseMode.SPAWN;
+            switch (mouseMode) {
+                case SPAWN:
+                    this.mouseMode = MouseMode.HEAT;
+                    break;
+                case HEAT:
+                    this.mouseMode = MouseMode.PARTICLE;
+                    break;
+                case PARTICLE:
+                    this.mouseMode = MouseMode.PARTICALIZE;
+                    break;
+                case PARTICALIZE:
+                    this.mouseMode = MouseMode.CIRCLE;
+                    break;
+                case CIRCLE:
+                    this.mouseMode = MouseMode.SPAWN;
             }
             return true;
         }
@@ -144,36 +153,52 @@ public class InputManager {
         }
     }
 
-    public void spawnElementByInput(CellularMatrix matrix, OrthographicCamera camera, ElementType currentlySelectedElement, int brushSize) {
+    public void spawnElementByInput(CellularMatrix matrix, OrthographicCamera camera, ElementType currentlySelectedElement, int brushSize, World world) {
         if (Gdx.input.isTouched()) {
             Vector3 touchPos = new Vector3();
             touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touchPos);
-            if (mouseMode == MouseMode.SPAWN) {
-                if (touchedLastFrame) {
-                    matrix.spawnElementBetweenTwoPoints(lastTouchPos, touchPos, currentlySelectedElement, brushSize);
-                } else {
-                    matrix.spawnElementByPixelWithBrush((int) touchPos.x, (int) touchPos.y, currentlySelectedElement, brushSize);
-                }
-            } else if (mouseMode == MouseMode.HEAT) {
-                if (touchedLastFrame) {
-                    matrix.applyHeatBetweenTwoPoints(lastTouchPos, touchPos, brushSize);
-                } else {
-                    CellularMatrix.FunctionInput input = new CellularMatrix.FunctionInput(matrix.toMatrix(touchPos.x), matrix.toMatrix(touchPos.y), brushSize);
-                    matrix.applyHeatByBrush(input);
-                }
-            } else if (mouseMode == MouseMode.PARTICLE) {
-                if (touchedLastFrame) {
-                    matrix.spawnParticleBetweenTwoPoints(lastTouchPos, touchPos, currentlySelectedElement, brushSize);
-                } else {
-                    matrix.spawnParticleByPixelWithBrush((int) touchPos.x, (int) touchPos.y, currentlySelectedElement, brushSize);
-                }
-            } else if (mouseMode == MouseMode.PARTICALIZE) {
-                if (touchedLastFrame) {
-                    matrix.particalizeBetweenTwoPoints(lastTouchPos, touchPos, brushSize);
-                } else {
-                    matrix.particalizeByPixelWithBrush((int) touchPos.x, (int) touchPos.y, brushSize);
-                }
+            switch (mouseMode) {
+                case SPAWN:
+                    if (touchedLastFrame) {
+                        matrix.spawnElementBetweenTwoPoints(lastTouchPos, touchPos, currentlySelectedElement, brushSize);
+                    } else {
+                        matrix.spawnElementByPixelWithBrush((int) touchPos.x, (int) touchPos.y, currentlySelectedElement, brushSize);
+                    }
+                    break;
+                case HEAT:
+                    if (touchedLastFrame) {
+                        matrix.applyHeatBetweenTwoPoints(lastTouchPos, touchPos, brushSize);
+                    } else {
+                        CellularMatrix.FunctionInput input = new CellularMatrix.FunctionInput(matrix.toMatrix(touchPos.x), matrix.toMatrix(touchPos.y), brushSize);
+                        matrix.applyHeatByBrush(input);
+                    }
+                    break;
+                case PARTICLE:
+                    if (touchedLastFrame) {
+                        matrix.spawnParticleBetweenTwoPoints(lastTouchPos, touchPos, currentlySelectedElement, brushSize);
+                    } else {
+                        matrix.spawnParticleByPixelWithBrush((int) touchPos.x, (int) touchPos.y, currentlySelectedElement, brushSize);
+                    }
+                    break;
+                case PARTICALIZE:
+                    if (touchedLastFrame) {
+                        matrix.particalizeBetweenTwoPoints(lastTouchPos, touchPos, brushSize);
+                    } else {
+                        matrix.particalizeByPixelWithBrush((int) touchPos.x, (int) touchPos.y, brushSize);
+                    }
+                    break;
+                case CIRCLE:
+                    if (!touchedLastFrame) {
+                        switch (currentlySelectedElement) {
+                            case SAND:
+                                ShapeFactory.createDefaultDynamicBox((int) touchPos.x, (int) touchPos.y, brushSize / 2);
+                                break;
+                            case STONE:
+                                ShapeFactory.createDefaultDynamicCircle((int) touchPos.x, (int) touchPos.y, brushSize / 2);
+                        }
+                    }
+                    break;
             }
             lastTouchPos = touchPos;
             touchedLastFrame = true;

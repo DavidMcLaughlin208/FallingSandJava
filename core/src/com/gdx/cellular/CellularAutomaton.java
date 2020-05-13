@@ -8,22 +8,23 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
-import com.gdx.cellular.elements.Element;
+import com.gdx.cellular.box2d.ShapeFactory;
 import com.gdx.cellular.elements.ElementType;
-import com.gdx.cellular.spouts.Spout;
 
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 
 public class CellularAutomaton extends ApplicationAdapter {
 	public static int screenWidth = 1280; // 480;
 	public static int screenHeight = 800; //800;
 	public static int pixelSizeModifier = 2;
+	public static int box2dSizeModifier = 10;
     public static Vector3 gravity = new Vector3(0f, -5f, 0f);
     public static BitSet stepped = new BitSet(1);
 
@@ -45,6 +46,8 @@ public class CellularAutomaton extends ApplicationAdapter {
 	private FPSLogger fpsLogger;
 	public static int frameCount = 0;
 	public boolean useChunks = true;
+	public World b2dWorld;
+	public Box2DDebugRenderer debugRenderer;
 
 	@Override
 	public void create () {
@@ -65,6 +68,11 @@ public class CellularAutomaton extends ApplicationAdapter {
 		matrix.generateShuffledIndexesForThreads(numThreads);
 
 		inputManager = new InputManager();
+
+		b2dWorld = new World(new Vector2(0, -100), true);
+		ShapeFactory.initialize(b2dWorld);
+		debugRenderer = new Box2DDebugRenderer();
+		setUpBasicBodies();
 	}
 
 	@Override
@@ -79,6 +87,8 @@ public class CellularAutomaton extends ApplicationAdapter {
         if (useChunks) {
 			matrix.resetChunks();
 		}
+		Array<Body> bodies = new Array<>();
+		b2dWorld.getBodies(bodies);
 
         // Detect and act on input
         currentlySelectedElement = inputManager.getNewlySelectedElementWithDefault(currentlySelectedElement);
@@ -89,7 +99,7 @@ public class CellularAutomaton extends ApplicationAdapter {
         inputManager.cycleMouseModes();
 		inputManager.clearMatrixIfInput(matrix);
 		inputManager.placeSpout(matrix, camera, currentlySelectedElement, brushSize);
-		inputManager.spawnElementByInput(matrix, camera, currentlySelectedElement, brushSize);
+		inputManager.spawnElementByInput(matrix, camera, currentlySelectedElement, brushSize, b2dWorld);
 		inputManager.save(matrix);
 		inputManager.load(matrix);
 
@@ -127,10 +137,33 @@ public class CellularAutomaton extends ApplicationAdapter {
 			matrix.drawAll(shapeRenderer);
 		}
 
+		debugRenderer.render(b2dWorld, camera.combined);
+		matrix.drawBox2d(bodies, shapeRenderer);
+		b2dWorld.step(1/60f, 20, 10);
+
+
 	}
 
 	private void incrementFrameCount() {
 		frameCount = frameCount == 3 ? 0 : frameCount + 1;
+	}
+
+	private void setUpBasicBodies() {
+		BodyDef groundBodyDef = new BodyDef();
+
+		groundBodyDef.position.set(new Vector2(camera.viewportWidth/2/box2dSizeModifier, 10));
+
+
+		Body groundBody = b2dWorld.createBody(groundBodyDef);
+
+
+		PolygonShape groundBox = new PolygonShape();
+
+		groundBox.setAsBox(camera.viewportWidth/3/box2dSizeModifier, 5.0f);
+
+		groundBody.createFixture(groundBox, 0.0f);
+
+		groundBox.dispose();
 	}
 
 	private void startAndWaitOnEvenThreads(List<Thread> threads) {

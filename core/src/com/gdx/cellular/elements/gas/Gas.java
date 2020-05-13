@@ -91,6 +91,11 @@ public abstract class Gas extends Element {
         spawnSparkIfIgnited(matrix);
         checkLifeSpan(matrix);
         takeEffectsDamage(matrix);
+        if (matrix.useChunks) {
+            if (isIgnited) {
+                matrix.reportToChunkActive(this);
+            }
+        }
     }
 
     @Override

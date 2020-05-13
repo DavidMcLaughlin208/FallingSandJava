@@ -4,5 +4,6 @@ public enum MouseMode {
     SPAWN,
     HEAT,
     PARTICLE,
-    PARTICALIZE;
+    PARTICALIZE,
+    CIRCLE
 }
