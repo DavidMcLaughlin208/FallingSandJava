@@ -5,5 +5,6 @@ public enum MouseMode {
     HEAT,
     PARTICLE,
     PARTICALIZE,
-    CIRCLE
+    PHYSICSOBJ,
+    RECTANGLE
 }

@@ -3,6 +3,7 @@ package com.gdx.cellular;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
@@ -24,6 +25,8 @@ public class InputManager {
     private final int minBrushSize = 3;
     private final int brushIncrements = 2;
     private MouseMode mouseMode = MouseMode.SPAWN;
+
+    private Vector3 mouseDownPos = new Vector3();
 
     private final int maxThreads = 50;
 
@@ -124,9 +127,12 @@ public class InputManager {
                     this.mouseMode = MouseMode.PARTICALIZE;
                     break;
                 case PARTICALIZE:
-                    this.mouseMode = MouseMode.CIRCLE;
+                    this.mouseMode = MouseMode.PHYSICSOBJ;
                     break;
-                case CIRCLE:
+                case PHYSICSOBJ:
+                    this.mouseMode = MouseMode.RECTANGLE;
+                    break;
+                case RECTANGLE:
                     this.mouseMode = MouseMode.SPAWN;
             }
             return true;
@@ -158,6 +164,9 @@ public class InputManager {
             Vector3 touchPos = new Vector3();
             touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touchPos);
+            if (!touchedLastFrame) {
+                mouseDownPos = touchPos.cpy();
+            }
             switch (mouseMode) {
                 case SPAWN:
                     if (touchedLastFrame) {
@@ -188,7 +197,7 @@ public class InputManager {
                         matrix.particalizeByPixelWithBrush((int) touchPos.x, (int) touchPos.y, brushSize);
                     }
                     break;
-                case CIRCLE:
+                case PHYSICSOBJ:
                     if (!touchedLastFrame) {
                         switch (currentlySelectedElement) {
                             case SAND:
@@ -203,6 +212,10 @@ public class InputManager {
             lastTouchPos = touchPos;
             touchedLastFrame = true;
         } else {
+            boolean notTheSameLocation = lastTouchPos.x != mouseDownPos.x || lastTouchPos.y != mouseDownPos.y;
+            if (touchedLastFrame && mouseMode == MouseMode.RECTANGLE && notTheSameLocation) {
+                matrix.spawnRect(mouseDownPos, lastTouchPos, currentlySelectedElement);
+            }
             touchedLastFrame = false;
         }
     }

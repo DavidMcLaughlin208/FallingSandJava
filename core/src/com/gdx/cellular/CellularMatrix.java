@@ -9,7 +9,9 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.utils.Array;
+import com.gdx.cellular.box2d.ShapeFactory;
 import com.gdx.cellular.elements.ColorConstants;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
@@ -611,6 +613,49 @@ public class CellularMatrix {
                 chunk.shiftShouldStepAndReset();
             }
         }
+    }
+
+    public void spawnRect(Vector3 mouseDownPos, Vector3 mouseUpPos, ElementType currentlySelectedElement) {
+        int mod = CellularAutomaton.box2dSizeModifier;
+        int matrixMouseDownX = toMatrix(mouseDownPos.x);
+        int matrixMouseDownY = toMatrix(mouseDownPos.y);
+        int matrixMouseUpX = toMatrix(mouseUpPos.x);
+        int matrixMouseUpY = toMatrix(mouseUpPos.y);
+        Vector3 boxCenter = new Vector3((matrixMouseDownX + matrixMouseUpX) / 2, (matrixMouseDownY + matrixMouseUpY) / 2, 0);
+        List<Vector2> vertices = getRectVertices(matrixMouseDownX, matrixMouseUpX, matrixMouseDownY, matrixMouseUpY);
+
+        Body body = ShapeFactory.createStaticRect(boxCenter, vertices);
+        PolygonShape shape = (PolygonShape) body.getFixtureList().get(0).getShape();
+        Vector2 point = new Vector2();
+        int minX = innerArraySize;
+        int maxX = 0;
+        int minY = innerArraySize;
+        int maxY = 0;
+        for (int i = 0; i < shape.getVertexCount(); i++) {
+            shape.getVertex(i, point);
+            Vector2 worldPoint = body.getWorldPoint(point);
+            minX = Math.min(toMatrix(worldPoint.x * mod), minX);
+            maxX = Math.max(toMatrix(worldPoint.x * mod), maxX);
+            minY = Math.min(toMatrix(worldPoint.y * mod), minY);
+            maxY = Math.max(toMatrix(worldPoint.y * mod), maxY);
+
+        }
+        int xDistance = maxX - minX;
+        int yDistance = maxY - minY;
+        for (int x = minX; x < minX + xDistance; x++) {
+            for (int y = minY; y < minY + yDistance; y++) {
+                spawnElementByMatrix(x, y, currentlySelectedElement);
+            }
+        }
+    }
+
+    private List<Vector2> getRectVertices(int minX, int maxX, int minY, int maxY) {
+        List<Vector2> verts = new ArrayList<>();
+        verts.add(new Vector2(minX, minY));
+        verts.add(new Vector2(minX, maxY));
+        verts.add(new Vector2(maxX, maxY));
+        verts.add(new Vector2(maxX, minY));
+        return verts;
     }
 
     public static class FunctionInput {

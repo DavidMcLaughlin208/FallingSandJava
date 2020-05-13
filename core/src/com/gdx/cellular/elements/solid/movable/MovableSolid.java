@@ -23,6 +23,9 @@ public abstract class MovableSolid extends Solid {
 //        sr.rect(pixelX, pixelY, CellularAutomaton.pixelSizeModifier, CellularAutomaton.pixelSizeModifier);
 //    }
 
+    public int stoppedMovingCount;
+    public int stoppedMovingThreshold = 2;
+
     public void step(CellularMatrix matrix) {
         if (stepped.get(0) == CellularAutomaton.stepped.get(0)) return;
         stepped.flip(0);
@@ -82,6 +85,10 @@ public abstract class MovableSolid extends Solid {
         spawnSparkIfIgnited(matrix);
         checkLifeSpan(matrix);
         modifyColor();
+        stoppedMovingCount = didNotMove(formerLocation) ? stoppedMovingCount + 1 : 0;
+        if (stoppedMovingCount > stoppedMovingThreshold) {
+            stoppedMovingCount = stoppedMovingThreshold;
+        }
         if (matrix.useChunks) {
             if (isFreeFalling || isIgnited || !didNotMove(formerLocation)) {
                 matrix.reportToChunkActive(this);
