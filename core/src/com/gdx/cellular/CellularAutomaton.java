@@ -2,6 +2,7 @@ package com.gdx.cellular;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -14,6 +15,7 @@ import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.gdx.cellular.box2d.ShapeFactory;
 import com.gdx.cellular.elements.ElementType;
+import com.gdx.cellular.input.InputProcessors;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -36,8 +38,6 @@ public class CellularAutomaton extends ApplicationAdapter {
 
     private ElementType currentlySelectedElement = ElementType.SAND;
 
-    private int brushSize = 5;
-
     private int numThreads = 12;
     private boolean useMultiThreading = true;
 
@@ -48,6 +48,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 	public boolean useChunks = true;
 	public World b2dWorld;
 	public Box2DDebugRenderer debugRenderer;
+	public InputProcessors inputProcessors;
 
 	@Override
 	public void create () {
@@ -72,6 +73,8 @@ public class CellularAutomaton extends ApplicationAdapter {
 		b2dWorld = new World(new Vector2(0, -100), true);
 		ShapeFactory.initialize(b2dWorld);
 		debugRenderer = new Box2DDebugRenderer();
+
+		inputProcessors = new InputProcessors(inputManager);
 //		setUpBasicBodies();
 	}
 
@@ -92,14 +95,14 @@ public class CellularAutomaton extends ApplicationAdapter {
 
         // Detect and act on input
         currentlySelectedElement = inputManager.getNewlySelectedElementWithDefault(currentlySelectedElement);
-        brushSize = inputManager.calculateNewBrushSize(brushSize);
         numThreads = inputManager.adjustThreadCount(numThreads);
         useMultiThreading = inputManager.toggleThreads(useMultiThreading);
         useChunks = inputManager.toggleChunks(useChunks);
         inputManager.cycleMouseModes();
 		inputManager.clearMatrixIfInput(matrix);
-		inputManager.placeSpout(matrix, camera, currentlySelectedElement, brushSize);
-		inputManager.spawnElementByInput(matrix, camera, currentlySelectedElement, brushSize, b2dWorld);
+		inputManager.placeSpout(matrix, camera, currentlySelectedElement);
+		inputManager.spawnElementByInput(matrix, camera, currentlySelectedElement, b2dWorld);
+		inputManager.openMenu();
 		inputManager.save(matrix);
 		inputManager.load(matrix);
 

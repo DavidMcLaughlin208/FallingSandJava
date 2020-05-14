@@ -2,14 +2,26 @@ package com.gdx.cellular;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.gdx.cellular.box2d.ShapeFactory;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
+import com.gdx.cellular.input.CreatorInputProcessor;
+import com.gdx.cellular.input.MenuInputProcessor;
 import com.gdx.cellular.util.TextInputHandler;
 
 import java.io.IOException;
@@ -30,6 +42,8 @@ public class InputManager {
 
     private final int maxThreads = 50;
 
+    private int brushSize = 5;
+
     private Vector3 lastTouchPos = new Vector3();
     private boolean touchedLastFrame = false;
 
@@ -40,6 +54,7 @@ public class InputManager {
     private String fileNameForLevel;
     private boolean readyToSave = false;
     private boolean readyToLoad = false;
+    private boolean showDropDown = false;
 
     public ElementType getNewlySelectedElementWithDefault(ElementType defaultElement) {
         ElementType elementType = defaultElement;
@@ -78,14 +93,10 @@ public class InputManager {
         return elementType;
     }
 
-    public int calculateNewBrushSize(int currentSize) {
-        int newSize = currentSize;
-        if (Gdx.input.isKeyJustPressed(Input.Keys.EQUALS)) {
-            newSize = Math.min(maxBrushSize, newSize + brushIncrements);
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.MINUS)) {
-            newSize = Math.max(minBrushSize, newSize - brushIncrements);
-        }
-        return newSize;
+    public void calculateNewBrushSize(int delta) {
+        brushSize += delta;
+        if (brushSize > maxBrushSize) brushSize = maxBrushSize;
+        if (brushSize < minBrushSize) brushSize = minBrushSize;
     }
 
     public int adjustThreadCount(int numThreads) {
@@ -146,7 +157,7 @@ public class InputManager {
         }
     }
 
-    public void placeSpout(CellularMatrix matrix, OrthographicCamera camera, ElementType currentlySelectedElement, int brushSize) {
+    public void placeSpout(CellularMatrix matrix, OrthographicCamera camera, ElementType currentlySelectedElement) {
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
             Vector3 touchPos = new Vector3();
             touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
@@ -159,8 +170,8 @@ public class InputManager {
         }
     }
 
-    public void spawnElementByInput(CellularMatrix matrix, OrthographicCamera camera, ElementType currentlySelectedElement, int brushSize, World world) {
-        if (Gdx.input.isTouched()) {
+    public void spawnElementByInput(CellularMatrix matrix, OrthographicCamera camera, ElementType currentlySelectedElement, World world) {
+        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
             Vector3 touchPos = new Vector3();
             touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touchPos);
@@ -218,6 +229,10 @@ public class InputManager {
             }
             touchedLastFrame = false;
         }
+    }
+
+    public void openMenu() {
+
     }
 
 
