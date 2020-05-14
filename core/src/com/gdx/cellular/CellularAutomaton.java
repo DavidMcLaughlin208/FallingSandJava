@@ -12,7 +12,13 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import com.gdx.cellular.box2d.ShapeFactory;
 import com.gdx.cellular.input.InputProcessors;
 
@@ -29,9 +35,9 @@ public class CellularAutomaton extends ApplicationAdapter {
     public static Vector3 gravity = new Vector3(0f, -5f, 0f);
     public static BitSet stepped = new BitSet(1);
 
-    private SpriteBatch batch;
+//    private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
-    private Pixmap pixmap;
+//    private Pixmap pixmap;
     private CellularMatrix matrix;
     private OrthographicCamera camera;
 
@@ -46,11 +52,12 @@ public class CellularAutomaton extends ApplicationAdapter {
 	public World b2dWorld;
 	public Box2DDebugRenderer debugRenderer;
 	public InputProcessors inputProcessors;
+	public Stage matrixStage;
 
 	@Override
 	public void create () {
 		fpsLogger = new FPSLogger();
-		batch = new SpriteBatch();
+//		batch = new SpriteBatch();
 
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, screenWidth, screenHeight);
@@ -59,13 +66,18 @@ public class CellularAutomaton extends ApplicationAdapter {
 		shapeRenderer.setProjectionMatrix(camera.combined);
 		shapeRenderer.setAutoShapeType(true);
 
-		pixmap = new Pixmap(0,0, Pixmap.Format.fromGdx2DPixmapFormat(1));
+//		pixmap = new Pixmap(0,0, Pixmap.Format.fromGdx2DPixmapFormat(1));
 
         stepped.set(0, true);
+
+		Viewport viewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera);
+		inputManager = new InputManager(viewport);
+
 		matrix = new CellularMatrix(screenWidth, screenHeight, pixelSizeModifier);
 		matrix.generateShuffledIndexesForThreads(numThreads);
 
-		inputManager = new InputManager();
+		matrixStage = new Stage(viewport);
+		matrixStage.addActor(new MatrixActor(shapeRenderer, matrix));
 
 		b2dWorld = new World(new Vector2(0, -100), true);
 		ShapeFactory.initialize(b2dWorld);
@@ -127,14 +139,14 @@ public class CellularAutomaton extends ApplicationAdapter {
 				startAndWaitOnEvenThreads(threads);
 				startAndWaitOnOddThreads(threads);
 			}
+//			matrix.drawAll(shapeRenderer);
+			matrixStage.draw();
 
-			matrix.drawAll(shapeRenderer);
 		}
 
 		debugRenderer.render(b2dWorld, camera.combined);
 		matrix.drawBox2d(bodies, shapeRenderer);
 		b2dWorld.step(1/60f, 20, 10);
-
 		inputManager.drawMenu();
 	}
 
@@ -196,7 +208,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 
     @Override
 	public void dispose () {
-		batch.dispose();
+//		batch.dispose();
 		shapeRenderer.dispose();
 	}
 

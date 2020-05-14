@@ -64,8 +64,8 @@ public class InputManager {
 
     private InputProcessor creatorInputProcessor;
 
-    public InputManager() {
-        createDropdownStage();
+    public InputManager(Viewport viewport) {
+        createDropdownStage(viewport);
     }
 
     public void setCurrentlySelectedElement(ElementType elementType) {
@@ -344,6 +344,7 @@ public class InputManager {
 
     public void drawMenu() {
         if (drawMenu) {
+            dropDownStage.act();
             dropDownStage.draw();
         }
     }
@@ -354,12 +355,11 @@ public class InputManager {
         Gdx.input.setInputProcessor(dropDownStage);
     }
 
-    private void createDropdownStage() {
-        Viewport viewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        Stage stage = new Stage();
+    private void createDropdownStage(Viewport viewport) {
+        Stage stage = new Stage(viewport);
         Skin skin = createSkin("uiskin");
 
-        List<Button> elementButtons = Arrays.stream(ElementType.values()).map(elementType -> createElementButton(skin, elementType, stage)).collect(Collectors.toList());
+        List<Button> elementButtons = Arrays.stream(ElementType.values()).map(elementType -> createElementButton(skin, elementType)).collect(Collectors.toList());
 
         dropDownTopLevelTable = new Table();
         elementButtons.forEach(button -> {
@@ -373,14 +373,13 @@ public class InputManager {
         dropDownStage = stage;
     }
 
-    private Button createElementButton(Skin skin, ElementType elementType, Stage stage) {
+    private Button createElementButton(Skin skin, ElementType elementType) {
         Button button = new TextButton(elementType.toString(), skin);
         button.addListener(new InputListener(){
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
                 drawMenu = false;
                 Gdx.input.setInputProcessor(creatorInputProcessor);
-                stage.dispose();
             }
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
