@@ -1,7 +1,8 @@
 package com.gdx.cellular.elements.liquid;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
+import com.gdx.cellular.CellularMatrix;
+import com.gdx.cellular.elements.Element;
 
 public class Blood extends Liquid{
 
@@ -13,9 +14,26 @@ public class Blood extends Liquid{
         frictionFactor = 1f;
         density = 6;
         dispersionRate = 5;
-        color = Color.RED;
-        defaultColor = Color.RED;
         coolingFactor = 5;
+    }
+
+    @Override
+    public boolean receiveHeat(int heat) {
+        return false;
+    }
+
+    @Override
+    public boolean actOnOther(Element other, CellularMatrix matrix) {
+        if (other.shouldApplyHeat()) {
+            other.receiveCooling(matrix, coolingFactor);
+            coolingFactor--;
+            if (coolingFactor <= 0) {
+                die(matrix);
+                return true;
+            }
+            return false;
+        }
+        return false;
     }
 
 }

@@ -2,14 +2,23 @@ package com.gdx.cellular.input;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.scenes.scene2d.ui.Cell;
+import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.InputManager;
+import com.gdx.cellular.elements.ElementType;
 
 public class CreatorInputProcessor implements InputProcessor {
 
     private final InputManager inputManager;
+    private final OrthographicCamera camera;
+    private final CellularMatrix matrix;
 
-    public CreatorInputProcessor(InputManager inputManager) {
+    public CreatorInputProcessor(InputManager inputManager, OrthographicCamera camera, CellularMatrix matrix) {
         this.inputManager = inputManager;
+        this.camera = camera;
+        this.matrix = matrix;
     }
 
     @Override
@@ -19,6 +28,19 @@ public class CreatorInputProcessor implements InputProcessor {
         }
         if (keycode == Input.Keys.MINUS) {
             inputManager.calculateNewBrushSize(-2);
+        }
+        ElementType elementType = InputElement.getElementForKeycode(keycode);
+        if (elementType != null) {
+            inputManager.setCurrentlySelectedElement(elementType);
+        }
+        if (keycode == Input.Keys.SPACE) {
+            inputManager.placeSpout(matrix, camera);
+        }
+        if (keycode == Input.Keys.C) {
+            inputManager.clearMatrix(matrix);
+        }
+        if (keycode == Input.Keys.P) {
+            inputManager.togglePause();
         }
         return false;
     }

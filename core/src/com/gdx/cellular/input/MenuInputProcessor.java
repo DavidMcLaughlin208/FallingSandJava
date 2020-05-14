@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Camera;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -12,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.InputManager;
 
 public class MenuInputProcessor implements InputProcessor {
@@ -21,10 +23,17 @@ public class MenuInputProcessor implements InputProcessor {
 
     private boolean showMenu = false;
 
+    private final InputManager inputManager;
+    private final OrthographicCamera camera;
+    private final CellularMatrix matrix;
 
-    public MenuInputProcessor(InputManager inputManager) {
+
+    public MenuInputProcessor(InputManager inputManager, OrthographicCamera camera, CellularMatrix matrix) {
         super();
         createDropdownStage();
+        this.inputManager = inputManager;
+        this.camera = camera;
+        this.matrix = matrix;
     }
 
     private void createDropdownStage() {

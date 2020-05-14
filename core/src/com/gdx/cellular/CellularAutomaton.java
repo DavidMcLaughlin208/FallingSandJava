@@ -36,8 +36,6 @@ public class CellularAutomaton extends ApplicationAdapter {
     private CellularMatrix matrix;
     private OrthographicCamera camera;
 
-    private ElementType currentlySelectedElement = ElementType.SAND;
-
     private int numThreads = 12;
     private boolean useMultiThreading = true;
 
@@ -74,7 +72,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 		ShapeFactory.initialize(b2dWorld);
 		debugRenderer = new Box2DDebugRenderer();
 
-		inputProcessors = new InputProcessors(inputManager);
+		inputProcessors = new InputProcessors(inputManager, matrix, camera);
 //		setUpBasicBodies();
 	}
 
@@ -94,14 +92,11 @@ public class CellularAutomaton extends ApplicationAdapter {
 		b2dWorld.getBodies(bodies);
 
         // Detect and act on input
-        currentlySelectedElement = inputManager.getNewlySelectedElementWithDefault(currentlySelectedElement);
         numThreads = inputManager.adjustThreadCount(numThreads);
         useMultiThreading = inputManager.toggleThreads(useMultiThreading);
         useChunks = inputManager.toggleChunks(useChunks);
         inputManager.cycleMouseModes();
-		inputManager.clearMatrixIfInput(matrix);
-		inputManager.placeSpout(matrix, camera, currentlySelectedElement);
-		inputManager.spawnElementByInput(matrix, camera, currentlySelectedElement, b2dWorld);
+		inputManager.spawnElementByInput(matrix, camera, b2dWorld);
 		inputManager.openMenu();
 		inputManager.save(matrix);
 		inputManager.load(matrix);

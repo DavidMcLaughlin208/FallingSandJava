@@ -47,6 +47,8 @@ public class InputManager {
     private Vector3 lastTouchPos = new Vector3();
     private boolean touchedLastFrame = false;
 
+    private ElementType currentlySelectedElement = ElementType.SAND;
+
     private boolean paused = false;
     private final TextInputHandler saveLevelNameListener = new TextInputHandler(this, this::setFileNameForSave);
     private final TextInputHandler loadLevelNameListener = new TextInputHandler(this, this::setFileNameForLoad);
@@ -56,41 +58,8 @@ public class InputManager {
     private boolean readyToLoad = false;
     private boolean showDropDown = false;
 
-    public ElementType getNewlySelectedElementWithDefault(ElementType defaultElement) {
-        ElementType elementType = defaultElement;
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
-            elementType = ElementType.STONE;
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
-            elementType = ElementType.SAND;
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
-            elementType = ElementType.DIRT;
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)) {
-            elementType = ElementType.WATER;
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_5)) {
-            elementType = ElementType.OIL;
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_6)) {
-            elementType = ElementType.ACID;
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_7)) {
-            elementType = ElementType.WOOD;
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_8)) {
-            elementType = ElementType.TITANIUM;
-        }  else if (Gdx.input.isKeyJustPressed(Input.Keys.NUM_9)) {
-            elementType = ElementType.EMPTYCELL;
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.F)) {
-            elementType = ElementType.SPARK;
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.E)) {
-            elementType = ElementType.EMBER;
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
-            elementType = ElementType.LAVA;
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.O)) {
-            elementType = ElementType.COAL;
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.G)) {
-            elementType = ElementType.FLAMMABLEGAS;
-        } else if (Gdx.input.isKeyJustPressed(Input.Keys.B)) {
-            elementType = ElementType.BLOOD;
-        }
-        return elementType;
+    public void setCurrentlySelectedElement(ElementType elementType) {
+        this.currentlySelectedElement = elementType;
     }
 
     public void calculateNewBrushSize(int delta) {
@@ -151,26 +120,22 @@ public class InputManager {
         return false;
     }
 
-    public void clearMatrixIfInput(CellularMatrix matrix) {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.C)) {
-            matrix.clearAll();
+    public void clearMatrix(CellularMatrix matrix) {
+        matrix.clearAll();
+    }
+
+    public void placeSpout(CellularMatrix matrix, OrthographicCamera camera) {
+        Vector3 touchPos = new Vector3();
+        touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+        camera.unproject(touchPos);
+        if (mouseMode == MouseMode.SPAWN) {
+            matrix.addSpout(currentlySelectedElement, touchPos, brushSize, false);
+        } else if (mouseMode == MouseMode.PARTICLE) {
+            matrix.addSpout(currentlySelectedElement, touchPos, brushSize, true);
         }
     }
 
-    public void placeSpout(CellularMatrix matrix, OrthographicCamera camera, ElementType currentlySelectedElement) {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-            Vector3 touchPos = new Vector3();
-            touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
-            camera.unproject(touchPos);
-            if (mouseMode == MouseMode.SPAWN) {
-                matrix.addSpout(currentlySelectedElement, touchPos, brushSize, false);
-            } else if (mouseMode == MouseMode.PARTICLE) {
-                matrix.addSpout(currentlySelectedElement, touchPos, brushSize, true);
-            }
-        }
-    }
-
-    public void spawnElementByInput(CellularMatrix matrix, OrthographicCamera camera, ElementType currentlySelectedElement, World world) {
+    public void spawnElementByInput(CellularMatrix matrix, OrthographicCamera camera, World world) {
         if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
             Vector3 touchPos = new Vector3();
             touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
@@ -241,14 +206,15 @@ public class InputManager {
         if (Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
             stepOneFrame = true;
         }
-        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
-            paused = !paused;
-        }
         return paused && !stepOneFrame;
     }
 
     public void setIsPaused(boolean isPaused) {
         this.paused = isPaused;
+    }
+
+    public void togglePause() {
+        paused = !paused;
     }
 
     public void save(CellularMatrix matrix) {
