@@ -117,7 +117,7 @@ public class CellularMatrix {
 
     public void drawAll(ShapeRenderer sr) {
         drawElements(sr);
-//        drawChunks(sr);
+        drawChunks(sr);
     }
 
     private void drawElements(ShapeRenderer sr) {

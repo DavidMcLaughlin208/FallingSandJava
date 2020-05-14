@@ -22,6 +22,8 @@ public abstract class Element {
     public float frictionFactor;
     public boolean isFreeFalling = true;
     public float inertialResistance;
+    public int stoppedMovingCount = 0;
+    public int stoppedMovingThreshold = 1;
     public int mass;
     public int health = 500;
     public int flammabilityResistance = 100;
@@ -221,6 +223,10 @@ public abstract class Element {
 
     public boolean didNotMove(Vector3 formerLocation) {
         return formerLocation.x == matrixX && formerLocation.y == matrixY;
+    }
+
+    public boolean hasNotMovedBeyondThreshold() {
+        return stoppedMovingCount >= stoppedMovingThreshold;
     }
 
     public void takeEffectsDamage(CellularMatrix matrix) {

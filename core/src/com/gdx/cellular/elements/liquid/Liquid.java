@@ -16,11 +16,10 @@ public abstract class Liquid extends Element {
 
     public int density;
     public int dispersionRate;
-    public int stoppedMovingCount;
-    public int stoppedMovingThreshold = 5;
 
     public Liquid(int x, int y, boolean isPixel) {
         super(x, y, isPixel);
+        stoppedMovingThreshold = 5;
     }
 
 //    public void draw(ShapeRenderer sr) {
@@ -98,10 +97,6 @@ public abstract class Liquid extends Element {
                 matrix.reportToChunkActive(this);
             }
         }
-    }
-
-    private boolean hasNotMovedBeyondThreshold() {
-        return stoppedMovingCount >= stoppedMovingThreshold;
     }
 
     @Override

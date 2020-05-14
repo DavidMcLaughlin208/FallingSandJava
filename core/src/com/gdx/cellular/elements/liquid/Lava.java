@@ -1,8 +1,8 @@
 package com.gdx.cellular.elements.liquid;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularMatrix;
+import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
 
 public class Lava extends Liquid {
@@ -28,6 +28,15 @@ public class Lava extends Liquid {
     public void checkIfDead(CellularMatrix matrix) {
         if (this.temperature <= 0) {
             dieAndReplace(matrix, ElementType.STONE);
+            for (int x = -1; x <= 1; x++) {
+                for (int y = -1; y <= 1; y++) {
+                    if (x == 0 && y == 0) continue;
+                    Element element = matrix.get(this.matrixX + x, this.matrixY + y);
+                    if (element instanceof Liquid) {
+                        element.dieAndReplace(matrix, ElementType.STONE);
+                    }
+                }
+            }
         }
         if (this.health <= 0) {
             die(matrix);

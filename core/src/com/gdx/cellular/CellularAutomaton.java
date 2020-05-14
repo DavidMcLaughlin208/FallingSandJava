@@ -72,7 +72,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 		b2dWorld = new World(new Vector2(0, -100), true);
 		ShapeFactory.initialize(b2dWorld);
 		debugRenderer = new Box2DDebugRenderer();
-		setUpBasicBodies();
+//		setUpBasicBodies();
 	}
 
 	@Override

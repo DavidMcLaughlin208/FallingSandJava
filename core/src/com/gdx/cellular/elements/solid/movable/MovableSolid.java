@@ -16,15 +16,13 @@ public abstract class MovableSolid extends Solid {
 
     public MovableSolid(int x, int y, boolean isPixel) {
         super(x, y, isPixel);
+        stoppedMovingThreshold = 5;
     }
 
 //    public void draw(ShapeRenderer sr) {
 //        sr.setColor(color);
 //        sr.rect(pixelX, pixelY, CellularAutomaton.pixelSizeModifier, CellularAutomaton.pixelSizeModifier);
 //    }
-
-    public int stoppedMovingCount;
-    public int stoppedMovingThreshold = 2;
 
     public void step(CellularMatrix matrix) {
         if (stepped.get(0) == CellularAutomaton.stepped.get(0)) return;
@@ -85,12 +83,12 @@ public abstract class MovableSolid extends Solid {
         spawnSparkIfIgnited(matrix);
         checkLifeSpan(matrix);
         modifyColor();
-        stoppedMovingCount = didNotMove(formerLocation) ? stoppedMovingCount + 1 : 0;
+        stoppedMovingCount = didNotMove(formerLocation) && !isIgnited ? stoppedMovingCount + 1 : 0;
         if (stoppedMovingCount > stoppedMovingThreshold) {
             stoppedMovingCount = stoppedMovingThreshold;
         }
         if (matrix.useChunks) {
-            if (isFreeFalling || isIgnited || !didNotMove(formerLocation)) {
+            if (isFreeFalling || isIgnited || !hasNotMovedBeyondThreshold()) {
                 matrix.reportToChunkActive(this);
             }
         }
