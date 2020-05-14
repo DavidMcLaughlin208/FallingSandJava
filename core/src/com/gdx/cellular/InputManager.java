@@ -1,5 +1,6 @@
 package com.gdx.cellular;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
@@ -10,18 +11,16 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.*;
 import com.gdx.cellular.box2d.ShapeFactory;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
-import com.gdx.cellular.input.CreatorInputProcessor;
-import com.gdx.cellular.input.MenuInputProcessor;
+import com.gdx.cellular.input.InputProcessors;
 import com.gdx.cellular.util.TextInputHandler;
 
 import java.io.IOException;
@@ -30,12 +29,14 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class InputManager {
 
     private final int maxBrushSize = 55;
     private final int minBrushSize = 3;
-    private final int brushIncrements = 2;
     private MouseMode mouseMode = MouseMode.SPAWN;
 
     private Vector3 mouseDownPos = new Vector3();
@@ -56,7 +57,16 @@ public class InputManager {
     private String fileNameForLevel;
     private boolean readyToSave = false;
     private boolean readyToLoad = false;
-    private boolean showDropDown = false;
+    public boolean drawMenu = false;
+
+    public Stage dropDownStage;
+    private Table dropDownTopLevelTable;
+
+    private InputProcessor creatorInputProcessor;
+
+    public InputManager() {
+        createDropdownStage();
+    }
 
     public void setCurrentlySelectedElement(ElementType elementType) {
         this.currentlySelectedElement = elementType;
@@ -64,6 +74,10 @@ public class InputManager {
 
     public MouseMode getMouseMode() {
         return this.mouseMode;
+    }
+
+    public void setCreatorInputProcessor(InputProcessor creatorInputProcessor) {
+        this.creatorInputProcessor = creatorInputProcessor;
     }
 
     public void calculateNewBrushSize(int delta) {
@@ -326,5 +340,61 @@ public class InputManager {
     }
 
     public void drawRect() {
+    }
+
+    public void drawMenu() {
+        if (drawMenu) {
+            dropDownStage.draw();
+        }
+    }
+
+    public void setDrawMenuAndLocation(float x, float y) {
+        this.drawMenu = true;
+        this.dropDownTopLevelTable.setPosition(x, y);
+        Gdx.input.setInputProcessor(dropDownStage);
+    }
+
+    private void createDropdownStage() {
+        Viewport viewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        Stage stage = new Stage();
+        Skin skin = createSkin("uiskin");
+
+        List<Button> elementButtons = Arrays.stream(ElementType.values()).map(elementType -> createElementButton(skin, elementType, stage)).collect(Collectors.toList());
+
+        dropDownTopLevelTable = new Table();
+        elementButtons.forEach(button -> {
+            dropDownTopLevelTable.add(button);
+            dropDownTopLevelTable.row();
+        });
+        dropDownTopLevelTable.debug();
+
+        stage.addActor(dropDownTopLevelTable);
+
+        dropDownStage = stage;
+    }
+
+    private Button createElementButton(Skin skin, ElementType elementType, Stage stage) {
+        Button button = new TextButton(elementType.toString(), skin);
+        button.addListener(new InputListener(){
+            @Override
+            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                drawMenu = false;
+                Gdx.input.setInputProcessor(creatorInputProcessor);
+                stage.dispose();
+            }
+            @Override
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                currentlySelectedElement = elementType;
+                return true;
+            }
+        });
+        return button;
+    }
+
+    private Skin createSkin(String name) {
+        FileHandle atlasFileHandler = new FileHandle(String.valueOf(Gdx.files.getFileHandle(name + ".atlas", com.badlogic.gdx.Files.FileType.Internal)));
+        FileHandle skinFileHandler = new FileHandle(String.valueOf(Gdx.files.getFileHandle(name + ".json", com.badlogic.gdx.Files.FileType.Internal)));
+        FileHandle imagesFileHandler = new FileHandle(String.valueOf(Gdx.files.getFileHandle("", com.badlogic.gdx.Files.FileType.Internal)));
+        return new Skin(skinFileHandler, new TextureAtlas(atlasFileHandler, imagesFileHandler));
     }
 }

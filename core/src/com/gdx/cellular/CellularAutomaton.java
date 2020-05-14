@@ -14,7 +14,6 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.gdx.cellular.box2d.ShapeFactory;
-import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.input.InputProcessors;
 
 import java.util.ArrayList;
@@ -95,7 +94,6 @@ public class CellularAutomaton extends ApplicationAdapter {
         numThreads = inputManager.adjustThreadCount(numThreads);
         useMultiThreading = inputManager.toggleThreads(useMultiThreading);
         useChunks = inputManager.toggleChunks(useChunks);
-		inputManager.openMenu();
 		inputManager.save(matrix);
 		inputManager.load(matrix);
 
@@ -137,7 +135,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 		matrix.drawBox2d(bodies, shapeRenderer);
 		b2dWorld.step(1/60f, 20, 10);
 
-
+		inputManager.drawMenu();
 	}
 
 	private void incrementFrameCount() {

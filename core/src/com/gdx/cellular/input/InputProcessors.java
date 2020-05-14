@@ -14,8 +14,9 @@ public class InputProcessors {
 
     public InputProcessors(InputManager inputManager, CellularMatrix matrix, OrthographicCamera camera) {
         this.inputManager = inputManager;
-        this.menuInputProcessor = new MenuInputProcessor(inputManager, camera, matrix);
-        this.creatorInputProcessor = new CreatorInputProcessor(inputManager, camera, matrix);
+        this.menuInputProcessor = new MenuInputProcessor(this, inputManager, camera, matrix);
+        this.creatorInputProcessor = new CreatorInputProcessor(this, inputManager, camera, matrix);
+        this.inputManager.setCreatorInputProcessor(creatorInputProcessor);
         Gdx.input.setInputProcessor(creatorInputProcessor);
     }
 

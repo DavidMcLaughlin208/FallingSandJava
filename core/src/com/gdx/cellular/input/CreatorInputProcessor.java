@@ -2,22 +2,22 @@ package com.gdx.cellular.input;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.scenes.scene2d.ui.Cell;
+import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.InputManager;
 import com.gdx.cellular.elements.ElementType;
 
-import static com.gdx.cellular.MouseMode.RECTANGLE;
 
 public class CreatorInputProcessor implements InputProcessor {
 
     private final InputManager inputManager;
     private final OrthographicCamera camera;
     private final CellularMatrix matrix;
+    private final InputProcessors parent;
 
-    public CreatorInputProcessor(InputManager inputManager, OrthographicCamera camera, CellularMatrix matrix) {
+    public CreatorInputProcessor(InputProcessors inputProcessors, InputManager inputManager, OrthographicCamera camera, CellularMatrix matrix) {
+        this.parent = inputProcessors;
         this.inputManager = inputManager;
         this.camera = camera;
         this.matrix = matrix;
@@ -68,6 +68,9 @@ public class CreatorInputProcessor implements InputProcessor {
 //            } else {
                 inputManager.spawnElementByInput(matrix, camera);
 //            }
+        } else if (button == Input.Buttons.RIGHT) {
+            Vector3 pos = camera.unproject(new Vector3(screenX, screenY, 0));
+            inputManager.setDrawMenuAndLocation(pos.x, pos.y);
         }
         return false;
     }
