@@ -9,6 +9,8 @@ import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.InputManager;
 import com.gdx.cellular.elements.ElementType;
 
+import static com.gdx.cellular.MouseMode.RECTANGLE;
+
 public class CreatorInputProcessor implements InputProcessor {
 
     private final InputManager inputManager;
@@ -42,6 +44,9 @@ public class CreatorInputProcessor implements InputProcessor {
         if (keycode == Input.Keys.P) {
             inputManager.togglePause();
         }
+        if (keycode == Input.Keys.M) {
+            inputManager.cycleMouseModes();
+        }
         return false;
     }
 
@@ -57,17 +62,27 @@ public class CreatorInputProcessor implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-
+        if (button == Input.Buttons.LEFT) {
+//            if (inputManager.getMouseMode() == RECTANGLE) {
+//                inputManager.drawRect(matrix, camera);
+//            } else {
+                inputManager.spawnElementByInput(matrix, camera);
+//            }
+        }
         return false;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        if (button == Input.Buttons.LEFT) {
+            inputManager.setTouchedLastFrame(false);
+        }
         return false;
     }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
+        inputManager.spawnElementByInput(matrix, camera);
         return false;
     }
 

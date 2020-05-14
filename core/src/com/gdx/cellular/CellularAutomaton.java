@@ -95,8 +95,6 @@ public class CellularAutomaton extends ApplicationAdapter {
         numThreads = inputManager.adjustThreadCount(numThreads);
         useMultiThreading = inputManager.toggleThreads(useMultiThreading);
         useChunks = inputManager.toggleChunks(useChunks);
-        inputManager.cycleMouseModes();
-		inputManager.spawnElementByInput(matrix, camera, b2dWorld);
 		inputManager.openMenu();
 		inputManager.save(matrix);
 		inputManager.load(matrix);

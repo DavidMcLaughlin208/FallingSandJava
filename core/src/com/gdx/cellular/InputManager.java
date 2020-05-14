@@ -62,6 +62,10 @@ public class InputManager {
         this.currentlySelectedElement = elementType;
     }
 
+    public MouseMode getMouseMode() {
+        return this.mouseMode;
+    }
+
     public void calculateNewBrushSize(int delta) {
         brushSize += delta;
         if (brushSize > maxBrushSize) brushSize = maxBrushSize;
@@ -94,30 +98,26 @@ public class InputManager {
         }
     }
 
-    public boolean cycleMouseModes() {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.M)) {
-            switch (mouseMode) {
-                case SPAWN:
-                    this.mouseMode = MouseMode.HEAT;
-                    break;
-                case HEAT:
-                    this.mouseMode = MouseMode.PARTICLE;
-                    break;
-                case PARTICLE:
-                    this.mouseMode = MouseMode.PARTICALIZE;
-                    break;
-                case PARTICALIZE:
-                    this.mouseMode = MouseMode.PHYSICSOBJ;
-                    break;
-                case PHYSICSOBJ:
-                    this.mouseMode = MouseMode.RECTANGLE;
-                    break;
-                case RECTANGLE:
-                    this.mouseMode = MouseMode.SPAWN;
-            }
-            return true;
+    public void cycleMouseModes() {
+        switch (mouseMode) {
+            case SPAWN:
+                this.mouseMode = MouseMode.HEAT;
+                break;
+            case HEAT:
+                this.mouseMode = MouseMode.PARTICLE;
+                break;
+            case PARTICLE:
+                this.mouseMode = MouseMode.PARTICALIZE;
+                break;
+            case PARTICALIZE:
+                this.mouseMode = MouseMode.PHYSICSOBJ;
+                break;
+            case PHYSICSOBJ:
+                this.mouseMode = MouseMode.RECTANGLE;
+                break;
+            case RECTANGLE:
+                this.mouseMode = MouseMode.SPAWN;
         }
-        return false;
     }
 
     public void clearMatrix(CellularMatrix matrix) {
@@ -135,8 +135,11 @@ public class InputManager {
         }
     }
 
-    public void spawnElementByInput(CellularMatrix matrix, OrthographicCamera camera, World world) {
-        if (Gdx.input.isButtonPressed(Input.Buttons.LEFT)) {
+    public void setTouchedLastFrame(boolean touchedLastFrame) {
+        this.touchedLastFrame = touchedLastFrame;
+    }
+
+    public void spawnElementByInput(CellularMatrix matrix, OrthographicCamera camera) {
             Vector3 touchPos = new Vector3();
             touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touchPos);
@@ -187,13 +190,12 @@ public class InputManager {
             }
             lastTouchPos = touchPos;
             touchedLastFrame = true;
-        } else {
-            boolean notTheSameLocation = lastTouchPos.x != mouseDownPos.x || lastTouchPos.y != mouseDownPos.y;
-            if (touchedLastFrame && mouseMode == MouseMode.RECTANGLE && notTheSameLocation) {
-                matrix.spawnRect(mouseDownPos, lastTouchPos, currentlySelectedElement);
-            }
-            touchedLastFrame = false;
-        }
+//        } else {
+//            boolean notTheSameLocation = lastTouchPos.x != mouseDownPos.x || lastTouchPos.y != mouseDownPos.y;
+//            if (touchedLastFrame && mouseMode == MouseMode.RECTANGLE && notTheSameLocation) {
+//                matrix.spawnRect(mouseDownPos, lastTouchPos, currentlySelectedElement);
+//            }
+//            touchedLastFrame = false;
     }
 
     public void openMenu() {
@@ -323,4 +325,6 @@ public class InputManager {
         return true;
     }
 
+    public void drawRect() {
+    }
 }
