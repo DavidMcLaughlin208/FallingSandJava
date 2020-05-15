@@ -6,8 +6,8 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public class MatrixActor extends Actor {
 
-    private ShapeRenderer shapeRenderer;
-    private CellularMatrix matrix;
+    private final ShapeRenderer shapeRenderer;
+    private final CellularMatrix matrix;
 
     public MatrixActor(ShapeRenderer shapeRenderer, CellularMatrix matrix) {
         this.shapeRenderer = shapeRenderer;

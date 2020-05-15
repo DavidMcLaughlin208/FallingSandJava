@@ -21,6 +21,7 @@ import com.gdx.cellular.box2d.ShapeFactory;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.input.InputProcessors;
+import com.gdx.cellular.ui.CreatorMenu;
 import com.gdx.cellular.util.TextInputHandler;
 
 import java.io.IOException;
@@ -48,7 +49,7 @@ public class InputManager {
     private Vector3 lastTouchPos = new Vector3();
     private boolean touchedLastFrame = false;
 
-    private ElementType currentlySelectedElement = ElementType.SAND;
+    public ElementType currentlySelectedElement = ElementType.SAND;
 
     private boolean paused = false;
     private final TextInputHandler saveLevelNameListener = new TextInputHandler(this, this::setFileNameForSave);
@@ -59,13 +60,11 @@ public class InputManager {
     private boolean readyToLoad = false;
     public boolean drawMenu = false;
 
-    public Stage dropDownStage;
-    private Table dropDownTopLevelTable;
-
-    private InputProcessor creatorInputProcessor;
+    public InputProcessor creatorInputProcessor;
+    private CreatorMenu creatorMenu;
 
     public InputManager(Viewport viewport) {
-        createDropdownStage(viewport);
+        this.creatorMenu = new CreatorMenu(this, viewport);
     }
 
     public void setCurrentlySelectedElement(ElementType elementType) {
@@ -344,56 +343,19 @@ public class InputManager {
 
     public void drawMenu() {
         if (drawMenu) {
-            dropDownStage.act();
-            dropDownStage.draw();
+            this.creatorMenu.dropDownStage.act();
+            this.creatorMenu.dropDownStage.draw();
         }
     }
 
     public void setDrawMenuAndLocation(float x, float y) {
         this.drawMenu = true;
-        this.dropDownTopLevelTable.setPosition(x, y);
-        Gdx.input.setInputProcessor(dropDownStage);
+        this.creatorMenu.dropDownTopLevelTable.setPosition(x, y);
+        Gdx.input.setInputProcessor(this.creatorMenu.dropDownStage);
     }
 
-    private void createDropdownStage(Viewport viewport) {
-        Stage stage = new Stage(viewport);
-        Skin skin = createSkin("uiskin");
 
-        List<Button> elementButtons = Arrays.stream(ElementType.values()).map(elementType -> createElementButton(skin, elementType)).collect(Collectors.toList());
-
-        dropDownTopLevelTable = new Table();
-        elementButtons.forEach(button -> {
-            dropDownTopLevelTable.add(button);
-            dropDownTopLevelTable.row();
-        });
-        dropDownTopLevelTable.debug();
-
-        stage.addActor(dropDownTopLevelTable);
-
-        dropDownStage = stage;
-    }
-
-    private Button createElementButton(Skin skin, ElementType elementType) {
-        Button button = new TextButton(elementType.toString(), skin);
-        button.addListener(new InputListener(){
-            @Override
-            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
-                drawMenu = false;
-                Gdx.input.setInputProcessor(creatorInputProcessor);
-            }
-            @Override
-            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
-                currentlySelectedElement = elementType;
-                return true;
-            }
-        });
-        return button;
-    }
-
-    private Skin createSkin(String name) {
-        FileHandle atlasFileHandler = new FileHandle(String.valueOf(Gdx.files.getFileHandle(name + ".atlas", com.badlogic.gdx.Files.FileType.Internal)));
-        FileHandle skinFileHandler = new FileHandle(String.valueOf(Gdx.files.getFileHandle(name + ".json", com.badlogic.gdx.Files.FileType.Internal)));
-        FileHandle imagesFileHandler = new FileHandle(String.valueOf(Gdx.files.getFileHandle("", com.badlogic.gdx.Files.FileType.Internal)));
-        return new Skin(skinFileHandler, new TextureAtlas(atlasFileHandler, imagesFileHandler));
+    public void setMouseMode(MouseMode mode) {
+        this.mouseMode = mode;
     }
 }
