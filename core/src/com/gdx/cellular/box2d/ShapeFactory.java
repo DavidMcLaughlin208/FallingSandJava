@@ -1,10 +1,11 @@
 package com.gdx.cellular.box2d;
 
-import com.badlogic.gdx.math.Vector;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.graphics.g2d.PolygonRegion;
+import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.FloatArray;
+import com.badlogic.gdx.utils.ShortArray;
 import com.gdx.cellular.CellularAutomaton;
 import com.gdx.cellular.box2d.douglaspeucker.Point;
 import com.gdx.cellular.box2d.douglaspeucker.PointImpl;
@@ -20,6 +21,7 @@ public class ShapeFactory {
 
     private World world;
     private static ShapeFactory shapeFactory;
+    private static final DelaunayTriangulator triangulator = new DelaunayTriangulator();;
 
     private ShapeFactory(World world) {
         this.world = world;
@@ -97,32 +99,50 @@ public class ShapeFactory {
         bodyDef.type = BodyDef.BodyType.DynamicBody;
 
         List<List<Vector2>> verts = getOutliningVertices(elements);
+        
         List<Point> leftPoints = verts.get(0).stream().map(PointImpl::new).collect(Collectors.toList());
-        List<Point> reducedLeftPoints = SeriesReducer.reduce(leftPoints, 0.1f);
+        List<Point> reducedLeftPoints = SeriesReducer.reduce(leftPoints, 0.01f);
+
         List<Point> rightPoints = verts.get(1).stream().map(PointImpl::new).collect(Collectors.toList());
-        List<Point> reducedRightPoints = SeriesReducer.reduce(rightPoints, 0.1f);
+        List<Point> reducedRightPoints = SeriesReducer.reduce(rightPoints, 0.01f);
+
         Vector2 center = new Vector2((float) ((elements.get(0).size/2) + x) / mod, (float) ((elements.size / 2) + y) / mod);
 
         bodyDef.position.set(center);
 
         Body body = shapeFactory.world.createBody(bodyDef);
 
-        PolygonShape polygon = new PolygonShape();
         List<Vector2> reducedVerts = new ArrayList<>();
         reducedLeftPoints.forEach(point -> reducedVerts.add(point.getPosition()));
         reducedRightPoints.forEach(point -> reducedVerts.add(point.getPosition()));
-        Vector2[] vertArray = reducedVerts.toArray(new Vector2[0]);
-        polygon.set(vertArray);
+        short[] shortArray = triangulator.computeTriangles(toFloatArray(reducedVerts), true).toArray();
 
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = polygon;
-        fixtureDef.density = 1;
-        fixtureDef.friction = 0.8f;
+        for (int i = 0; i < shortArray.length; i += 3) {
+            PolygonShape polygon = new PolygonShape();
+            Vector2[] triangleVerts = new Vector2[] {reducedVerts.get(shortArray[i]), reducedVerts.get(shortArray[i + 1]), reducedVerts.get(shortArray[i + 2])};
+            polygon.set(triangleVerts);
+            FixtureDef fixtureDef = new FixtureDef();
+            fixtureDef.shape = polygon;
+            fixtureDef.density = 1;
+            fixtureDef.friction = 0.8f;
+            body.createFixture(fixtureDef);
+            polygon.dispose();
+        }
 
-        Fixture fixture = body.createFixture(fixtureDef);
+        body.setAngularVelocity((float) (Math.random() * 10));
 
-        polygon.dispose();
+
         return body;
+    }
+
+    private static float[] toFloatArray(List<Vector2> reducedVerts) {
+        float[] floatArray = new float[reducedVerts.size() * 2];
+        for (int i = 0; i < reducedVerts.size(); i++) {
+            Vector2 vert = reducedVerts.get(i);
+            floatArray[i * 2] = vert.x;
+            floatArray[(i * 2) + 1] = vert.y;
+        }
+        return floatArray;
     }
 
     private static List<List<Vector2>> getOutliningVertices(Array<Array<Element>> elements) {

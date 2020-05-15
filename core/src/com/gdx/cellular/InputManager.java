@@ -94,7 +94,7 @@ public class InputManager {
         elements.get(3).add(null, null, null, null);
 
         elements.add(new Array<>());
-        elements.get(4).add(null, null, null, null);
+        elements.get(4).add(null, null, new Stone(0, 0,false), new Stone(0, 0,false));
         elements.get(4).add(new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false));
         elements.get(4).add(null, null, null, null);
 
@@ -104,7 +104,7 @@ public class InputManager {
         elements.get(5).add(null, null, null, null);
 
         elements.add(new Array<>());
-        elements.get(6).add(null, null, null, null);
+        elements.get(6).add(null, null, new Stone(0, 0,false), new Stone(0, 0,false));
         elements.get(6).add(new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false));
         elements.get(6).add(null, null, null, null);
 
@@ -114,7 +114,7 @@ public class InputManager {
         elements.get(7).add(null, null, null, null);
 
         elements.add(new Array<>());
-        elements.get(8).add(null, null, null, null);
+        elements.get(8).add(null, null, new Stone(0, 0,false), new Stone(0, 0,false));
         elements.get(8).add(new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false));
         elements.get(8).add(null, null, null, null);
 
