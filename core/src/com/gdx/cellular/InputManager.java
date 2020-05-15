@@ -20,6 +20,7 @@ import com.badlogic.gdx.utils.viewport.*;
 import com.gdx.cellular.box2d.ShapeFactory;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
+import com.gdx.cellular.elements.solid.immoveable.Stone;
 import com.gdx.cellular.input.InputProcessors;
 import com.gdx.cellular.ui.CreatorMenu;
 import com.gdx.cellular.util.TextInputHandler;
@@ -63,8 +64,71 @@ public class InputManager {
     public InputProcessor creatorInputProcessor;
     private CreatorMenu creatorMenu;
 
+    private Array<Array<Element>> polygonArray;
+
     public InputManager(Viewport viewport) {
         this.creatorMenu = new CreatorMenu(this, viewport);
+        polygonArray = createPolygonArray();
+    }
+
+    private Array<Array<Element>> createPolygonArray() {
+        Array<Array<Element>> elements = new Array<>();
+        elements.add(new Array<>());
+        elements.get(0).add(null, null, new Stone(0, 0,false), new Stone(0, 0,false));
+        elements.get(0).add(new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false));
+        elements.get(0).add(null, null, new Stone(0, 0,false), new Stone(0, 0,false));
+
+        elements.add(new Array<>());
+        elements.get(1).add(null, null, null, null);
+        elements.get(1).add(new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false));
+        elements.get(1).add(null, null, null, null);
+
+        elements.add(new Array<>());
+        elements.get(2).add(null, null, null, null);
+        elements.get(2).add(new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false));
+        elements.get(2).add(null, null, null, null);
+
+        elements.add(new Array<>());
+        elements.get(3).add(null, null, null, null);
+        elements.get(3).add(new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false));
+        elements.get(3).add(null, null, null, null);
+
+        elements.add(new Array<>());
+        elements.get(4).add(null, null, null, null);
+        elements.get(4).add(new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false));
+        elements.get(4).add(null, null, null, null);
+
+        elements.add(new Array<>());
+        elements.get(5).add(null, null, null, null);
+        elements.get(5).add(new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false));
+        elements.get(5).add(null, null, null, null);
+
+        elements.add(new Array<>());
+        elements.get(6).add(null, null, null, null);
+        elements.get(6).add(new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false));
+        elements.get(6).add(null, null, null, null);
+
+        elements.add(new Array<>());
+        elements.get(7).add(null, null, null, null);
+        elements.get(7).add(new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false));
+        elements.get(7).add(null, null, null, null);
+
+        elements.add(new Array<>());
+        elements.get(8).add(null, null, null, null);
+        elements.get(8).add(new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false));
+        elements.get(8).add(null, null, null, null);
+
+        elements.add(new Array<>());
+        elements.get(9).add(null, null, null, null);
+        elements.get(9).add(new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false));
+        elements.get(9).add(null, null, null, null);
+
+        elements.add(new Array<>());
+        elements.get(10).add(null, null, null, null);
+        elements.get(10).add(new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false));
+        elements.get(10).add(null, null, null, null);
+
+        return elements;
     }
 
     public void setCurrentlySelectedElement(ElementType elementType) {
@@ -197,6 +261,9 @@ public class InputManager {
                                 break;
                             case STONE:
                                 ShapeFactory.createDefaultDynamicCircle((int) touchPos.x, (int) touchPos.y, brushSize / 2);
+                                break;
+                            case DIRT:
+                                ShapeFactory.createDynamicPolygonFromElementArray((int) touchPos.x, (int) touchPos.y, polygonArray);
                         }
                     }
                     break;

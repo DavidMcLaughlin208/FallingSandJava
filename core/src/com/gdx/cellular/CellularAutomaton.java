@@ -84,7 +84,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 		debugRenderer = new Box2DDebugRenderer();
 
 		inputProcessors = new InputProcessors(inputManager, matrix, camera);
-//		setUpBasicBodies();
+		setUpBasicBodies();
 	}
 
 	@Override
