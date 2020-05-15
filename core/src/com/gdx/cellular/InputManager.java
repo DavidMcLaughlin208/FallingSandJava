@@ -25,6 +25,7 @@ import com.gdx.cellular.input.InputProcessors;
 import com.gdx.cellular.ui.CreatorMenu;
 import com.gdx.cellular.util.TextInputHandler;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
@@ -263,7 +264,7 @@ public class InputManager {
                                 ShapeFactory.createDefaultDynamicCircle((int) touchPos.x, (int) touchPos.y, brushSize / 2);
                                 break;
                             case DIRT:
-                                ShapeFactory.createDynamicPolygonFromElementArray((int) touchPos.x, (int) touchPos.y, polygonArray);
+                                ShapeFactory.createDynamicPolygonFromElementArray((int) touchPos.x, (int) touchPos.y, getRandomPolygonArray());
                         }
                     }
                     break;
@@ -276,6 +277,35 @@ public class InputManager {
 //                matrix.spawnRect(mouseDownPos, lastTouchPos, currentlySelectedElement);
 //            }
 //            touchedLastFrame = false;
+    }
+
+    private Array<Array<Element>> getRandomPolygonArray() {
+        Array<Array<Element>> polygonElementArray = new Array<>();
+        try {
+            File folder = new File("customphysicsobjects");
+            File[] listOfFiles = folder.listFiles();
+            int index = (int) Math.floor(Math.random() * listOfFiles.length);
+            File selectedFile = listOfFiles[index];
+            Path filePath = Paths.get(selectedFile.toString());
+            List<String> object = Files.readAllLines(filePath, StandardCharsets.UTF_8);
+            for (int r = 0; r < object.size(); r++) {
+                Array<Element> row = new Array<>();
+                polygonElementArray.add(row);
+                String line = object.get(r);
+                String[] splitLine = line.split(",");
+                for (int i = 0; i < splitLine.length; i++) {
+                    String element = splitLine[i].trim().toUpperCase();
+                    if (element.equals("NULL")) {
+                        row.add(null);
+                    } else {
+                        row.add(ElementType.valueOf(element).createElementByMatrix(0, 0));
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return polygonElementArray;
     }
 
     public void openMenu() {

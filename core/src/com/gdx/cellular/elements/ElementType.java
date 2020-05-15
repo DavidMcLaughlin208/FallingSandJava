@@ -14,7 +14,6 @@ import com.gdx.cellular.elements.solid.movable.Dirt;
 import com.gdx.cellular.elements.solid.movable.Ember;
 import com.gdx.cellular.elements.solid.movable.Sand;
 import com.gdx.cellular.particles.Particle;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public enum ElementType {
     EMPTYCELL(EmptyCell.class) {
@@ -208,12 +207,12 @@ public enum ElementType {
     PARTICLE(Particle.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {
-            throw new NotImplementedException();
+            throw new IllegalStateException();
         }
 
         @Override
         public Element createElementByPixel(int x, int y) {
-            throw new NotImplementedException();
+            throw new IllegalStateException();
         }
 
     };
