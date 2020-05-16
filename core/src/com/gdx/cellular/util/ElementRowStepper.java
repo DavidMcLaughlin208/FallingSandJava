@@ -1,4 +1,6 @@
-package com.gdx.cellular;
+package com.gdx.cellular.util;
+
+import com.gdx.cellular.CellularMatrix;
 
 public class ElementRowStepper implements Runnable {
 

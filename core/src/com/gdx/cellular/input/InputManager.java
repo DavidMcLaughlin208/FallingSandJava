@@ -1,27 +1,17 @@
-package com.gdx.cellular;
+package com.gdx.cellular.input;
 
-import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.*;
+import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.box2d.ShapeFactory;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.elements.solid.immoveable.Stone;
-import com.gdx.cellular.input.InputProcessors;
 import com.gdx.cellular.ui.CreatorMenu;
 import com.gdx.cellular.util.TextInputHandler;
 
@@ -32,17 +22,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class InputManager {
 
     private final int maxBrushSize = 55;
     private final int minBrushSize = 3;
     private MouseMode mouseMode = MouseMode.SPAWN;
-
-    private Vector3 mouseDownPos = new Vector3();
 
     private final int maxThreads = 50;
 
@@ -66,6 +52,7 @@ public class InputManager {
     private CreatorMenu creatorMenu;
 
     private Array<Array<Element>> polygonArray;
+    private Vector3 rectStartPos = new Vector3();
 
     public InputManager(Viewport viewport) {
         this.creatorMenu = new CreatorMenu(this, viewport);
@@ -221,9 +208,6 @@ public class InputManager {
             Vector3 touchPos = new Vector3();
             touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touchPos);
-            if (!touchedLastFrame) {
-                mouseDownPos = touchPos.cpy();
-            }
             switch (mouseMode) {
                 case SPAWN:
                     if (touchedLastFrame) {
@@ -268,6 +252,11 @@ public class InputManager {
                         }
                     }
                     break;
+                case RECTANGLE:
+                    if (!touchedLastFrame) {
+                        rectStartPos = new Vector3((float) Math.floor(touchPos.x), (float) Math.floor(touchPos.y), 0);
+                    }
+                    break;
             }
             lastTouchPos = touchPos;
             touchedLastFrame = true;
@@ -277,6 +266,16 @@ public class InputManager {
 //                matrix.spawnRect(mouseDownPos, lastTouchPos, currentlySelectedElement);
 //            }
 //            touchedLastFrame = false;
+    }
+
+    public void spawnRect(CellularMatrix matrix, OrthographicCamera camera) {
+        Vector3 touchPos = new Vector3();
+        touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+        camera.unproject(touchPos);
+        touchPos.set((float) Math.floor(touchPos.x), (float) Math.floor(touchPos.y), 0);
+        if (touchPos.x != rectStartPos.x && touchPos.y != rectStartPos.y) {
+            matrix.spawnRect(rectStartPos, lastTouchPos, currentlySelectedElement);
+        }
     }
 
     private Array<Array<Element>> getRandomPolygonArray() {

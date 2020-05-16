@@ -1,4 +1,4 @@
-package com.gdx.cellular;
+package com.gdx.cellular.input;
 
 public enum MouseMode {
     SPAWN,

@@ -1,9 +1,8 @@
 package com.gdx.cellular.util;
 
 import com.badlogic.gdx.Input;
-import com.gdx.cellular.InputManager;
+import com.gdx.cellular.input.InputManager;
 
-import java.lang.reflect.Method;
 import java.util.function.Function;
 
 public class TextInputHandler implements Input.TextInputListener {

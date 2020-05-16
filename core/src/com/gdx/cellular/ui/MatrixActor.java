@@ -1,8 +1,9 @@
-package com.gdx.cellular;
+package com.gdx.cellular.ui;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.gdx.cellular.CellularMatrix;
 
 public class MatrixActor extends Actor {
 

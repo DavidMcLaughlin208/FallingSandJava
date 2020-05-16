@@ -5,8 +5,9 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularMatrix;
-import com.gdx.cellular.InputManager;
 import com.gdx.cellular.elements.ElementType;
+
+import static com.gdx.cellular.input.MouseMode.RECTANGLE;
 
 
 public class CreatorInputProcessor implements InputProcessor {
@@ -63,11 +64,7 @@ public class CreatorInputProcessor implements InputProcessor {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if (button == Input.Buttons.LEFT) {
-//            if (inputManager.getMouseMode() == RECTANGLE) {
-//                inputManager.drawRect(matrix, camera);
-//            } else {
-                inputManager.spawnElementByInput(matrix, camera);
-//            }
+            inputManager.spawnElementByInput(matrix, camera);
         } else if (button == Input.Buttons.RIGHT) {
             Vector3 pos = camera.unproject(new Vector3(screenX, screenY, 0));
             inputManager.setDrawMenuAndLocation(pos.x, pos.y);
@@ -79,6 +76,9 @@ public class CreatorInputProcessor implements InputProcessor {
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if (button == Input.Buttons.LEFT) {
             inputManager.setTouchedLastFrame(false);
+            if (inputManager.getMouseMode() == RECTANGLE) {
+                inputManager.spawnRect(matrix, camera);
+            }
         }
         return false;
     }

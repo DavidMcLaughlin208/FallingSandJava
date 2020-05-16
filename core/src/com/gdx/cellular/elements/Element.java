@@ -4,7 +4,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularAutomaton;
 import com.gdx.cellular.CellularMatrix;
-import com.gdx.cellular.EffectColors;
+import com.gdx.cellular.effects.EffectColors;
 
 import java.util.BitSet;
 

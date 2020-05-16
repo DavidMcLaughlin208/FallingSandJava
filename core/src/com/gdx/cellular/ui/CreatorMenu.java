@@ -13,10 +13,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Select;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.gdx.cellular.InputManager;
-import com.gdx.cellular.MouseMode;
+import com.gdx.cellular.input.InputManager;
+import com.gdx.cellular.input.MouseMode;
 import com.gdx.cellular.elements.ElementType;
 
 import java.util.Arrays;

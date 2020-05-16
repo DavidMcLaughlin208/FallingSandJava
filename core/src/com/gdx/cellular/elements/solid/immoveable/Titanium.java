@@ -2,8 +2,6 @@ package com.gdx.cellular.elements.solid.immoveable;
 
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularMatrix;
-import com.gdx.cellular.EffectColors;
-import com.gdx.cellular.elements.solid.immoveable.ImmovableSolid;
 
 public class Titanium extends ImmovableSolid {
 

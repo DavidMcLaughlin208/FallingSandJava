@@ -1,4 +1,4 @@
-package com.gdx.cellular;
+package com.gdx.cellular.effects;
 
 
 import com.badlogic.gdx.graphics.Color;
@@ -9,8 +9,6 @@ import java.util.List;
 public class EffectColors {
 
     private static List<Color >fireColors = new ArrayList<>();
-
-    public static Color TITANIUM_COLOR = new Color(201,201,201,1);
 
     static {
         fireColors.add(Color.RED);
