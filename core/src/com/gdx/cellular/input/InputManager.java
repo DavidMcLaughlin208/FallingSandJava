@@ -48,6 +48,8 @@ public class InputManager {
     private boolean readyToLoad = false;
     public boolean drawMenu = false;
 
+    public boolean earClip = false;
+
     public InputProcessor creatorInputProcessor;
     private CreatorMenu creatorMenu;
 
@@ -145,6 +147,12 @@ public class InputManager {
             newThreads -= numThreads == 1 ? 0 : 1;
         }
         return newThreads;
+    }
+
+    public void toggleEarClip() {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.U)) {
+            earClip = !earClip;
+        }
     }
 
     public boolean toggleThreads(boolean toggleThreads) {
@@ -248,7 +256,7 @@ public class InputManager {
                                 ShapeFactory.createDefaultDynamicCircle((int) touchPos.x, (int) touchPos.y, brushSize / 2);
                                 break;
                             case DIRT:
-                                ShapeFactory.createDynamicPolygonFromElementArray((int) touchPos.x, (int) touchPos.y, getRandomPolygonArray());
+                                ShapeFactory.createDynamicPolygonFromElementArray((int) touchPos.x, (int) touchPos.y, getRandomPolygonArray(), earClip);
                         }
                     }
                     break;
@@ -453,5 +461,9 @@ public class InputManager {
 
     public void setMouseMode(MouseMode mode) {
         this.mouseMode = mode;
+    }
+
+    public void clearBox2dActors() {
+        ShapeFactory.clearAllActors();
     }
 }

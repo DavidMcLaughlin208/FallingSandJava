@@ -3,13 +3,19 @@ package com.gdx.cellular.box2d;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.ShortArray;
 import com.gdx.cellular.CellularAutomaton;
 import com.gdx.cellular.box2d.douglaspeucker.Point;
 import com.gdx.cellular.box2d.douglaspeucker.PointImpl;
 import com.gdx.cellular.box2d.douglaspeucker.SeriesReducer;
 import com.gdx.cellular.elements.Element;
 
+import org.dyn4j.geometry.Convex;
+import org.dyn4j.geometry.Triangle;
+import org.dyn4j.geometry.decompose.SweepLine;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,7 +23,8 @@ public class ShapeFactory {
 
     private World world;
     private static ShapeFactory shapeFactory;
-    private static final DelaunayTriangulator triangulator = new DelaunayTriangulator();;
+    private static final EarClippingTriangulator earClippingTriangulator = new EarClippingTriangulator();
+    private static final DelaunayTriangulator delaunayTriangulator = new DelaunayTriangulator();
 
     private ShapeFactory(World world) {
         this.world = world;
@@ -89,7 +96,7 @@ public class ShapeFactory {
         return body;
     }
 
-    public static Body createDynamicPolygonFromElementArray(int x, int y, Array<Array<Element>> elements) {
+    public static Body createDynamicPolygonFromElementArray(int x, int y, Array<Array<Element>> elements, boolean earClip) {
         int mod = CellularAutomaton.box2dSizeModifier;
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -97,12 +104,14 @@ public class ShapeFactory {
         int yWidth = (elements.size / 2);
 
         List<List<Vector2>> verts = getOutliningVertices(elements);
+//        List<Vector2> allVerts = new ArrayList<>(verts.get(0));
+//        allVerts.addAll(verts.get(1));
 
         List<Point> leftPoints = verts.get(0).stream().map(PointImpl::new).collect(Collectors.toList());
-        List<Point> reducedLeftPoints = SeriesReducer.reduce(leftPoints, 0.01f);
+        List<Point> reducedLeftPoints = SeriesReducer.reduce(leftPoints, 0.000001f);
 
         List<Point> rightPoints = verts.get(1).stream().map(PointImpl::new).collect(Collectors.toList());
-        List<Point> reducedRightPoints = SeriesReducer.reduce(rightPoints, 0.01f);
+        List<Point> reducedRightPoints = SeriesReducer.reduce(rightPoints, 0.000001f);
 
         Vector2 center = new Vector2((float) (xWidth + x) / mod, (float) (yWidth + y) / mod);
 
@@ -118,25 +127,52 @@ public class ShapeFactory {
             reducedVerts.add(point.getPosition());
         }
         reducedVerts = reducedVerts.stream().map(vector2 -> new Vector2(vector2.x - xWidth, vector2.y - yWidth)).collect(Collectors.toList());
-        short[] shortArray = triangulator.computeTriangles(toFloatArray(reducedVerts), true).toArray();
+        org.dyn4j.geometry.Vector2[] dyn4jVerts = reducedVerts.stream().map(vec -> new org.dyn4j.geometry.Vector2(vec.x, vec.y)).toArray(org.dyn4j.geometry.Vector2[]::new);
+        SweepLine sweepLine = new SweepLine();
+        List<Convex> convexes = sweepLine.decompose(dyn4jVerts);
 
-        for (int i = 0; i < shortArray.length; i += 3) {
-            PolygonShape polygon = new PolygonShape();
-            Vector2[] triangleVerts = new Vector2[] {
-                    reducedVerts.get(shortArray[i]),
-                    reducedVerts.get(shortArray[i + 1]),
-                    reducedVerts.get(shortArray[i + 2])
-            };
-            polygon.set(triangleVerts);
-            FixtureDef fixtureDef = new FixtureDef();
-            fixtureDef.shape = polygon;
-            fixtureDef.density = 1;
-            fixtureDef.friction = 0.8f;
-            body.createFixture(fixtureDef);
-            polygon.dispose();
+        for (Convex convex : convexes) {
+            org.dyn4j.geometry.Polygon polygon = (org.dyn4j.geometry.Polygon) convex;
+            List<Triangle> triangles = sweepLine.triangulate(polygon.getVertices());
+            for (Triangle triangle : triangles) {
+                Vector2[] triangleVerts = Arrays.stream(triangle.getVertices()).map(vert -> new Vector2((float) vert.x, (float) vert.y)).toArray(Vector2[]::new);
+                PolygonShape polygonForFixture = new PolygonShape();
+                polygonForFixture.set(triangleVerts);
+                FixtureDef fixtureDef = new FixtureDef();
+                fixtureDef.shape = polygonForFixture;
+                fixtureDef.density = 1;
+                fixtureDef.friction = 0.8f;
+                body.createFixture(fixtureDef);
+                polygonForFixture.dispose();
+            }
         }
 
-//        body.setAngularVelocity((float) (Math.random() * 10));
+//        ShortArray shortArray;
+//        if (earClip) {
+//            shortArray = ShortArray.with(earClippingTriangulator.computeTriangles(toFloatArray(reducedVerts)).toArray());
+//        } else {
+//            float[] vertsAsFloats = toFloatArray(reducedVerts);
+//            shortArray = ShortArray.with(delaunayTriangulator.computeTriangles(vertsAsFloats, true).toArray());
+////            delaunayTriangulator.trim(shortArray, vertsAsFloats, vertsAsFloats, 0, reducedVerts.size() * 2);
+//        }
+
+//        for (int i = 0; i < shortArray.size; i += 3) {
+//            PolygonShape polygon = new PolygonShape();
+//            Vector2[] triangleVerts = new Vector2[] {
+//                    reducedVerts.get(shortArray.items[i]),
+//                    reducedVerts.get(shortArray.items[i + 1]),
+//                    reducedVerts.get(shortArray.items[i + 2])
+//            };
+//            polygon.set(triangleVerts);
+//            FixtureDef fixtureDef = new FixtureDef();
+//            fixtureDef.shape = polygon;
+//            fixtureDef.density = 1;
+//            fixtureDef.friction = 0.8f;
+//            body.createFixture(fixtureDef);
+//            polygon.dispose();
+//        }
+
+        body.setAngularVelocity((float) (Math.random() * 2));
 
         return body;
     }
@@ -220,5 +256,15 @@ public class ShapeFactory {
 
         box.dispose();
         return body;
+    }
+
+    public static void clearAllActors() {
+        Array<Body> bodies = new Array<>();
+        shapeFactory.world.getBodies(bodies);
+        for(int i = 0; i < bodies.size; i++)
+        {
+            if(!shapeFactory.world.isLocked())
+                shapeFactory.world.destroyBody(bodies.get(i));
+        }
     }
 }
