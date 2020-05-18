@@ -40,6 +40,9 @@ public class PhysicsElementActor {
             for (int x = 0; x < row.size; x++) {
                 Element element = row.get(x);
                 if (element != null) {
+                    if (element.secondaryMatrixX != -1 && element.secondaryMatrixY != -1) {
+                        matrix.setElementAtIndex(element.secondaryMatrixX, element.secondaryMatrixY, ElementType.EMPTYCELL.createElementByMatrix(element.secondaryMatrixX, element.secondaryMatrixY));
+                    }
                     Vector2 matrixCoords = getMatrixCoords(element);
                     Element elementAtNewPos = matrix.get((int) matrixCoords.x, (int) matrixCoords.y);
                     if (elementAtNewPos instanceof EmptyCell || (elementAtNewPos != null && elementAtNewPos.owningBody == physicsBody)) {
@@ -52,6 +55,23 @@ public class PhysicsElementActor {
                     }
                     if (elementAtNewPos instanceof MovableSolid) {
                         elementAtNewPos.dieAndReplaceWithParticle(matrix, matrix.generateRandomVelocityWithBounds(-150, 150));
+                        physicsBody.setLinearVelocity(physicsBody.getLinearVelocity().scl(.9f));
+                        physicsBody.setAngularVelocity(physicsBody.getAngularVelocity() * .9f);
+                        if (matrix.isWithinBounds(matrixCoords)) {
+                            matrix.setElementAtIndex((int) matrixCoords.x, (int) matrixCoords.y, element);
+                        }
+                    }
+                }
+            }
+        }
+        for (int y = 0; y < elements.size; y++) {
+            Array<Element> row = elements.get(y);
+            for (int x = 0; x < row.size - 1; x++) {
+                Element element = row.get(x);
+                if (element != null) {
+                    Element nextElement = row.get(x + 1);
+                    if (nextElement != null && (element.matrixX - nextElement.matrixY != 1)) {
+                            matrix.setElementAtSecondLocation(element.matrixX + 1, element.matrixY, element);
                     }
                 }
             }
@@ -61,11 +81,14 @@ public class PhysicsElementActor {
     public void draw(ShapeRenderer sr) {
         sr.begin();
         sr.set(ShapeRenderer.ShapeType.Filled);
+        int mod = CellularAutomaton.pixelSizeModifier;
         for (int y = 0; y < elements.size; y++) {
             Array<Element> row = elements.get(y);
             for (int x = 0; x < row.size; x ++) {
                 Element element = row.get(x);
                 if (element != null) {
+                    int pixelX = element.toPixel(element.matrixX);
+                    int pixelY = element.toPixel(element.matrixY);
                     sr.setColor(element.color);
                     sr.rect(element.toPixel(element.matrixX), element.toPixel(element.matrixY), CellularAutomaton.pixelSizeModifier, CellularAutomaton.pixelSizeModifier);
                 }

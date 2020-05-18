@@ -126,7 +126,7 @@ public class ShapeFactory {
         for (Point point : reducedRightPoints) {
             reducedVerts.add(point.getPosition());
         }
-        reducedVerts = reducedVerts.stream().map(vector2 -> new Vector2(vector2.x - xWidth, vector2.y - yWidth)).collect(Collectors.toList());
+        reducedVerts = reducedVerts.stream().map(vector2 -> new Vector2((vector2.x - xWidth)/(mod/2), (vector2.y - yWidth)/(mod/2))).collect(Collectors.toList());
         org.dyn4j.geometry.Vector2[] dyn4jVerts = reducedVerts.stream().map(vec -> new org.dyn4j.geometry.Vector2(vec.x, vec.y)).toArray(org.dyn4j.geometry.Vector2[]::new);
         SweepLine sweepLine = new SweepLine();
         List<Convex> convexes = sweepLine.decompose(dyn4jVerts);
@@ -195,7 +195,7 @@ public class ShapeFactory {
         for (int y = 0; y < elements.size; y++) {
             Array<Element> row = elements.get(y);
             foundFirst = false;
-            for (int x = 0; x < elements.get(0).size; x++) {
+            for (int x = 0; x < row.size; x++) {
                 Element element = row.get(x);
                 if (element != null) {
                     if (!foundFirst) {
@@ -223,13 +223,17 @@ public class ShapeFactory {
     }
 
     public static Body createStaticRect(Vector3 boxCenter, List<Vector2> vertices) {
-        return createStaticRect(boxCenter, vertices, 0, 0.5f);
+        return createRect(boxCenter, vertices, 0, 0.5f, BodyDef.BodyType.StaticBody);
     }
 
-    public static Body createStaticRect(Vector3 boxCenter, List<Vector2> vertices, int angle, float friction) {
+    public static Body createDynamicRect(Vector3 boxCenter, List<Vector2> vertices) {
+        return createRect(boxCenter, vertices, 0, 0.5f, BodyDef.BodyType.DynamicBody);
+    }
+
+    public static Body createRect(Vector3 boxCenter, List<Vector2> vertices, int angle, float friction, BodyDef.BodyType type) {
         int mod = CellularAutomaton.box2dSizeModifier;
         BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.type = type;
 
         Vector2 center = new Vector2(Math.round(boxCenter.x / mod), Math.round(boxCenter.y / mod));
         bodyDef.position.set(center);
@@ -245,19 +249,38 @@ public class ShapeFactory {
             return v;
         }).collect(Collectors.toList());
         updatedVertices = updatedVertices.stream().map(vert -> new Vector2(vert.x - center.x, vert.y - center.y)).collect(Collectors.toList());
-        Vector2[] verticesAsArray = updatedVertices.toArray(new Vector2[0]);
-//        box.setAsBox(10, 10);
-        box.set(verticesAsArray);
+        org.dyn4j.geometry.Vector2[] dyn4jVerts = updatedVertices.stream().map(vec -> new org.dyn4j.geometry.Vector2(vec.x, vec.y)).toArray(org.dyn4j.geometry.Vector2[]::new);
+        SweepLine sweepLine = new SweepLine();
+        List<Convex> convexes = sweepLine.decompose(dyn4jVerts);
 
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = box;
-        fixtureDef.density = 1;
-        fixtureDef.friction = friction;
-
-        Fixture fixture = body.createFixture(fixtureDef);
-
-        box.dispose();
+        for (Convex convex : convexes) {
+            org.dyn4j.geometry.Polygon polygon = (org.dyn4j.geometry.Polygon) convex;
+            List<Triangle> triangles = sweepLine.triangulate(polygon.getVertices());
+            for (Triangle triangle : triangles) {
+                Vector2[] triangleVerts = Arrays.stream(triangle.getVertices()).map(vert -> new Vector2((float) vert.x, (float) vert.y)).toArray(Vector2[]::new);
+                PolygonShape polygonForFixture = new PolygonShape();
+                polygonForFixture.set(triangleVerts);
+                FixtureDef fixtureDef = new FixtureDef();
+                fixtureDef.shape = polygonForFixture;
+                fixtureDef.density = 1;
+                fixtureDef.friction = 0.8f;
+                body.createFixture(fixtureDef);
+                polygonForFixture.dispose();
+            }
+        }
+//        Vector2[] verticesAsArray = updatedVertices.toArray(new Vector2[0]);
+////        box.setAsBox(10, 10);
+//        box.set(verticesAsArray);
+//
+//
+//        FixtureDef fixtureDef = new FixtureDef();
+//        fixtureDef.shape = box;
+//        fixtureDef.density = 1;
+//        fixtureDef.friction = friction;
+//
+//        Fixture fixture = body.createFixture(fixtureDef);
+//
+//        box.dispose();
         return body;
     }
 

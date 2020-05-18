@@ -125,6 +125,9 @@ public class CellularMatrix {
             Array<Element> row = getRow(y);
             for (int x = 0; x < row.size; x++) {
                 Element element = row.get(x);
+//                if (element.owningBody != null) {
+//                    continue;
+//                }
                 Color currentColor = element.color;
                 int toIndex = x;
                 for (int following = x; following < row.size; following++) {
@@ -198,7 +201,7 @@ public class CellularMatrix {
                             sr.line(curVertCopy, prevVertCopy);
 
                         }
-                        sr.circle(position.x * mod, position.y * mod, 5);
+                        sr.circle(position.x * mod, position.y * mod, 2);
                         break;
                 }
             }
@@ -318,6 +321,12 @@ public class CellularMatrix {
     public boolean setElementAtIndex(int x, int y, Element element) {
         matrix.get(y).set(x, element);
         element.setCoordinatesByMatrix(x, y);
+        return true;
+    }
+
+    public boolean setElementAtSecondLocation(int x, int y, Element element) {
+        matrix.get(y).set(x, element);
+        element.setSecondaryCoordinatesByMatrix(x, y);
         return true;
     }
 
@@ -629,7 +638,7 @@ public class CellularMatrix {
         Vector3 boxCenter = new Vector3((float) (matrixMouseDownX + matrixMouseUpX) / 2, (float) (matrixMouseDownY + matrixMouseUpY) / 2, 0);
         List<Vector2> vertices = getRectVertices(matrixMouseDownX, matrixMouseUpX, matrixMouseDownY, matrixMouseUpY);
 
-        Body body = ShapeFactory.createStaticRect(boxCenter, vertices);
+        Body body = ShapeFactory.createDynamicRect(boxCenter, vertices);
         PolygonShape shape = (PolygonShape) body.getFixtureList().get(0).getShape();
         Vector2 point = new Vector2();
         int minX = innerArraySize;
@@ -648,11 +657,14 @@ public class CellularMatrix {
         Array<Array<Element>> elementList = new Array<>();
         int xDistance = maxX - minX;
         int yDistance = maxY - minY;
+        ElementType type;
         for (int y = minY; y < minY + yDistance; y++) {
             Array<Element> row = new Array<>();
             elementList.add(row);
             for (int x = minX; x < minX + xDistance; x++) {
-                Element element = spawnElementByMatrix(x, y, currentlySelectedElement);
+                type = (x % 2 == 0) ? ElementType.STONE : ElementType.WOOD;
+
+                Element element = spawnElementByMatrix(x, y, type);
                 row.add(element);
             }
         }

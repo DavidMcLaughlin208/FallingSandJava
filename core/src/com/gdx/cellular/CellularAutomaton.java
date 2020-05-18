@@ -15,6 +15,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.gdx.cellular.box2d.PhysicsElementActor;
 import com.gdx.cellular.box2d.ShapeFactory;
+import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.input.InputManager;
 import com.gdx.cellular.input.InputProcessors;
 import com.gdx.cellular.ui.MatrixActor;
@@ -142,10 +143,11 @@ public class CellularAutomaton extends ApplicationAdapter {
 
 		}
 
-		b2dWorld.step(1/60f, 20, 10);
+		b2dWorld.step(1/60f, 5, 5);
 		matrix.stepPhysicsElementActors();
 		matrixStage.draw();
-		matrix.drawBox2d(shapeRenderer, bodies);
+//		matrix.drawBox2d(shapeRenderer, bodies);
+//		matrix.drawPhysicsElementActors(shapeRenderer);
 		debugRenderer.render(b2dWorld, camera.combined);
 		inputManager.drawMenu();
 	}
@@ -156,6 +158,10 @@ public class CellularAutomaton extends ApplicationAdapter {
 
 	private void setUpBasicBodies() {
 		BodyDef groundBodyDef = new BodyDef();
+
+//		List<Vector2> verts = new ArrayList<>();
+//		inputManager.spawnRect(matrix, new Vector3((camera.viewportWidth/2/box2dSizeModifier/8) * 10, 10, 0), new Vector3((camera.viewportWidth/2/box2dSizeModifier - camera.viewportWidth/2/box2dSizeModifier/8) * 10, 0, 0), ElementType.STONE);
+//		ShapeFactory.createStaticRect(new Vector3(camera.viewportWidth/2/box2dSizeModifier, 10, 0), verts);
 
 		groundBodyDef.position.set(new Vector2(camera.viewportWidth/2/box2dSizeModifier, 10));
 

@@ -10,6 +10,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.*;
+import com.gdx.cellular.CellularAutomaton;
 import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.box2d.PhysicsElementActor;
 import com.gdx.cellular.box2d.ShapeFactory;
@@ -261,7 +262,8 @@ public class InputManager {
                                 ShapeFactory.createDefaultDynamicCircle((int) touchPos.x, (int) touchPos.y, brushSize / 2);
                                 break;
                             case DIRT:
-                                ShapeFactory.createDynamicPolygonFromElementArray((int) touchPos.x, (int) touchPos.y, getRandomPolygonArray(), earClip);
+                                spawnRandomPolygon((int) touchPos.x, (int) touchPos.y, getRandomPolygonArray(), matrix);
+
                         }
                     }
                     break;
@@ -281,6 +283,12 @@ public class InputManager {
 //            touchedLastFrame = false;
     }
 
+    private void spawnRandomPolygon(int x, int y, Array<Array<Element>> randomPolygonArray, CellularMatrix matrix) {
+        Body body = ShapeFactory.createDynamicPolygonFromElementArray(x, y, randomPolygonArray, earClip);
+        PhysicsElementActor physicsElementActor = new PhysicsElementActor(body, randomPolygonArray);
+        matrix.physicsElementActors.add(physicsElementActor);
+    }
+
     public void spawnBox(int x, int y, int brushSize, CellularMatrix matrix) {
         int matrixX = matrix.toMatrix(x);
         int matrixY = matrix.toMatrix(y);
@@ -292,18 +300,18 @@ public class InputManager {
         shape.getVertex(2, point);
         Vector2 worldPoint2 = body.getWorldPoint(point).cpy();
 
-        Array<Array<Element>> elementList = new Array<>();
-        for (int xIndex = matrix.toMatrix((int) worldPoint1.x); xIndex < matrix.toMatrix((int) (worldPoint1.x + (worldPoint2.x - worldPoint1.x))); xIndex++) {
-            Array<Element> row = new Array<>();
-            elementList.add(row);
-            for (int yIndex = matrix.toMatrix((int) worldPoint2.y); yIndex > matrix.toMatrix((int) (worldPoint2.y + (worldPoint1.y - worldPoint2.y))); yIndex--) {
-                Element element = matrix.spawnElementByMatrix(matrix.toMatrix(x), matrix.toMatrix(y), currentlySelectedElement);
-                row.add(element);
-            }
-        }
+//        Array<Array<Element>> elementList = new Array<>();
+//        for (int xIndex = matrix.toMatrix((int) worldPoint1.x); xIndex < matrix.toMatrix((int) (worldPoint1.x + (worldPoint2.x - worldPoint1.x))); xIndex++) {
+//            Array<Element> row = new Array<>();
+//            elementList.add(row);
+//            for (int yIndex = matrix.toMatrix((int) worldPoint2.y); yIndex > matrix.toMatrix((int) (worldPoint2.y + (worldPoint1.y - worldPoint2.y))); yIndex--) {
+//                Element element = matrix.spawnElementByMatrix(matrix.toMatrix(x), matrix.toMatrix(y), ElementType.STONE);
+//                row.add(element);
+//            }
+//        }
 
-        PhysicsElementActor physicsElementActor = new PhysicsElementActor(body, elementList);
-        matrix.physicsElementActors.add(physicsElementActor);
+//        PhysicsElementActor physicsElementActor = new PhysicsElementActor(body, elementList);
+//        matrix.physicsElementActors.add(physicsElementActor);
 
     }
 
@@ -312,8 +320,12 @@ public class InputManager {
         touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
         camera.unproject(touchPos);
         touchPos.set((float) Math.floor(touchPos.x), (float) Math.floor(touchPos.y), 0);
-        if (touchPos.x != rectStartPos.x && touchPos.y != rectStartPos.y) {
-            matrix.spawnRect(rectStartPos, lastTouchPos, currentlySelectedElement);
+        spawnRect(matrix, rectStartPos, lastTouchPos, currentlySelectedElement);
+    }
+
+    public void spawnRect(CellularMatrix matrix, Vector3 topLeft, Vector3 bottomRight, ElementType type) {
+        if (topLeft.x != bottomRight.x && topLeft.y != bottomRight.y) {
+            matrix.spawnRect(topLeft, bottomRight, type);
         }
     }
 
@@ -326,7 +338,8 @@ public class InputManager {
             File selectedFile = listOfFiles[index];
             Path filePath = Paths.get(selectedFile.toString());
             List<String> object = Files.readAllLines(filePath, StandardCharsets.UTF_8);
-            for (int r = 0; r < object.size(); r++) {
+//            polygonElementArray.setSize(object.size());
+            for (int r = object.size() -1; r >= 0; r--) {
                 Array<Element> row = new Array<>();
                 polygonElementArray.add(row);
                 String line = object.get(r);

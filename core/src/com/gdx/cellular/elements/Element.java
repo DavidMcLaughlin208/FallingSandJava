@@ -21,6 +21,9 @@ public abstract class Element {
     public int matrixY;
     public Vector3 vel;
 
+    public int secondaryMatrixX;
+    public int secondaryMatrixY;
+
     public float frictionFactor;
     public boolean isFreeFalling = true;
     public float inertialResistance;
@@ -113,6 +116,12 @@ public abstract class Element {
     public void setCoordinatesByMatrix(int providedX, int providedY) {
         setXByMatrix(providedX);
         setYByMatrix(providedY);
+    }
+
+
+    public void setSecondaryCoordinatesByMatrix(int providedX, int providedY) {
+        this.secondaryMatrixX = providedX;
+        this.secondaryMatrixY = providedY;
     }
 
     public void setCoordinatesByPixel(int providedX, int providedY) {
