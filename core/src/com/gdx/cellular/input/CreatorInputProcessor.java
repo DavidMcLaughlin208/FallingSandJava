@@ -42,7 +42,6 @@ public class CreatorInputProcessor implements InputProcessor {
         if (keycode == Input.Keys.C) {
             inputManager.clearMatrix(matrix);
             inputManager.clearBox2dActors();
-            inputManager.clearPhysicsElementObjects();
         }
         if (keycode == Input.Keys.P) {
             inputManager.togglePause();

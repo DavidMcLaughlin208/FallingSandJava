@@ -4,10 +4,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.*;
 import com.gdx.cellular.CellularMatrix;
+import com.gdx.cellular.box2d.PhysicsElementActor;
 import com.gdx.cellular.box2d.ShapeFactory;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
@@ -251,7 +255,7 @@ public class InputManager {
                     if (!touchedLastFrame) {
                         switch (currentlySelectedElement) {
                             case SAND:
-                                ShapeFactory.createDefaultDynamicBox((int) touchPos.x, (int) touchPos.y, brushSize / 2);
+                                spawnBox((int) touchPos.x, (int) touchPos.y, brushSize, matrix);
                                 break;
                             case STONE:
                                 ShapeFactory.createDefaultDynamicCircle((int) touchPos.x, (int) touchPos.y, brushSize / 2);
@@ -275,6 +279,32 @@ public class InputManager {
 //                matrix.spawnRect(mouseDownPos, lastTouchPos, currentlySelectedElement);
 //            }
 //            touchedLastFrame = false;
+    }
+
+    public void spawnBox(int x, int y, int brushSize, CellularMatrix matrix) {
+        int matrixX = matrix.toMatrix(x);
+        int matrixY = matrix.toMatrix(y);
+        Body body =  ShapeFactory.createDefaultDynamicBox(x, y, brushSize / 2);
+        PolygonShape shape = (PolygonShape) body.getFixtureList().get(0).getShape();
+        Vector2 point = new Vector2();
+        shape.getVertex(0, point);
+        Vector2 worldPoint1 = body.getWorldPoint(point).cpy();
+        shape.getVertex(2, point);
+        Vector2 worldPoint2 = body.getWorldPoint(point).cpy();
+
+        Array<Array<Element>> elementList = new Array<>();
+        for (int xIndex = matrix.toMatrix((int) worldPoint1.x); xIndex < matrix.toMatrix((int) (worldPoint1.x + (worldPoint2.x - worldPoint1.x))); xIndex++) {
+            Array<Element> row = new Array<>();
+            elementList.add(row);
+            for (int yIndex = matrix.toMatrix((int) worldPoint2.y); yIndex > matrix.toMatrix((int) (worldPoint2.y + (worldPoint1.y - worldPoint2.y))); yIndex--) {
+                Element element = matrix.spawnElementByMatrix(matrix.toMatrix(x), matrix.toMatrix(y), currentlySelectedElement);
+                row.add(element);
+            }
+        }
+
+        PhysicsElementActor physicsElementActor = new PhysicsElementActor(body, elementList);
+        matrix.physicsElementActors.add(physicsElementActor);
+
     }
 
     public void spawnRect(CellularMatrix matrix, OrthographicCamera camera) {

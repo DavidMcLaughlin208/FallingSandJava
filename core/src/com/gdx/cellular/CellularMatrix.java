@@ -115,7 +115,7 @@ public class CellularMatrix {
 
     public void drawAll(ShapeRenderer sr) {
         drawElements(sr);
-        drawChunks(sr);
+//        drawChunks(sr);
     }
 
     private void drawElements(ShapeRenderer sr) {
@@ -164,11 +164,11 @@ public class CellularMatrix {
         sr.setColor(Color.RED);
         int mod = CellularAutomaton.box2dSizeModifier;
         for (Body body : bodies) {
+            Vector2 position = body.getPosition();
             for (Fixture fixture : body.getFixtureList()) {
                 Shape.Type shapeType = fixture.getShape().getType();
                 switch (shapeType) {
                     case Circle:
-                        Vector2 position = body.getPosition();
                         sr.set(ShapeRenderer.ShapeType.Line);
                         sr.circle(position.x * mod, position.y * mod, fixture.getShape().getRadius() * mod);
                         break;
@@ -196,7 +196,9 @@ public class CellularMatrix {
                             currentVertex.y *= mod;
                             Vector2 curVertCopy = previousVertex.cpy();
                             sr.line(curVertCopy, prevVertCopy);
+
                         }
+                        sr.circle(position.x * mod, position.y * mod, 5);
                         break;
                 }
             }
@@ -624,7 +626,7 @@ public class CellularMatrix {
         int matrixMouseDownY = toMatrix(mouseDownPos.y);
         int matrixMouseUpX = toMatrix(mouseUpPos.x);
         int matrixMouseUpY = toMatrix(mouseUpPos.y);
-        Vector3 boxCenter = new Vector3((matrixMouseDownX + matrixMouseUpX) / 2, (matrixMouseDownY + matrixMouseUpY) / 2, 0);
+        Vector3 boxCenter = new Vector3((float) (matrixMouseDownX + matrixMouseUpX) / 2, (float) (matrixMouseDownY + matrixMouseUpY) / 2, 0);
         List<Vector2> vertices = getRectVertices(matrixMouseDownX, matrixMouseUpX, matrixMouseDownY, matrixMouseUpY);
 
         Body body = ShapeFactory.createStaticRect(boxCenter, vertices);

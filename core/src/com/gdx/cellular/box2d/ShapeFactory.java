@@ -236,6 +236,7 @@ public class ShapeFactory {
 
         Body body = shapeFactory.world.createBody(bodyDef);
 
+
         PolygonShape box = new PolygonShape();
         List<Vector2> updatedVertices = vertices.stream().map(v -> v.scl(1f/(float) mod)).collect(Collectors.toList());
         updatedVertices = vertices.stream().map(v -> {
@@ -243,7 +244,9 @@ public class ShapeFactory {
             v.y = (float) Math.floor(v.y);
             return v;
         }).collect(Collectors.toList());
+        updatedVertices = updatedVertices.stream().map(vert -> new Vector2(vert.x - center.x, vert.y - center.y)).collect(Collectors.toList());
         Vector2[] verticesAsArray = updatedVertices.toArray(new Vector2[0]);
+//        box.setAsBox(10, 10);
         box.set(verticesAsArray);
 
 
