@@ -1,7 +1,9 @@
 package com.gdx.cellular.elements;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.gdx.cellular.CellularAutomaton;
 import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.effects.EffectColors;
@@ -37,6 +39,8 @@ public abstract class Element {
     public Integer lifeSpan = null;
     public Color defaultColor;
     public ElementType elementType;
+    public Body owningBody = null;
+    public Vector2 owningBodyCoords = null;
 
     public Color color;
 
@@ -98,6 +102,14 @@ public abstract class Element {
         matrix.setElementAtIndex(moveToLocationMatrixX, moveToLocationMatrixY, toSwap);
     }
 
+    public void setOwningBodyCoords(int x, int y) {
+        this.owningBodyCoords = new Vector2(x, y);
+    }
+
+    public void setCoordinatesByMatrix(Vector2 pos) {
+        setCoordinatesByMatrix((int) pos.x, (int) pos.y);
+    }
+
     public void setCoordinatesByMatrix(int providedX, int providedY) {
         setXByMatrix(providedX);
         setYByMatrix(providedY);
@@ -128,12 +140,12 @@ public abstract class Element {
         this.pixelY = toPixel(providedVal);
     }
 
-    private int toMatrix(int pixelVal) {
+    public int toMatrix(int pixelVal) {
         return (int) Math.floor(pixelVal / CellularAutomaton.pixelSizeModifier);
     }
 
-    private int toPixel(int pixelVal) {
-        return (int) Math.floor(pixelVal * CellularAutomaton.pixelSizeModifier);
+    public int toPixel(int matrixVal) {
+        return (int) Math.floor(matrixVal * CellularAutomaton.pixelSizeModifier);
     }
 
     public boolean isReactionFrame() {

@@ -68,7 +68,7 @@ public class ShapeFactory {
         return body;
     }
 
-    public static Body createDynamicBox(int x, int y, int size, float density, float friction, float restituion) {
+    public static Body createDynamicBox(int x, int y, int size, float density, float friction, float restitution) {
         int mod = CellularAutomaton.box2dSizeModifier;
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -86,7 +86,7 @@ public class ShapeFactory {
         fixtureDef.shape = box;
         fixtureDef.density = density;
         fixtureDef.friction = friction;
-        fixtureDef.restitution = restituion;
+        fixtureDef.restitution = restitution;
 
         Fixture fixture = body.createFixture(fixtureDef);
 
@@ -229,7 +229,7 @@ public class ShapeFactory {
     public static Body createStaticRect(Vector3 boxCenter, List<Vector2> vertices, int angle, float friction) {
         int mod = CellularAutomaton.box2dSizeModifier;
         BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.StaticBody;
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
 
         Vector2 center = new Vector2(Math.round(boxCenter.x / mod), Math.round(boxCenter.y / mod));
         bodyDef.position.set(center);

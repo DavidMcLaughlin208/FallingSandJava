@@ -13,6 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.gdx.cellular.box2d.PhysicsElementActor;
 import com.gdx.cellular.box2d.ShapeFactory;
 import com.gdx.cellular.input.InputManager;
 import com.gdx.cellular.input.InputProcessors;
@@ -138,13 +139,14 @@ public class CellularAutomaton extends ApplicationAdapter {
 				startAndWaitOnOddThreads(threads);
 			}
 //			matrix.drawAll(shapeRenderer);
-			matrixStage.draw();
 
 		}
 
 		debugRenderer.render(b2dWorld, camera.combined);
-		matrix.drawBox2d(bodies, shapeRenderer);
 		b2dWorld.step(1/60f, 20, 10);
+		matrix.stepPhysicsElementActors();
+		matrixStage.draw();
+		matrix.drawBox2d(shapeRenderer, bodies);
 		inputManager.drawMenu();
 	}
 

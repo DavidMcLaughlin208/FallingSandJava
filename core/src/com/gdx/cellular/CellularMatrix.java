@@ -9,18 +9,15 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.Shape;
-import com.badlogic.gdx.scenes.scene2d.ui.Cell;
 import com.badlogic.gdx.utils.Array;
+import com.gdx.cellular.box2d.PhysicsElementActor;
 import com.gdx.cellular.box2d.ShapeFactory;
 import com.gdx.cellular.elements.ColorConstants;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.elements.EmptyCell;
-import com.gdx.cellular.elements.gas.Gas;
 import com.gdx.cellular.elements.liquid.Liquid;
-import com.gdx.cellular.elements.solid.immoveable.ImmovableSolid;
 import com.gdx.cellular.elements.solid.movable.MovableSolid;
-import com.gdx.cellular.particles.Particle;
 import com.gdx.cellular.spouts.ElementSpout;
 import com.gdx.cellular.spouts.ParticleSpout;
 import com.gdx.cellular.spouts.Spout;
@@ -45,16 +42,17 @@ public class CellularMatrix {
     private Array<Array<Element>> matrix;
     private Array<Array<Chunk>> chunks;
     public Array<Spout> spoutArray;
+    public Array<PhysicsElementActor> physicsElementActors = new Array<>();
 
     public CellularMatrix(int width, int height, int pixelSizeModifier) {
         this.pixelSizeModifier = pixelSizeModifier;
-        innerArraySize = toMatrix(width);
-        outerArraySize = toMatrix(height);
-        matrix = generateMatrix();
+        this.innerArraySize = toMatrix(width);
+        this.outerArraySize = toMatrix(height);
+        this.matrix = generateMatrix();
         if (useChunks) {
-            chunks = generateChunks();
+            this.chunks = generateChunks();
         }
-        shuffledXIndexes = generateShuffledIndexes(innerArraySize);
+        this.shuffledXIndexes = generateShuffledIndexes(innerArraySize);
 
         calculateAndSetThreadedXIndexOffset();
         spoutArray = new Array<>();
@@ -161,9 +159,9 @@ public class CellularMatrix {
         sr.end();
     }
 
-    public void drawBox2d(Array<Body> bodies, ShapeRenderer sr) {
+    public void drawBox2d(ShapeRenderer sr, Array<Body> bodies) {
+        sr.begin(ShapeRenderer.ShapeType.Line);
         sr.setColor(Color.RED);
-        sr.begin();
         int mod = CellularAutomaton.box2dSizeModifier;
         for (Body body : bodies) {
             for (Fixture fixture : body.getFixtureList()) {
@@ -349,12 +347,17 @@ public class CellularMatrix {
         }
     }
 
-    public void spawnElementByMatrix(int matrixX, int matrixY, ElementType elementType) {
+    public Element spawnElementByMatrix(int matrixX, int matrixY, ElementType elementType) {
         if (isWithinBounds(matrixX, matrixY) && get(matrixX, matrixY).getClass() != elementType.clazz) {
             Element newElement = elementType.createElementByMatrix(matrixX, matrixY);
-            setElementAtIndex(matrixX, matrixY, elementType.createElementByMatrix(matrixX, matrixY));
+            setElementAtIndex(matrixX, matrixY, newElement);
             reportToChunkActive(newElement);
+            return newElement;
         }
+        return null;
+    }
+    public boolean isWithinBounds(Vector2 vec) {
+        return isWithinBounds((int) vec.x, (int) vec.y);
     }
 
     public boolean isWithinBounds(int matrixX, int matrixY) {
@@ -558,7 +561,7 @@ public class CellularMatrix {
         return new Vector3(x, y, 0);
     }
 
-    private Vector3 generateRandomVelocityWithBounds(int lower, int upper) {
+    public Vector3 generateRandomVelocityWithBounds(int lower, int upper) {
         return generateRandomVelocityWithBounds(lower, upper, lower, upper);
     }
 
@@ -640,13 +643,19 @@ public class CellularMatrix {
             maxY = Math.max(toMatrix(worldPoint.y * mod), maxY);
 
         }
+        Array<Array<Element>> elementList = new Array<>();
         int xDistance = maxX - minX;
         int yDistance = maxY - minY;
-        for (int x = minX; x < minX + xDistance; x++) {
-            for (int y = minY; y < minY + yDistance; y++) {
-                spawnElementByMatrix(x, y, currentlySelectedElement);
+        for (int y = minY; y < minY + yDistance; y++) {
+            Array<Element> row = new Array<>();
+            elementList.add(row);
+            for (int x = minX; x < minX + xDistance; x++) {
+                Element element = spawnElementByMatrix(x, y, currentlySelectedElement);
+                row.add(element);
             }
         }
+        PhysicsElementActor newActor = new PhysicsElementActor(body, elementList);
+        physicsElementActors.add(newActor);
     }
 
     private List<Vector2> getRectVertices(int minX, int maxX, int minY, int maxY) {
@@ -656,6 +665,18 @@ public class CellularMatrix {
         verts.add(new Vector2(maxX, maxY));
         verts.add(new Vector2(maxX, minY));
         return verts;
+    }
+
+    public void stepPhysicsElementActors() {
+        for (PhysicsElementActor physicsElementActor : physicsElementActors) {
+            physicsElementActor.step(this);
+        }
+    }
+
+    public void drawPhysicsElementActors(ShapeRenderer sr) {
+        for (PhysicsElementActor physicsElementActor : physicsElementActors) {
+            physicsElementActor.draw(sr);
+        }
     }
 
     public static class FunctionInput {

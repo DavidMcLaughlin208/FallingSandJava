@@ -195,6 +195,7 @@ public class InputManager {
 
     public void clearMatrix(CellularMatrix matrix) {
         matrix.clearAll();
+        matrix.physicsElementActors = new Array<>();
     }
 
     public void placeSpout(CellularMatrix matrix, OrthographicCamera camera) {
