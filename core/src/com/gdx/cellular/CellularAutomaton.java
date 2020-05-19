@@ -143,11 +143,13 @@ public class CellularAutomaton extends ApplicationAdapter {
 
 		}
 
-		b2dWorld.step(1/60f, 5, 5);
+		b2dWorld.step(1/60f, 5, 2);
 		matrix.stepPhysicsElementActors();
 		matrixStage.draw();
-//		matrix.drawBox2d(shapeRenderer, bodies);
+		matrix.drawBox2d(shapeRenderer, bodies);
+//		shapeRenderer.begin();
 //		matrix.drawPhysicsElementActors(shapeRenderer);
+//		shapeRenderer.end();
 		debugRenderer.render(b2dWorld, camera.combined);
 		inputManager.drawMenu();
 	}

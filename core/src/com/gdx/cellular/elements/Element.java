@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.gdx.cellular.CellularAutomaton;
 import com.gdx.cellular.CellularMatrix;
+import com.gdx.cellular.box2d.PhysicsElementActor;
 import com.gdx.cellular.effects.EffectColors;
 
 import java.util.BitSet;
@@ -21,8 +22,8 @@ public abstract class Element {
     public int matrixY;
     public Vector3 vel;
 
-    public int secondaryMatrixX;
-    public int secondaryMatrixY;
+    public int secondaryMatrixX = -1;
+    public int secondaryMatrixY = -1;
 
     public float frictionFactor;
     public boolean isFreeFalling = true;
@@ -42,7 +43,7 @@ public abstract class Element {
     public Integer lifeSpan = null;
     public Color defaultColor;
     public ElementType elementType;
-    public Body owningBody = null;
+    public PhysicsElementActor owningBody = null;
     public Vector2 owningBodyCoords = null;
 
     public Color color;
@@ -103,6 +104,10 @@ public abstract class Element {
         matrix.setElementAtIndex(this.matrixX, this.matrixY, thirdNeighbor);
         matrix.setElementAtIndex(toSwap.matrixX, toSwap.matrixY, this);
         matrix.setElementAtIndex(moveToLocationMatrixX, moveToLocationMatrixY, toSwap);
+    }
+
+    public void setOwningBodyCoords(Vector2 coords) {
+        setOwningBodyCoords((int) coords.x, (int) coords.y);
     }
 
     public void setOwningBodyCoords(int x, int y) {
@@ -229,17 +234,36 @@ public abstract class Element {
     }
 
     protected void die(CellularMatrix matrix, ElementType type) {
-        matrix.setElementAtIndex(matrixX, matrixY, type.createElementByMatrix(matrixX, matrixY));
+        Element newElement = type.createElementByMatrix(matrixX, matrixY);
+        matrix.setElementAtIndex(matrixX, matrixY, newElement);
         matrix.reportToChunkActive(matrixX, matrixY);
+        if (owningBody != null) {
+            owningBody.elementDeath(this, newElement);
+        }
     }
 
     public void dieAndReplace(CellularMatrix matrix, ElementType type) {
         die(matrix, type);
     }
 
-    public void dieAndReplaceWithParticle(CellularMatrix matrix, Vector3 velocty) {
-        matrix.setElementAtIndex(matrixX, matrixY, ElementType.createParticleByMatrix(matrix, matrixX, matrixY, velocty, elementType));
-        matrix.reportToChunkActive(matrixX, matrixY);
+    public void dieAndReplaceWithParticle(CellularMatrix matrix, Vector3 velocity) {
+        if (!(matrix.get(matrixX, matrixY) instanceof EmptyCell)) {
+            int yIndex = 1;
+            while (true) {
+                Element elementAtNewPos = matrix.get(matrixX, matrixY + yIndex);
+                if (elementAtNewPos == null) {
+                    break;
+                } else if (elementAtNewPos instanceof EmptyCell) {
+                    matrix.setElementAtIndex(matrixX, matrixY + yIndex, ElementType.createParticleByMatrix(matrix, matrixX, matrixY, velocity, elementType));
+                    matrix.reportToChunkActive(matrixX, matrixY + yIndex);
+                    break;
+                }
+                yIndex++;
+            }
+        } else {
+            matrix.setElementAtIndex(matrixX, matrixY, ElementType.createParticleByMatrix(matrix, matrixX, matrixY, velocity, elementType));
+            matrix.reportToChunkActive(matrixX, matrixY);
+        }
     }
 
     public boolean didNotMove(Vector3 formerLocation) {

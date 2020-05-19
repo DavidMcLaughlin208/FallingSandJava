@@ -231,7 +231,7 @@ public class ShapeFactory {
     }
 
     public static Body createRect(Vector3 boxCenter, List<Vector2> vertices, int angle, float friction, BodyDef.BodyType type) {
-        int mod = CellularAutomaton.box2dSizeModifier;
+        int mod = CellularAutomaton.box2dSizeModifier/2;
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = type;
 

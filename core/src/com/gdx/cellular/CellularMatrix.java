@@ -662,7 +662,7 @@ public class CellularMatrix {
             Array<Element> row = new Array<>();
             elementList.add(row);
             for (int x = minX; x < minX + xDistance; x++) {
-                type = (x % 2 == 0) ? ElementType.STONE : ElementType.WOOD;
+                type = (x % 2 == 0) ? ElementType.STONE : ElementType.STONE;
 
                 Element element = spawnElementByMatrix(x, y, type);
                 row.add(element);
@@ -691,6 +691,10 @@ public class CellularMatrix {
         for (PhysicsElementActor physicsElementActor : physicsElementActors) {
             physicsElementActor.draw(sr);
         }
+    }
+
+    public void destroyPhysicsElementActor(PhysicsElementActor physicsElementActor) {
+        this.physicsElementActors.removeValue(physicsElementActor, true);
     }
 
     public static class FunctionInput {

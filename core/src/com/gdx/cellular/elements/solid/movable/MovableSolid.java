@@ -26,7 +26,7 @@ public abstract class MovableSolid extends Solid {
 
     public void step(CellularMatrix matrix) {
         if (this.owningBody != null) {
-            return;
+            stepAsPartOfPhysicsBody(matrix);
         }
         if (stepped.get(0) == CellularAutomaton.stepped.get(0)) return;
         stepped.flip(0);
@@ -95,6 +95,14 @@ public abstract class MovableSolid extends Solid {
                 matrix.reportToChunkActive(this);
             }
         }
+    }
+
+    private void stepAsPartOfPhysicsBody(CellularMatrix matrix) {
+        applyHeatToNeighborsIfIgnited(matrix);
+        takeEffectsDamage(matrix);
+        spawnSparkIfIgnited(matrix);
+        checkLifeSpan(matrix);
+        modifyColor();
     }
 
     @Override
