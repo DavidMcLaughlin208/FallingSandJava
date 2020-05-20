@@ -5,10 +5,7 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.Shape;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
 import com.gdx.cellular.box2d.PhysicsElementActor;
 import com.gdx.cellular.box2d.ShapeFactory;
@@ -632,7 +629,7 @@ public class CellularMatrix {
         }
     }
 
-    public void spawnRect(Vector3 mouseDownPos, Vector3 mouseUpPos, ElementType currentlySelectedElement) {
+    public void spawnRect(Vector3 mouseDownPos, Vector3 mouseUpPos, ElementType currentlySelectedElement, BodyDef.BodyType bodyType) {
         int mod = CellularAutomaton.box2dSizeModifier;
         int matrixMouseDownX = toMatrix(mouseDownPos.x);
         int matrixMouseDownY = toMatrix(mouseDownPos.y);
@@ -641,7 +638,7 @@ public class CellularMatrix {
         Vector3 boxCenter = new Vector3((float) (matrixMouseDownX + matrixMouseUpX) / 2, (float) (matrixMouseDownY + matrixMouseUpY) / 2, 0);
         List<Vector2> vertices = getRectVertices(matrixMouseDownX, matrixMouseUpX, matrixMouseDownY, matrixMouseUpY);
 
-        Body body = ShapeFactory.createDynamicRect(boxCenter, vertices);
+        Body body = ShapeFactory.createBoxByBodyType(boxCenter, vertices, bodyType);
         PolygonShape shape = (PolygonShape) body.getFixtureList().get(0).getShape();
         Vector2 point = new Vector2();
         int minX = innerArraySize;
@@ -671,7 +668,7 @@ public class CellularMatrix {
                 row.add(element);
             }
         }
-        PhysicsElementActor newActor = new PhysicsElementActor(body, elementList);
+        PhysicsElementActor newActor = new PhysicsElementActor(body, elementList, minX, maxY);
         physicsElementActors.add(newActor);
     }
 

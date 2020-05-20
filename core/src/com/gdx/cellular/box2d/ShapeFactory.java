@@ -230,6 +230,10 @@ public class ShapeFactory {
         return createRect(boxCenter, vertices, 0, 0.5f, BodyDef.BodyType.DynamicBody);
     }
 
+    public static Body createBoxByBodyType(Vector3 boxCenter, List<Vector2> vertices, BodyDef.BodyType type) {
+        return createRect(boxCenter, vertices, 0, 0.5f, type);
+    }
+
     public static Body createRect(Vector3 boxCenter, List<Vector2> vertices, int angle, float friction, BodyDef.BodyType type) {
         int mod = CellularAutomaton.box2dSizeModifier/2;
         BodyDef bodyDef = new BodyDef();
@@ -281,6 +285,7 @@ public class ShapeFactory {
 //        Fixture fixture = body.createFixture(fixtureDef);
 //
 //        box.dispose();
+        body.setTransform(body.getPosition(), angle);
         return body;
     }
 

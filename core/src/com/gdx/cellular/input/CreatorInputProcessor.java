@@ -4,6 +4,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.elements.ElementType;
 
@@ -78,7 +79,7 @@ public class CreatorInputProcessor implements InputProcessor {
         if (button == Input.Buttons.LEFT) {
             inputManager.setTouchedLastFrame(false);
             if (inputManager.getMouseMode() == RECTANGLE) {
-                inputManager.spawnRect(matrix, camera);
+                inputManager.spawnRect(matrix, camera, BodyDef.BodyType.DynamicBody);
             }
         }
         return false;

@@ -240,6 +240,9 @@ public abstract class Element {
         matrix.reportToChunkActive(matrixX, matrixY);
         if (owningBody != null) {
             owningBody.elementDeath(this, newElement);
+            if (secondaryMatrixX != -1 && secondaryMatrixY != -1) {
+                matrix.setElementAtIndex(secondaryMatrixX, secondaryMatrixY, newElement);
+            }
         }
     }
 

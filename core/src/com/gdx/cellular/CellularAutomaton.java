@@ -162,22 +162,22 @@ public class CellularAutomaton extends ApplicationAdapter {
 		BodyDef groundBodyDef = new BodyDef();
 
 //		List<Vector2> verts = new ArrayList<>();
-//		inputManager.spawnRect(matrix, new Vector3((camera.viewportWidth/2/box2dSizeModifier/8) * 10, 10, 0), new Vector3((camera.viewportWidth/2/box2dSizeModifier - camera.viewportWidth/2/box2dSizeModifier/8) * 10, 0, 0), ElementType.STONE);
+		inputManager.spawnRect(matrix, new Vector3((camera.viewportWidth/2/box2dSizeModifier/8) * 10, 150, 0), new Vector3((camera.viewportWidth/2/box2dSizeModifier - camera.viewportWidth/2/box2dSizeModifier/8) * 20, 50, 0), ElementType.STONE, BodyDef.BodyType.StaticBody);
 //		ShapeFactory.createStaticRect(new Vector3(camera.viewportWidth/2/box2dSizeModifier, 10, 0), verts);
 
-		groundBodyDef.position.set(new Vector2(camera.viewportWidth/2/box2dSizeModifier, 10));
-
-
-		Body groundBody = b2dWorld.createBody(groundBodyDef);
-
-
-		PolygonShape groundBox = new PolygonShape();
-
-		groundBox.setAsBox(camera.viewportWidth/3/box2dSizeModifier, 5.0f);
-
-		groundBody.createFixture(groundBox, 0.0f);
-
-		groundBox.dispose();
+//		groundBodyDef.position.set(new Vector2(camera.viewportWidth/2/box2dSizeModifier, 10));
+//
+//
+//		Body groundBody = b2dWorld.createBody(groundBodyDef);
+//
+//
+//		PolygonShape groundBox = new PolygonShape();
+//
+//		groundBox.setAsBox(camera.viewportWidth/3/box2dSizeModifier, 5.0f);
+//
+//		groundBody.createFixture(groundBox, 0.0f);
+//
+//		groundBox.dispose();
 	}
 
 	private void startAndWaitOnEvenThreads(List<Thread> threads) {

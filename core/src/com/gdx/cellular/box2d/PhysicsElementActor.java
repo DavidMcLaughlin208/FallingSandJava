@@ -23,23 +23,26 @@ public class PhysicsElementActor {
     float lastAngle = 0;
     int xWidth;
     int yWidth;
+    int shouldCalculateCount = 3;
 
-    public PhysicsElementActor(Body body, Array<Array<Element>> elements) {
+    public PhysicsElementActor(Body body, Array<Array<Element>> elements, int minX, int maxY) {
         this.physicsBody = body;
         this.elements = elements;
 //        xWidth = (elements.get(0).size/2);
-        Vector2 offsetVector = new Vector2();
-        ((PolygonShape) physicsBody.getFixtureList().get(0).getShape()).getVertex(0, offsetVector);
-        xWidth = (int) offsetVector.x;
+//        Vector2 offsetVector = new Vector2();
+//        ((PolygonShape) physicsBody.getFixtureList().get(0).getShape()).getVertex(0, offsetVector);
+//        xWidth = Math.round(offsetVector.x) * 5;
 //        yWidth = (elements.size / 2);
-        yWidth = (int) offsetVector.y;
+//        yWidth = Math.round(offsetVector.y) * 5;
+        xWidth = (int) Math.abs(body.getPosition().x*5 - minX);
+        yWidth = (int) Math.abs(body.getPosition().y*5 - maxY);
         for (int y = 0; y < elements.size; y++) {
             Array<Element> row = elements.get(y);
             for (int x = 0; x < row.size; x++) {
                 Element element = row.get(x);
                 if (element != null) {
                     element.owningBody = this;
-                    element.setOwningBodyCoords(x - (xWidth*10), y + (yWidth*10));
+                    element.setOwningBodyCoords(x - xWidth, y - yWidth);
                 }
             }
         }
@@ -53,7 +56,7 @@ public class PhysicsElementActor {
         xAccumulator += Math.abs(physicsBody.getPosition().x - lastPos.x);
         yAccumulator += Math.abs(physicsBody.getPosition().y - lastPos.y);
         angleAccumulator += Math.abs(physicsBody.getAngle() - lastAngle);
-        if (xAccumulator > .1 || yAccumulator > .1 | angleAccumulator > .5) {
+        if (shouldCalculateCount > 0 || xAccumulator > .1 || yAccumulator > .1 | angleAccumulator > .5) {
             for (int y = 0; y < elements.size; y++) {
                 Array<Element> row = elements.get(y);
                 for (int x = 0; x < row.size; x++) {
@@ -68,9 +71,12 @@ public class PhysicsElementActor {
                         if (elementAtNewPos == element) {
                             continue;
                         }
+                        if (elementAtNewPos != null && elementAtNewPos.owningBody != null) {
+                            elementAtNewPos.owningBody.shouldCalculateCount = 1;
+                        }
                         if (elementAtNewPos instanceof EmptyCell || (elementAtNewPos != null && elementAtNewPos.owningBody == this)) {
+                            matrix.setElementAtIndex(element.matrixX, element.matrixY, ElementType.EMPTYCELL.createElementByMatrix(element.matrixX, element.matrixY));
                             if (matrix.isWithinBounds(matrixCoords)) {
-                                matrix.setElementAtIndex(element.matrixX, element.matrixY, ElementType.EMPTYCELL.createElementByMatrix(element.matrixX, element.matrixY));
                                 matrix.setElementAtIndex((int) matrixCoords.x, (int) matrixCoords.y, element);
                             }
                         } else {
@@ -94,20 +100,27 @@ public class PhysicsElementActor {
                         //                    }
                     }
                 }
-                this.lastAngle = physicsBody.getAngle();
-                this.lastPos = physicsBody.getPosition().cpy();
-                xAccumulator = 0;
-                yAccumulator = 0;
-                angleAccumulator = 0;
             }
+            this.lastAngle = physicsBody.getAngle();
+            this.lastPos = physicsBody.getPosition().cpy();
+            xAccumulator = 0;
+            yAccumulator = 0;
+            angleAccumulator = 0;
+            shouldCalculateCount -= 1;
+            int drawLength = 2;
             for (int y = 0; y < elements.size; y++) {
                 Array<Element> row = elements.get(y);
                 for (int x = 0; x < row.size - 2; x++) {
                     Element element = row.get(x);
                     if (element != null) {
-                        Element nextElement = row.get(x + 1);
-                        if (nextElement != null && (element.matrixX - nextElement.matrixX != 1)) {
-                            matrix.setElementAtSecondLocation(element.matrixX + 1, element.matrixY, element);
+                        for (int length = 1; length <= drawLength; length++) {
+                            Element nextElement = row.get(x + length);
+                            if (!(nextElement instanceof EmptyCell)) {
+                                break;
+                            }
+                            if ((element.matrixX - nextElement.matrixX != length)) {
+                                matrix.setElementAtSecondLocation(element.matrixX + length, element.matrixY, element);
+                            }
                         }
                     }
                 }

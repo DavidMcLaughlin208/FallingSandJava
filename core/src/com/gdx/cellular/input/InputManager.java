@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.*;
@@ -285,8 +286,8 @@ public class InputManager {
 
     private void spawnRandomPolygon(int x, int y, Array<Array<Element>> randomPolygonArray, CellularMatrix matrix) {
         Body body = ShapeFactory.createDynamicPolygonFromElementArray(x, y, randomPolygonArray, earClip);
-        PhysicsElementActor physicsElementActor = new PhysicsElementActor(body, randomPolygonArray);
-        matrix.physicsElementActors.add(physicsElementActor);
+//        PhysicsElementActor physicsElementActor = new PhysicsElementActor(body, randomPolygonArray);
+//        matrix.physicsElementActors.add(physicsElementActor);
     }
 
     public void spawnBox(int x, int y, int brushSize, CellularMatrix matrix) {
@@ -315,17 +316,17 @@ public class InputManager {
 
     }
 
-    public void spawnRect(CellularMatrix matrix, OrthographicCamera camera) {
+    public void spawnRect(CellularMatrix matrix, OrthographicCamera camera, BodyDef.BodyType bodyType) {
         Vector3 touchPos = new Vector3();
         touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
         camera.unproject(touchPos);
         touchPos.set((float) Math.floor(touchPos.x), (float) Math.floor(touchPos.y), 0);
-        spawnRect(matrix, rectStartPos, lastTouchPos, currentlySelectedElement);
+        spawnRect(matrix, rectStartPos, lastTouchPos, currentlySelectedElement, bodyType);
     }
 
-    public void spawnRect(CellularMatrix matrix, Vector3 topLeft, Vector3 bottomRight, ElementType type) {
+    public void spawnRect(CellularMatrix matrix, Vector3 topLeft, Vector3 bottomRight, ElementType type, BodyDef.BodyType bodyType) {
         if (topLeft.x != bottomRight.x && topLeft.y != bottomRight.y) {
-            matrix.spawnRect(topLeft, bottomRight, type);
+            matrix.spawnRect(topLeft, bottomRight, type, bodyType);
         }
     }
 
