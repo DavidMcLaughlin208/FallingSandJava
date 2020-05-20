@@ -19,12 +19,12 @@ public enum ElementType {
     EMPTYCELL(EmptyCell.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {
-            return new EmptyCell(x, y, false);
+            return EmptyCell.getInstance();
         }
 
         @Override
         public Element createElementByPixel(int x, int y) {
-            return new EmptyCell(x, y, true);
+            return EmptyCell.getInstance();
         }
     },
     STONE(Stone.class) {

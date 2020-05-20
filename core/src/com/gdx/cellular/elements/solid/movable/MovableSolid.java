@@ -69,7 +69,7 @@ public abstract class MovableSolid extends Solid {
             if (matrix.isWithinBounds(modifiedMatrixX, modifiedMatrixY)) {
                 Element neighbor = matrix.get(modifiedMatrixX, modifiedMatrixY);
                 if (neighbor == this) continue;
-                boolean stopped = actOnNeighboringElement(neighbor, matrix, i == upperBound, i == 1, lastValidLocation, 0);
+                boolean stopped = actOnNeighboringElement(neighbor, modifiedMatrixX, modifiedMatrixY, matrix, i == upperBound, i == 1, lastValidLocation, 0);
                 if (stopped) {
                     break;
                 }
@@ -106,12 +106,12 @@ public abstract class MovableSolid extends Solid {
     }
 
     @Override
-    protected boolean actOnNeighboringElement(Element neighbor, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth) {
+    protected boolean actOnNeighboringElement(Element neighbor, int modifiedMatrixX, int modifiedMatrixY, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth) {
         if (neighbor instanceof EmptyCell || neighbor instanceof Particle) {
             setAdjacentNeighborsFreeFalling(matrix, depth, lastValidLocation);
             if (isFinal) {
                 isFreeFalling = true;
-                swapPositions(matrix, neighbor);
+                swapPositions(matrix, neighbor, modifiedMatrixX, modifiedMatrixY);
             } else {
                 return false;
             }
@@ -119,10 +119,10 @@ public abstract class MovableSolid extends Solid {
             if (depth > 0) {
                 isFreeFalling = true;
                 setAdjacentNeighborsFreeFalling(matrix, depth, lastValidLocation);
-                swapPositions(matrix, neighbor);
+                swapPositions(matrix, neighbor, modifiedMatrixX, modifiedMatrixY);
             } else {
                 isFreeFalling = true;
-                moveToLastValidAndSwap(matrix, neighbor, lastValidLocation);
+                moveToLastValidAndSwap(matrix, neighbor, modifiedMatrixX, modifiedMatrixY, lastValidLocation);
                 return true;
             }
         } else if (neighbor instanceof Solid) {
@@ -149,7 +149,7 @@ public abstract class MovableSolid extends Solid {
             neighbor.vel.y = vel.y;
             vel.x *= frictionFactor * neighbor.frictionFactor;
             if (diagonalNeighbor != null) {
-                boolean stoppedDiagonally = actOnNeighboringElement(diagonalNeighbor, matrix, true, false, lastValidLocation, depth + 1);
+                boolean stoppedDiagonally = actOnNeighboringElement(diagonalNeighbor, matrixX + additionalX, matrixY + additionalY, matrix, true, false, lastValidLocation, depth + 1);
                 if (!stoppedDiagonally) {
                     isFreeFalling = true;
                     return true;
@@ -158,7 +158,7 @@ public abstract class MovableSolid extends Solid {
 
             Element adjacentNeighbor = matrix.get(matrixX + additionalX, matrixY);
             if (adjacentNeighbor != null  && adjacentNeighbor != diagonalNeighbor) {
-                boolean stoppedAdjacently = actOnNeighboringElement(adjacentNeighbor, matrix, true, false, lastValidLocation, depth + 1);
+                boolean stoppedAdjacently = actOnNeighboringElement(adjacentNeighbor, matrixX + additionalX, matrixY, matrix, true, false, lastValidLocation, depth + 1);
                 if (stoppedAdjacently) vel.x *= -1;
                 if (!stoppedAdjacently) {
                     isFreeFalling = false;
@@ -172,7 +172,7 @@ public abstract class MovableSolid extends Solid {
             return true;
         } else if (neighbor instanceof Gas) {
             if (isFinal) {
-                moveToLastValidAndSwap(matrix, neighbor, lastValidLocation);
+                moveToLastValidAndSwap(matrix, neighbor, modifiedMatrixX, modifiedMatrixY, lastValidLocation);
                 return true;
             }
             return false;

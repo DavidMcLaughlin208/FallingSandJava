@@ -3,7 +3,6 @@ package com.gdx.cellular.elements;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.Body;
 import com.gdx.cellular.CellularAutomaton;
 import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.box2d.PhysicsElementActor;
@@ -73,18 +72,20 @@ public abstract class Element {
         return false;
     }
 
-    protected abstract boolean actOnNeighboringElement(Element neighbor, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth);
+    protected abstract boolean actOnNeighboringElement(Element neighbor, int modifiedMatrixX, int modifiedMatrixY, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth);
 
     public void swapPositions(CellularMatrix matrix, Element toSwap) {
-        int toSwapMatrixX = toSwap.matrixX;
-        int toSwapMatrixY = toSwap.matrixY;
+        swapPositions(matrix, toSwap, toSwap.matrixX, toSwap.matrixY);
+    }
+
+    public void swapPositions(CellularMatrix matrix, Element toSwap, int toSwapX, int toSwapY) {
         matrix.setElementAtIndex(this.matrixX, this.matrixY, toSwap);
-        matrix.setElementAtIndex(toSwapMatrixX, toSwapMatrixY, this);
+        matrix.setElementAtIndex(toSwapX, toSwapY, this);
     }
 
     public void moveToLastValid(CellularMatrix matrix, Vector3 moveToLocation) {
         Element toSwap = matrix.get(moveToLocation.x, moveToLocation.y);
-        swapPositions(matrix, toSwap);
+        swapPositions(matrix, toSwap, (int) moveToLocation.x, (int) moveToLocation.y);
     }
 
     public void moveToLastValidDieAndReplace(CellularMatrix matrix, Vector3 moveToLocation) {
@@ -96,13 +97,13 @@ public abstract class Element {
         die(matrix);
     }
 
-    public void moveToLastValidAndSwap(CellularMatrix matrix, Element toSwap, Vector3 moveToLocation) {
+    public void moveToLastValidAndSwap(CellularMatrix matrix, Element toSwap, int toSwapX, int toSwapY, Vector3 moveToLocation) {
         int moveToLocationMatrixX = (int) moveToLocation.x;
         int moveToLocationMatrixY = (int) moveToLocation.y;
         Element thirdNeighbor = matrix.get(moveToLocationMatrixX, moveToLocationMatrixY);
 
         matrix.setElementAtIndex(this.matrixX, this.matrixY, thirdNeighbor);
-        matrix.setElementAtIndex(toSwap.matrixX, toSwap.matrixY, this);
+        matrix.setElementAtIndex(toSwapX, toSwapY, this);
         matrix.setElementAtIndex(moveToLocationMatrixX, moveToLocationMatrixY, toSwap);
     }
 

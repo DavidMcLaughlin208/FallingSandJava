@@ -137,10 +137,10 @@ public class CellularMatrix {
                     }
                     toIndex = following;
                 }
-                x = toIndex;
 
                 sr.setColor(element.color);
-                sr.rect(element.pixelX, element.pixelY, rectDrawWidth(toIndex), pixelSizeModifier);
+                sr.rect(element.toPixel(x), element.toPixel(y), rectDrawWidth(toIndex), pixelSizeModifier);
+                x = toIndex;
 
             }
         }
@@ -325,9 +325,12 @@ public class CellularMatrix {
     }
 
     public boolean setElementAtSecondLocation(int x, int y, Element element) {
-        matrix.get(y).set(x, element);
-        element.setSecondaryCoordinatesByMatrix(x, y);
-        return true;
+        if (isWithinBounds(x, y)) {
+            matrix.get(y).set(x, element);
+            element.setSecondaryCoordinatesByMatrix(x, y);
+            return true;
+        }
+        return false;
     }
 
     public void spawnElementByPixelWithBrush(int pixelX, int pixelY, ElementType elementType, int localBrushSize) {

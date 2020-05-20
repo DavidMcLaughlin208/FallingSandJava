@@ -75,7 +75,7 @@ public class Particle extends Element {
             if (matrix.isWithinBounds(modifiedMatrixX, modifiedMatrixY)) {
                 Element neighbor = matrix.get(modifiedMatrixX, modifiedMatrixY);
                 if (neighbor == this) continue;
-                boolean stopped = actOnNeighboringElement(neighbor, matrix, i == upperBound, i == 1, lastValidLocation, 0);
+                boolean stopped = actOnNeighboringElement(neighbor, modifiedMatrixX, modifiedMatrixY, matrix, i == upperBound, i == 1, lastValidLocation, 0);
                 if (stopped) {
                     break;
                 }
@@ -90,10 +90,10 @@ public class Particle extends Element {
     }
 
     @Override
-    protected boolean actOnNeighboringElement(Element neighbor, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth) {
+    protected boolean actOnNeighboringElement(Element neighbor, int modifiedMatrixX, int modifiedMatrixY, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth) {
         if (neighbor instanceof EmptyCell || neighbor instanceof Particle) {
             if (isFinal) {
-                swapPositions(matrix, neighbor);
+                swapPositions(matrix, neighbor, modifiedMatrixX, modifiedMatrixY);
             } else {
                 return false;
             }
@@ -103,7 +103,7 @@ public class Particle extends Element {
             return true;
         } else if (neighbor instanceof Gas) {
             if (isFinal) {
-                moveToLastValidAndSwap(matrix, neighbor, lastValidLocation);
+                moveToLastValidAndSwap(matrix, neighbor, modifiedMatrixX, modifiedMatrixY, lastValidLocation);
                 return true;
             }
             return false;

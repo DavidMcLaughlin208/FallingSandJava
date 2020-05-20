@@ -9,7 +9,6 @@ import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.elements.EmptyCell;
 import com.gdx.cellular.elements.gas.Gas;
 import com.gdx.cellular.elements.solid.Solid;
-import com.gdx.cellular.elements.solid.movable.MovableSolid;
 import com.gdx.cellular.particles.Particle;
 
 public abstract class Liquid extends Element {
@@ -71,7 +70,7 @@ public abstract class Liquid extends Element {
             if (matrix.isWithinBounds(modifiedMatrixX, modifiedMatrixY)) {
                 Element neighbor = matrix.get(modifiedMatrixX, modifiedMatrixY);
                 if (neighbor == this) continue;
-                boolean stopped = actOnNeighboringElement(neighbor, matrix, i == upperBound, i == 1, lastValidLocation, 0);
+                boolean stopped = actOnNeighboringElement(neighbor, modifiedMatrixX, modifiedMatrixY, matrix, i == upperBound, i == 1, lastValidLocation, 0);
                 if (stopped) {
                     break;
                 }
@@ -100,21 +99,21 @@ public abstract class Liquid extends Element {
     }
 
     @Override
-    protected boolean actOnNeighboringElement(Element neighbor, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth) {
+    protected boolean actOnNeighboringElement(Element neighbor, int modifiedMatrixX, int modifiedMatrixY, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth) {
         boolean acted = actOnOther(neighbor, matrix);
         if (acted) return true;
         if (neighbor instanceof EmptyCell || neighbor instanceof Particle) {
             setAdjacentNeighborsFreeFalling(matrix, depth, lastValidLocation);
             if (isFinal) {
                 isFreeFalling = true;
-                swapPositions(matrix, neighbor);
+                swapPositions(matrix, neighbor, modifiedMatrixX, modifiedMatrixY);
             } else {
                 return false;
             }
         } else if (neighbor instanceof Liquid) {
             Liquid liquidNeighbor = (Liquid) neighbor;
             if (compareDensities(liquidNeighbor)) {
-                swapLiquidForDensities(matrix, liquidNeighbor, lastValidLocation);
+                swapLiquidForDensities(matrix, liquidNeighbor, modifiedMatrixX, modifiedMatrixY, lastValidLocation);
                 return false;
             }
             if (depth > 0) {
@@ -193,7 +192,7 @@ public abstract class Liquid extends Element {
             neighbor.vel.y = vel.y;
             vel.x *= frictionFactor;
             if (diagonalNeighbor != null) {
-                boolean stoppedDiagonally = iterateToAdditional(matrix, diagonalNeighbor.matrixX, diagonalNeighbor.matrixY, distance);
+                boolean stoppedDiagonally = iterateToAdditional(matrix, matrixX + additionalX, matrixY + additionalY, distance);
                 if (!stoppedDiagonally) {
                     isFreeFalling = true;
                     return true;
@@ -202,7 +201,7 @@ public abstract class Liquid extends Element {
 
             Element adjacentNeighbor = matrix.get(matrixX + additionalX, matrixY);
             if (adjacentNeighbor != null) {
-                boolean stoppedAdjacently = iterateToAdditional(matrix, adjacentNeighbor.matrixX, adjacentNeighbor.matrixY, distance);
+                boolean stoppedAdjacently = iterateToAdditional(matrix, matrixX + additionalX, matrixY, distance);
                 if (stoppedAdjacently) vel.x *= -1;
                 if (!stoppedAdjacently) {
 //                    isFreeFalling = false;
@@ -216,7 +215,7 @@ public abstract class Liquid extends Element {
             return true;
         } else if (neighbor instanceof Gas) {
             if (isFinal) {
-                moveToLastValidAndSwap(matrix, neighbor, lastValidLocation);
+                moveToLastValidAndSwap(matrix, neighbor, modifiedMatrixX, modifiedMatrixY, lastValidLocation);
                 return true;
             }
             return false;
@@ -239,7 +238,7 @@ public abstract class Liquid extends Element {
             if (neighbor == null) continue;
             if (neighbor instanceof EmptyCell || neighbor instanceof Particle) {
                 if (isFinal) {
-                    swapPositions(matrix, neighbor);
+                    swapPositions(matrix, neighbor, startingX + i * distanceModifier, startingY);
                     return false;
                 }
                 lastValidLocation.x = startingX + i * distanceModifier;
@@ -248,7 +247,7 @@ public abstract class Liquid extends Element {
             } else if (neighbor instanceof Liquid) {
                 Liquid liquidNeighbor = (Liquid) neighbor;
                 if (compareDensities(liquidNeighbor)) {
-                    swapLiquidForDensities(matrix, liquidNeighbor, lastValidLocation);
+                    swapLiquidForDensities(matrix, liquidNeighbor, startingX + i * distanceModifier, startingY, lastValidLocation);
                     return false;
                 }
                 continue;
@@ -263,9 +262,9 @@ public abstract class Liquid extends Element {
         return true;
     }
 
-    private void swapLiquidForDensities(CellularMatrix matrix, Liquid neighbor, Vector3 lastValidLocation) {
+    private void swapLiquidForDensities(CellularMatrix matrix, Liquid neighbor, int neighorX, int neighborY, Vector3 lastValidLocation) {
         vel.y = -62;
-        moveToLastValidAndSwap(matrix, neighbor, lastValidLocation);
+        moveToLastValidAndSwap(matrix, neighbor, neighorX, neighborY, lastValidLocation);
     }
 
     private boolean compareDensities(Liquid neighbor) {

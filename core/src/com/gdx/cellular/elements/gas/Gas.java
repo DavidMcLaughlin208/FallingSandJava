@@ -74,7 +74,7 @@ public abstract class Gas extends Element {
             if (matrix.isWithinBounds(modifiedMatrixX, modifiedMatrixY)) {
                 Element neighbor = matrix.get(modifiedMatrixX, modifiedMatrixY);
                 if (neighbor == this) continue;
-                boolean stopped = actOnNeighboringElement(neighbor, matrix, i == upperBound, i == 1, lastValidLocation, 0);
+                boolean stopped = actOnNeighboringElement(neighbor, modifiedMatrixX, modifiedMatrixY, matrix, i == upperBound, i == 1, lastValidLocation, 0);
                 if (stopped) {
                     break;
                 }
@@ -99,19 +99,19 @@ public abstract class Gas extends Element {
     }
 
     @Override
-    protected boolean actOnNeighboringElement(Element neighbor, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth) {
+    protected boolean actOnNeighboringElement(Element neighbor, int modifiedMatrixX, int modifiedMatrixY, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth) {
         boolean acted = actOnOther(neighbor, matrix);
         if (acted) return true;
         if (neighbor instanceof EmptyCell || neighbor instanceof Particle) {
             if (isFinal) {
-                swapPositions(matrix, neighbor);
+                swapPositions(matrix, neighbor, modifiedMatrixX, modifiedMatrixY);
             } else {
                 return false;
             }
         } else if (neighbor instanceof Gas) {
             Gas gasNeighbor = (Gas) neighbor;
             if (compareGasDensities(gasNeighbor)) {
-                swapGasForDensities(matrix, gasNeighbor, lastValidLocation);
+                swapGasForDensities(matrix, gasNeighbor, modifiedMatrixX, modifiedMatrixY, lastValidLocation);
                 return false;
             }
             if (depth > 0) {
@@ -268,7 +268,7 @@ public abstract class Gas extends Element {
             if (neighbor == null) continue;
             if (neighbor instanceof EmptyCell || neighbor instanceof Particle) {
                 if (isFinal) {
-                    swapPositions(matrix, neighbor);
+                    swapPositions(matrix, neighbor, startingX + i * distanceModifier, startingY);
                     return false;
                 }
                 lastValidLocation.x = startingX + i * distanceModifier;
@@ -277,7 +277,7 @@ public abstract class Gas extends Element {
             } else if (neighbor instanceof Gas) {
                 Gas gasNeighbor = (Gas) neighbor;
                 if (compareGasDensities(gasNeighbor)) {
-                    swapGasForDensities(matrix, gasNeighbor, lastValidLocation);
+                    swapGasForDensities(matrix, gasNeighbor, startingX + i * distanceModifier, startingY,  lastValidLocation);
                     return false;
                 }
             } else if (neighbor instanceof Solid || neighbor instanceof Liquid) {
@@ -291,9 +291,9 @@ public abstract class Gas extends Element {
         return true;
     }
 
-    private void swapGasForDensities(CellularMatrix matrix, Gas neighbor, Vector3 lastValidLocation) {
+    private void swapGasForDensities(CellularMatrix matrix, Gas neighbor, int neighborX, int neighborY, Vector3 lastValidLocation) {
         vel.y = 62;
-        moveToLastValidAndSwap(matrix, neighbor, lastValidLocation);
+        moveToLastValidAndSwap(matrix, neighbor, neighborX, neighborY, lastValidLocation);
     }
 
     private boolean compareGasDensities(Gas neighbor) {

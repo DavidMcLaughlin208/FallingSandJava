@@ -1,6 +1,5 @@
 package com.gdx.cellular.elements.gas;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.elements.Element;
@@ -25,12 +24,12 @@ public class Spark extends Gas {
     }
 
     @Override
-    protected boolean actOnNeighboringElement(Element neighbor, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth) {
+    protected boolean actOnNeighboringElement(Element neighbor, int modifiedMatrixX, int modifiedMatrixY, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth) {
         boolean acted = actOnOther(neighbor, matrix);
         if (acted) return true;
         if (neighbor instanceof EmptyCell) {
             if (isFinal) {
-                swapPositions(matrix, neighbor);
+                swapPositions(matrix, neighbor, modifiedMatrixX, modifiedMatrixY);
             } else {
                 return false;
             }

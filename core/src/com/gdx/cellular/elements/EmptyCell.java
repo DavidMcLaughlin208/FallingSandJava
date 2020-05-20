@@ -1,19 +1,22 @@
 package com.gdx.cellular.elements;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.Array;
 import com.gdx.cellular.CellularMatrix;
 
 public class EmptyCell extends Element {
+    private static Element element;
 
-    public EmptyCell(int x, int y, boolean isPixel) {
+    private EmptyCell(int x, int y, boolean isPixel) {
         super(x, y, isPixel);
     }
 
-//    @Override
-//    public void draw(ShapeRenderer sr) {}
+    public static Element getInstance() {
+        if (element == null) {
+            element = new EmptyCell(-1, -1, false);
+        }
+        return element;
+    }
 
     @Override
     public void step(CellularMatrix matrix) {
@@ -21,7 +24,7 @@ public class EmptyCell extends Element {
     }
 
     @Override
-    protected boolean actOnNeighboringElement(Element neighbor, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth) {
+    protected boolean actOnNeighboringElement(Element neighbor, int modifiedMatrixX, int modifiedMatrixY, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth) {
         return true;
     }
 
@@ -34,6 +37,30 @@ public class EmptyCell extends Element {
     public boolean receiveHeat(int heat) {
         return false;
     }
+
+    @Override
+    public void setCoordinatesByMatrix(Vector2 pos) { }
+
+    @Override
+    public void setCoordinatesByMatrix(int providedX, int providedY) { }
+
+    @Override
+    public void setSecondaryCoordinatesByMatrix(int providedX, int providedY) { }
+
+    @Override
+    public void setCoordinatesByPixel(int providedX, int providedY) { }
+
+    @Override
+    public void setXByPixel(int providedVal) { }
+
+    @Override
+    public void setYByPixel(int providedVal) { }
+
+    @Override
+    public void setXByMatrix(int providedVal) { }
+
+    @Override
+    public void setYByMatrix(int providedVal) { }
 
 
 }
