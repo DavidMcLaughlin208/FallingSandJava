@@ -11,7 +11,7 @@ public class Smoke extends Gas{
         inertialResistance = 0;
         mass = 1;
         frictionFactor = 1f;
-        density = 2;
+        density = 3;
         dispersionRate = 2;
         lifeSpan = getRandomInt(250) + 450;
     }
