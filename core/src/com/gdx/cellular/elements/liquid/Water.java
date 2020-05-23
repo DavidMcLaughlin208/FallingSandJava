@@ -1,6 +1,5 @@
 package com.gdx.cellular.elements.liquid;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.elements.Element;
@@ -24,7 +23,7 @@ public class Water extends Liquid {
     }
 
     @Override
-    public boolean receiveHeat(int heat) {
+    public boolean receiveHeat(CellularMatrix matrix, int heat) {
         return false;
     }
 

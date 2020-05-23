@@ -9,10 +9,7 @@ import com.gdx.cellular.elements.liquid.*;
 import com.gdx.cellular.elements.solid.immoveable.Stone;
 import com.gdx.cellular.elements.solid.immoveable.Titanium;
 import com.gdx.cellular.elements.solid.immoveable.Wood;
-import com.gdx.cellular.elements.solid.movable.Coal;
-import com.gdx.cellular.elements.solid.movable.Dirt;
-import com.gdx.cellular.elements.solid.movable.Ember;
-import com.gdx.cellular.elements.solid.movable.Sand;
+import com.gdx.cellular.elements.solid.movable.*;
 import com.gdx.cellular.particles.Particle;
 
 public enum ElementType {
@@ -47,6 +44,17 @@ public enum ElementType {
         @Override
         public Element createElementByPixel(int x, int y) {
             return new Sand(x, y, true);
+        }
+    },
+    SNOW(Snow.class) {
+        @Override
+        public Element createElementByMatrix(int x, int y) {
+            return new Snow(x, y, false);
+        }
+
+        @Override
+        public Element createElementByPixel(int x, int y) {
+            return new Snow(x, y, true);
         }
     },
     DIRT(Dirt.class) {

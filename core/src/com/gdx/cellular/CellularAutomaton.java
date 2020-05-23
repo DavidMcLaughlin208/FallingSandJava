@@ -27,8 +27,8 @@ import java.util.List;
 
 
 public class CellularAutomaton extends ApplicationAdapter {
-	public static int screenWidth = 1280; // 480;
-	public static int screenHeight = 800; //800;
+	public static int screenWidth = 960; // 480;
+	public static int screenHeight = 600; //800;
 	public static int pixelSizeModifier = 2;
 	public static int box2dSizeModifier = 10;
     public static Vector3 gravity = new Vector3(0f, -5f, 0f);
@@ -60,6 +60,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, screenWidth, screenHeight);
+		camera.zoom = 1f;
 
 		shapeRenderer = new ShapeRenderer();
 		shapeRenderer.setProjectionMatrix(camera.combined);
@@ -143,7 +144,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 
 		}
 
-		b2dWorld.step(1/60f, 5, 2);
+		b2dWorld.step(1/60f, 10, 6);
 		matrix.stepPhysicsElementActors();
 		matrixStage.draw();
 		matrix.drawBox2d(shapeRenderer, bodies);

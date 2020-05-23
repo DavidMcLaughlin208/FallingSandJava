@@ -3,13 +3,13 @@ package com.gdx.cellular.box2d;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
 import com.gdx.cellular.CellularAutomaton;
 import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.elements.EmptyCell;
+import com.gdx.cellular.elements.liquid.Liquid;
 import com.gdx.cellular.elements.solid.movable.MovableSolid;
 
 public class PhysicsElementActor {
@@ -21,28 +21,22 @@ public class PhysicsElementActor {
     float yAccumulator = 0;
     float angleAccumulator = 0;
     float lastAngle = 0;
-    int xWidth;
-    int yWidth;
+    int xCenterOffset;
+    int yCenterOffset;
     int shouldCalculateCount = 3;
 
     public PhysicsElementActor(Body body, Array<Array<Element>> elements, int minX, int maxY) {
         this.physicsBody = body;
         this.elements = elements;
-//        xWidth = (elements.get(0).size/2);
-//        Vector2 offsetVector = new Vector2();
-//        ((PolygonShape) physicsBody.getFixtureList().get(0).getShape()).getVertex(0, offsetVector);
-//        xWidth = Math.round(offsetVector.x) * 5;
-//        yWidth = (elements.size / 2);
-//        yWidth = Math.round(offsetVector.y) * 5;
-        xWidth = (int) Math.abs(body.getPosition().x*5 - minX);
-        yWidth = (int) Math.abs(body.getPosition().y*5 - maxY);
+        xCenterOffset = (int) Math.abs(body.getPosition().x*5 - minX);
+        yCenterOffset = (int) Math.abs(body.getPosition().y*5 - maxY);
         for (int y = 0; y < elements.size; y++) {
             Array<Element> row = elements.get(y);
             for (int x = 0; x < row.size; x++) {
                 Element element = row.get(x);
                 if (element != null) {
                     element.owningBody = this;
-                    element.setOwningBodyCoords(x - xWidth, y - yWidth);
+                    element.setOwningBodyCoords(x - xCenterOffset, y - yCenterOffset);
                 }
             }
         }
@@ -62,9 +56,9 @@ public class PhysicsElementActor {
                 for (int x = 0; x < row.size; x++) {
                     Element element = row.get(x);
                     if (element != null) {
-                        if (element.secondaryMatrixX != -1 && element.secondaryMatrixY != -1) {
-                            matrix.setElementAtIndex(element.secondaryMatrixX, element.secondaryMatrixY, ElementType.EMPTYCELL.createElementByMatrix(element.secondaryMatrixX, element.secondaryMatrixY));
-                            element.setSecondaryCoordinatesByMatrix(-1, -1);
+                        if (element.secondaryMatrixCoords.size() > 0) {
+                            element.secondaryMatrixCoords.forEach(vector2 -> matrix.setElementAtIndex((int) vector2.x, (int) vector2.y, ElementType.EMPTYCELL.createElementByMatrix(0,0)));
+                            element.resetSecondaryCoordinates();
                         }
                         Vector2 matrixCoords = getMatrixCoords(element);
                         Element elementAtNewPos = matrix.get((int) matrixCoords.x, (int) matrixCoords.y);
@@ -72,23 +66,22 @@ public class PhysicsElementActor {
                             continue;
                         }
                         if (elementAtNewPos != null && elementAtNewPos.owningBody != null) {
-                            elementAtNewPos.owningBody.shouldCalculateCount = 1;
+                            elementAtNewPos.owningBody.shouldCalculateCount = 2;
                         }
                         if (elementAtNewPos instanceof EmptyCell || (elementAtNewPos != null && elementAtNewPos.owningBody == this)) {
                             matrix.setElementAtIndex(element.matrixX, element.matrixY, ElementType.EMPTYCELL.createElementByMatrix(element.matrixX, element.matrixY));
                             if (matrix.isWithinBounds(matrixCoords)) {
                                 matrix.setElementAtIndex((int) matrixCoords.x, (int) matrixCoords.y, element);
                             }
-                        } else {
-                            matrix.setElementAtIndex(element.matrixX, element.matrixY, ElementType.EMPTYCELL.createElementByMatrix(element.matrixX, element.matrixY));
-                        }
-                        if (elementAtNewPos instanceof MovableSolid) {
-                            elementAtNewPos.dieAndReplaceWithParticle(matrix, matrix.generateRandomVelocityWithBounds(-150, 150));
+                        } else if (elementAtNewPos instanceof MovableSolid || elementAtNewPos instanceof Liquid) {
+                            elementAtNewPos.dieAndReplaceWithParticle(matrix, matrix.generateRandomVelocityWithBounds(-100, 100));
                             physicsBody.setLinearVelocity(physicsBody.getLinearVelocity().scl(.9f));
                             physicsBody.setAngularVelocity(physicsBody.getAngularVelocity() * .98f);
                             if (matrix.isWithinBounds(matrixCoords)) {
                                 matrix.setElementAtIndex((int) matrixCoords.x, (int) matrixCoords.y, element);
                             }
+                        } else {
+                            matrix.setElementAtIndex(element.matrixX, element.matrixY, ElementType.EMPTYCELL.createElementByMatrix(element.matrixX, element.matrixY));
                         }
                         //                    if (elementAtNewPos instanceof MovableSolid) {
                         //                        if (matrix.isWithinBounds(matrixCoords)) {
@@ -107,17 +100,14 @@ public class PhysicsElementActor {
             yAccumulator = 0;
             angleAccumulator = 0;
             shouldCalculateCount -= 1;
-            int drawLength = 2;
+            int drawLength = 1;
             for (int y = 0; y < elements.size; y++) {
                 Array<Element> row = elements.get(y);
-                for (int x = 0; x < row.size - 2; x++) {
+                for (int x = 0; x < row.size - drawLength; x++) {
                     Element element = row.get(x);
                     if (element != null) {
                         for (int length = 1; length <= drawLength; length++) {
                             Element nextElement = row.get(x + length);
-                            if (!(nextElement instanceof EmptyCell)) {
-                                break;
-                            }
                             if ((element.matrixX - nextElement.matrixX != length)) {
                                 matrix.setElementAtSecondLocation(element.matrixX + length, element.matrixY, element);
                             }
@@ -144,8 +134,8 @@ public class PhysicsElementActor {
                     int pixelY = element.toPixel(element.matrixY);
                     sr.setColor(element.color);
                     sr.rect(element.toPixel(element.matrixX), element.toPixel(element.matrixY), CellularAutomaton.pixelSizeModifier, CellularAutomaton.pixelSizeModifier);
-                    if (element.secondaryMatrixX != -1 || element.secondaryMatrixY != -1) {
-                        sr.rect(element.toPixel(element.secondaryMatrixX), element.toPixel(element.secondaryMatrixY), CellularAutomaton.pixelSizeModifier, CellularAutomaton.pixelSizeModifier);
+                    if (element.secondaryMatrixCoords.size() > 0) {
+                        element.secondaryMatrixCoords.forEach(vector2 -> sr.rect(element.toPixel((int) vector2.x), element.toPixel((int) vector2.y), CellularAutomaton.pixelSizeModifier, CellularAutomaton.pixelSizeModifier));
                     }
 //                    sr.rect(pixelX, pixelY, pixelX + 1, pixelY - 1, CellularAutomaton.pixelSizeModifier, CellularAutomaton.pixelSizeModifier, 1, 1, (float) Math.toDegrees(physicsBody.getAngle()));
                 }
@@ -168,7 +158,7 @@ public class PhysicsElementActor {
     }
 
     public boolean elementDeath(Element elementToDie, Element replacement) {
-        this.elements.get((int) elementToDie.owningBodyCoords.y + yWidth).set((int) elementToDie.owningBodyCoords.x + xWidth, replacement);
+        this.elements.get((int) elementToDie.owningBodyCoords.y + yCenterOffset).set((int) elementToDie.owningBodyCoords.x + xCenterOffset, replacement);
         if (replacement != null) {
             replacement.owningBody = this;
             replacement.setOwningBodyCoords(elementToDie.owningBodyCoords);

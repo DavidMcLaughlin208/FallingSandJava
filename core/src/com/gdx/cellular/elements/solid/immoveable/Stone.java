@@ -1,8 +1,7 @@
 package com.gdx.cellular.elements.solid.immoveable;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
-import com.gdx.cellular.elements.solid.immoveable.ImmovableSolid;
+import com.gdx.cellular.CellularMatrix;
 
 public class Stone extends ImmovableSolid {
 
@@ -15,7 +14,7 @@ public class Stone extends ImmovableSolid {
     }
 
     @Override
-    public boolean receiveHeat(int heat) {
+    public boolean receiveHeat(CellularMatrix matrix, int heat) {
         return false;
     }
 

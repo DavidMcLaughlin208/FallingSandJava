@@ -500,7 +500,7 @@ public class CellularMatrix {
         for (int x = matrixX - halfBrush; x <= matrixX + halfBrush; x++) {
             for (int y = matrixY - halfBrush; y <= matrixY + halfBrush; y++) {
                 Element element = get(x, y);
-                if (element != null) element.receiveHeat(5);
+                if (element != null) element.receiveHeat(this, 5);
             }
         }
     }
@@ -662,7 +662,7 @@ public class CellularMatrix {
             Array<Element> row = new Array<>();
             elementList.add(row);
             for (int x = minX; x < minX + xDistance; x++) {
-                type = (x % 2 == 0) ? ElementType.STONE : ElementType.STONE;
+                type = (x % 2 == 0) ? ElementType.WOOD : ElementType.WOOD;
 
                 Element element = spawnElementByMatrix(x, y, type);
                 row.add(element);

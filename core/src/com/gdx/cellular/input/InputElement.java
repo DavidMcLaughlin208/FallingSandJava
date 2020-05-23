@@ -31,6 +31,7 @@ public class InputElement {
         elementMap.put(Input.Keys.B, ElementType.BLOOD);
         elementMap.put(Input.Keys.G, ElementType.FLAMMABLEGAS);
         elementMap.put(Input.Keys.F, ElementType.SPARK);
+        elementMap.put(Input.Keys.N, ElementType.SNOW);
     }
 
     public static ElementType getElementForKeycode(int keycode) {

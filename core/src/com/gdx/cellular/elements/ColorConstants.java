@@ -26,6 +26,8 @@ public class ColorConstants {
 
     private static final Color EMBER = new Color(102/255f, 59/255f, 0/255f, 1);
 
+    private static final Color SNOW = new Color(1, 1, 1, 1);
+
     // Immovable Solids
     private static final Color STONE = new Color(150/255f, 150/255f, 150/255f, 1);
 
@@ -80,6 +82,8 @@ public class ColorConstants {
         elementColorMap.get(ElementType.COAL).add(COAL_3);
 
         elementColorMap.get(ElementType.EMBER).add(EMBER);
+
+        elementColorMap.get(ElementType.SNOW).add(SNOW);
 
         elementColorMap.get(ElementType.STONE).add(STONE);
 

@@ -18,7 +18,7 @@ public abstract class Liquid extends Element {
 
     public Liquid(int x, int y, boolean isPixel) {
         super(x, y, isPixel);
-        stoppedMovingThreshold = 5;
+        stoppedMovingThreshold = 10;
     }
 
 //    public void draw(ShapeRenderer sr) {
@@ -143,7 +143,7 @@ public abstract class Liquid extends Element {
             neighbor.vel.y = vel.y;
             vel.x *= frictionFactor;
             if (diagonalNeighbor != null) {
-                boolean stoppedDiagonally = iterateToAdditional(matrix, diagonalNeighbor.matrixX, diagonalNeighbor.matrixY, distance);
+                boolean stoppedDiagonally = iterateToAdditional(matrix, matrixX + additionalX, matrixY + additionalY, distance);
                 if (!stoppedDiagonally) {
                     isFreeFalling = true;
                     return true;
@@ -152,15 +152,15 @@ public abstract class Liquid extends Element {
 
             Element adjacentNeighbor = matrix.get(matrixX + additionalX, matrixY);
             if (adjacentNeighbor != null && adjacentNeighbor != diagonalNeighbor) {
-                boolean stoppedAdjacently = iterateToAdditional(matrix, adjacentNeighbor.matrixX, adjacentNeighbor.matrixY, distance);
+                boolean stoppedAdjacently = iterateToAdditional(matrix, matrixX + additionalX, matrixY, distance);
                 if (stoppedAdjacently) vel.x *= -1;
                 if (!stoppedAdjacently) {
-//                    isFreeFalling = false;
+                    isFreeFalling = false;
                     return true;
                 }
             }
 
-//            isFreeFalling = false;
+            isFreeFalling = false;
 
             moveToLastValid(matrix, lastValidLocation);
             return true;
@@ -204,12 +204,12 @@ public abstract class Liquid extends Element {
                 boolean stoppedAdjacently = iterateToAdditional(matrix, matrixX + additionalX, matrixY, distance);
                 if (stoppedAdjacently) vel.x *= -1;
                 if (!stoppedAdjacently) {
-//                    isFreeFalling = false;
+                    isFreeFalling = false;
                     return true;
                 }
             }
 
-//            isFreeFalling = false;
+            isFreeFalling = false;
 
             moveToLastValid(matrix, lastValidLocation);
             return true;
@@ -227,7 +227,8 @@ public abstract class Liquid extends Element {
         int distanceModifier = distance > 0 ? 1 : -1;
         Vector3 lastValidLocation = new Vector3(matrixX, matrixY, 0);
         for (int i = 0; i <= Math.abs(distance); i++) {
-            Element neighbor = matrix.get(startingX + i * distanceModifier, startingY);
+            int modifiedX = startingX + i * distanceModifier;
+            Element neighbor = matrix.get(modifiedX, startingY);
             if (neighbor == null) {
                 return true;
             }
@@ -235,22 +236,19 @@ public abstract class Liquid extends Element {
             if (acted) return false;
             boolean isFirst = i == 0;
             boolean isFinal = i == Math.abs(distance);
-            if (neighbor == null) continue;
             if (neighbor instanceof EmptyCell || neighbor instanceof Particle) {
                 if (isFinal) {
-                    swapPositions(matrix, neighbor, startingX + i * distanceModifier, startingY);
+                    swapPositions(matrix, neighbor, modifiedX, startingY);
                     return false;
                 }
                 lastValidLocation.x = startingX + i * distanceModifier;
                 lastValidLocation.y = startingY;
-                continue;
             } else if (neighbor instanceof Liquid) {
                 Liquid liquidNeighbor = (Liquid) neighbor;
                 if (compareDensities(liquidNeighbor)) {
-                    swapLiquidForDensities(matrix, liquidNeighbor, startingX + i * distanceModifier, startingY, lastValidLocation);
+                    swapLiquidForDensities(matrix, liquidNeighbor, modifiedX, startingY, lastValidLocation);
                     return false;
                 }
-                continue;
             } else if (neighbor instanceof Solid) {
                 if (isFirst) {
                     return true;

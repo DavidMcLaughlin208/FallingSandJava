@@ -1,6 +1,7 @@
 package com.gdx.cellular.elements.gas;
 
 import com.badlogic.gdx.math.Vector3;
+import com.gdx.cellular.CellularMatrix;
 
 public class Smoke extends Gas{
 
@@ -16,7 +17,7 @@ public class Smoke extends Gas{
     }
 
     @Override
-    public boolean receiveHeat(int heat) {
+    public boolean receiveHeat(CellularMatrix matrix, int heat) {
         return false;
     }
 }

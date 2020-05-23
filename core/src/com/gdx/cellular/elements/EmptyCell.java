@@ -34,7 +34,7 @@ public class EmptyCell extends Element {
     }
 
     @Override
-    public boolean receiveHeat(int heat) {
+    public boolean receiveHeat(CellularMatrix matrix, int heat) {
         return false;
     }
 

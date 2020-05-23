@@ -7,6 +7,8 @@ import com.gdx.cellular.elements.ElementType;
 
 public class Lava extends Liquid {
 
+    int magmatizeDamage;
+
     public Lava(int x, int y, boolean isPixel) {
         super(x, y, isPixel);
         vel = new Vector3(0,-124f,0);
@@ -17,10 +19,11 @@ public class Lava extends Liquid {
         dispersionRate = 1;
         temperature = 10;
         heated = true;
+        magmatizeDamage = 10;
     }
 
     @Override
-    public boolean receiveHeat(int heat) {
+    public boolean receiveHeat(CellularMatrix matrix, int heat) {
         return false;
     }
 
@@ -42,6 +45,15 @@ public class Lava extends Liquid {
             die(matrix);
         }
     }
+
+    @Override
+    public boolean actOnOther(Element other, CellularMatrix matrix) {
+        other.magmatize(matrix, this.magmatizeDamage);
+        return false;
+    }
+
+    @Override
+    public void magmatize(CellularMatrix matrix, int damage) { }
 
     @Override
     public boolean receiveCooling(CellularMatrix matrix, int cooling) {

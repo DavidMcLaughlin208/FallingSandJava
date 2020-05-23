@@ -1,8 +1,7 @@
 package com.gdx.cellular.elements.solid.movable;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
-import com.gdx.cellular.elements.solid.movable.MovableSolid;
+import com.gdx.cellular.CellularMatrix;
 
 public class Sand extends MovableSolid {
 
@@ -15,7 +14,7 @@ public class Sand extends MovableSolid {
     }
 
     @Override
-    public boolean receiveHeat(int heat) {
+    public boolean receiveHeat(CellularMatrix matrix, int heat) {
         return false;
     }
 

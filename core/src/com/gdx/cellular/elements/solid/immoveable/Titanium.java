@@ -14,7 +14,7 @@ public class Titanium extends ImmovableSolid {
     }
 
     @Override
-    public boolean receiveHeat(int heat) {
+    public boolean receiveHeat(CellularMatrix matrix, int heat) {
         return false;
     }
 

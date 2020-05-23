@@ -8,7 +8,9 @@ import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.box2d.PhysicsElementActor;
 import com.gdx.cellular.effects.EffectColors;
 
+import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.List;
 
 public abstract class Element {
 
@@ -21,8 +23,7 @@ public abstract class Element {
     public int matrixY;
     public Vector3 vel;
 
-    public int secondaryMatrixX = -1;
-    public int secondaryMatrixY = -1;
+    public List<Vector2> secondaryMatrixCoords = new ArrayList<>();
 
     public float frictionFactor;
     public boolean isFreeFalling = true;
@@ -84,6 +85,7 @@ public abstract class Element {
     }
 
     public void moveToLastValid(CellularMatrix matrix, Vector3 moveToLocation) {
+        if ((int) (moveToLocation.x) == matrixX && (int) (moveToLocation.y) == matrixY) return;
         Element toSwap = matrix.get(moveToLocation.x, moveToLocation.y);
         swapPositions(matrix, toSwap, (int) moveToLocation.x, (int) moveToLocation.y);
     }
@@ -126,8 +128,11 @@ public abstract class Element {
 
 
     public void setSecondaryCoordinatesByMatrix(int providedX, int providedY) {
-        this.secondaryMatrixX = providedX;
-        this.secondaryMatrixY = providedY;
+        this.secondaryMatrixCoords.add(new Vector2(providedX, providedY));
+    }
+
+    public void resetSecondaryCoordinates() {
+        this.secondaryMatrixCoords = new ArrayList<>();
     }
 
     public void setCoordinatesByPixel(int providedX, int providedY) {
@@ -184,7 +189,7 @@ public abstract class Element {
                 if (!(x == 0 && y == 0)) {
                     Element neighbor = matrix.get(x, y);
                     if (neighbor != null) {
-                        neighbor.receiveHeat(heatFactor);
+                        neighbor.receiveHeat(matrix, heatFactor);
                     }
                 }
             }
@@ -196,7 +201,7 @@ public abstract class Element {
         return isIgnited || heated;
     }
 
-    public boolean receiveHeat(int heat) {
+    public boolean receiveHeat(CellularMatrix matrix, int heat) {
         if (isIgnited) {
             return false;
         }
@@ -240,8 +245,8 @@ public abstract class Element {
         matrix.reportToChunkActive(matrixX, matrixY);
         if (owningBody != null) {
             owningBody.elementDeath(this, newElement);
-            if (secondaryMatrixX != -1 && secondaryMatrixY != -1) {
-                matrix.setElementAtIndex(secondaryMatrixX, secondaryMatrixY, newElement);
+            if (secondaryMatrixCoords.size() > 0) {
+                secondaryMatrixCoords.stream().forEach(vector2 -> matrix.setElementAtIndex((int) vector2.x, (int) vector2.y, newElement));
             }
         }
     }
@@ -338,5 +343,10 @@ public abstract class Element {
 
     public ElementType getEnumType() {
         return ElementType.valueOf(this.getClass().getSimpleName().toUpperCase());
+    }
+
+    public void magmatize(CellularMatrix matrix, int damage) {
+        this.health -= damage;
+        checkIfDead(matrix);
     }
 }
