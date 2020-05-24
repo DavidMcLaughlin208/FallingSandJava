@@ -4,6 +4,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.gdx.cellular.CellularMatrix;
+import com.gdx.cellular.input.processors.CreatorInputProcessor;
+import com.gdx.cellular.input.processors.MenuInputProcessor;
 
 public class InputProcessors {
 

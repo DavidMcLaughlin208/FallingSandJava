@@ -44,6 +44,7 @@ public class InputManager {
     private boolean touchedLastFrame = false;
 
     public ElementType currentlySelectedElement = ElementType.SAND;
+    public BodyDef.BodyType bodyType = BodyDef.BodyType.DynamicBody;
 
     private boolean paused = false;
     private final TextInputHandler saveLevelNameListener = new TextInputHandler(this, this::setFileNameForSave);
@@ -59,72 +60,10 @@ public class InputManager {
     public InputProcessor creatorInputProcessor;
     private CreatorMenu creatorMenu;
 
-    private Array<Array<Element>> polygonArray;
     private Vector3 rectStartPos = new Vector3();
 
     public InputManager(Viewport viewport) {
         this.creatorMenu = new CreatorMenu(this, viewport);
-        polygonArray = createPolygonArray();
-    }
-
-    private Array<Array<Element>> createPolygonArray() {
-        Array<Array<Element>> elements = new Array<>();
-        elements.add(new Array<>());
-        elements.get(0).add(null, null, new Stone(0, 0,false), new Stone(0, 0,false));
-        elements.get(0).add(new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false));
-        elements.get(0).add(null, null, new Stone(0, 0,false), new Stone(0, 0,false));
-
-        elements.add(new Array<>());
-        elements.get(1).add(null, null, null, null);
-        elements.get(1).add(new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false));
-        elements.get(1).add(null, null, null, null);
-
-        elements.add(new Array<>());
-        elements.get(2).add(null, null, null, null);
-        elements.get(2).add(new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false));
-        elements.get(2).add(null, null, null, null);
-
-        elements.add(new Array<>());
-        elements.get(3).add(null, null, null, null);
-        elements.get(3).add(new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false));
-        elements.get(3).add(null, null, null, null);
-
-        elements.add(new Array<>());
-        elements.get(4).add(null, null, new Stone(0, 0,false), new Stone(0, 0,false));
-        elements.get(4).add(new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false));
-        elements.get(4).add(null, null, null, null);
-
-        elements.add(new Array<>());
-        elements.get(5).add(null, null, null, null);
-        elements.get(5).add(new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false));
-        elements.get(5).add(null, null, null, null);
-
-        elements.add(new Array<>());
-        elements.get(6).add(null, null, new Stone(0, 0,false), new Stone(0, 0,false));
-        elements.get(6).add(new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false));
-        elements.get(6).add(null, null, null, null);
-
-        elements.add(new Array<>());
-        elements.get(7).add(null, null, null, null);
-        elements.get(7).add(new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false));
-        elements.get(7).add(null, null, null, null);
-
-        elements.add(new Array<>());
-        elements.get(8).add(null, null, new Stone(0, 0,false), new Stone(0, 0,false));
-        elements.get(8).add(new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false));
-        elements.get(8).add(null, null, null, null);
-
-        elements.add(new Array<>());
-        elements.get(9).add(null, null, null, null);
-        elements.get(9).add(new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false));
-        elements.get(9).add(null, null, null, null);
-
-        elements.add(new Array<>());
-        elements.get(10).add(null, null, null, null);
-        elements.get(10).add(new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false), new Stone(0, 0,false));
-        elements.get(10).add(null, null, null, null);
-
-        return elements;
     }
 
     public void setCurrentlySelectedElement(ElementType elementType) {
@@ -316,7 +255,7 @@ public class InputManager {
 
     }
 
-    public void spawnRect(CellularMatrix matrix, OrthographicCamera camera, BodyDef.BodyType bodyType) {
+    public void spawnRect(CellularMatrix matrix, OrthographicCamera camera) {
         Vector3 touchPos = new Vector3();
         touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
         camera.unproject(touchPos);
@@ -506,6 +445,10 @@ public class InputManager {
 
     public void setMouseMode(MouseMode mode) {
         this.mouseMode = mode;
+    }
+
+    public void setBodyType(BodyDef.BodyType bodyType) {
+        this.bodyType = bodyType;
     }
 
     public void clearBox2dActors() {

@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -19,7 +20,10 @@ import com.gdx.cellular.input.MouseMode;
 import com.gdx.cellular.elements.ElementType;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class CreatorMenu {
@@ -30,9 +34,11 @@ public class CreatorMenu {
     public Table dropDownTopLevelTable;
     public Table dropDownElementList;
     public Table dropDownMouseMode;
+    public Table dropDownBodyType;
     public Stage dropDownStage;
-    public boolean showElementList = false;
     public SelectedSubList selectedSubList;
+
+    public Map<SelectedSubList, Table> listTableMap = new HashMap<>();
 
     public CreatorMenu(InputManager inputManager, Viewport viewport) {
         this.inputManager = inputManager;
@@ -51,6 +57,7 @@ public class CreatorMenu {
                 super.setPosition(x, y);
                 dropDownElementList.setPosition(this.getX() + CELL_WIDTH, this.getY());
                 dropDownMouseMode.setPosition(this.getX() + CELL_WIDTH, this.getY() - CELL_HEIGHT);
+                dropDownBodyType.setPosition(this.getX() + CELL_WIDTH, this.getY() - CELL_HEIGHT * 2);
             }
 
         };
@@ -59,8 +66,12 @@ public class CreatorMenu {
         dropDownTopLevelTable.row();
         Button accessMouseModeList = createAccessSublistButton(skin, "Mouse Modes", SelectedSubList.MOUSEMODE);
         dropDownTopLevelTable.add(accessMouseModeList).width(CELL_WIDTH).height(CELL_HEIGHT);
+        dropDownTopLevelTable.row();
+        Button bodyTypeList = createAccessSublistButton(skin, "Body Type", SelectedSubList.BODYTYPE);
+        dropDownTopLevelTable.add(bodyTypeList).width(CELL_WIDTH).height(CELL_HEIGHT);
 
 
+        // Element Sublist
         dropDownElementList = new Table() {
             @Override
             public void draw (Batch batch, float parentAlpha) {
@@ -75,6 +86,7 @@ public class CreatorMenu {
             dropDownElementList.row();
         });
 
+        // Mouse Mode Sublist
         dropDownMouseMode = new Table() {
             @Override
             public void draw (Batch batch, float parentAlpha) {
@@ -88,11 +100,32 @@ public class CreatorMenu {
             dropDownMouseMode.add(button).width(CELL_WIDTH).height(CELL_HEIGHT);
             dropDownMouseMode.row();
         });
+        dropDownBodyType = new Table() {
+            @Override
+            public void draw (Batch batch, float parentAlpha) {
+                if (SelectedSubList.BODYTYPE.equals(selectedSubList)) {
+                    super.draw(batch, parentAlpha);
+                }
+            }
+        };
+        List<Button> bodyTypeButtons = createBodyTypeButtons(skin);
+        bodyTypeButtons.forEach(button -> {
+            dropDownBodyType.add(button).width(CELL_WIDTH).height(CELL_HEIGHT);
+            dropDownBodyType.row();
+        });
+
+        // Body Type Sublist
+
 //        dropDownTopLevelTable.debug();
 
         stage.addActor(dropDownTopLevelTable);
         stage.addActor(dropDownElementList);
         stage.addActor(dropDownMouseMode);
+        stage.addActor(dropDownBodyType);
+
+        listTableMap.put(SelectedSubList.ELEMENT, dropDownElementList);
+        listTableMap.put(SelectedSubList.MOUSEMODE, dropDownMouseMode);
+        listTableMap.put(SelectedSubList.BODYTYPE, dropDownBodyType);
 
         dropDownStage = stage;
     }
@@ -102,7 +135,9 @@ public class CreatorMenu {
         button.addListener(new ClickListener(){
             @Override
             public void enter (InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                hideSelectedList(selectedSubList);
                 selectedSubList = subList;
+                unhideSelectedSublist(selectedSubList);
             }
             @Override
             public void exit (InputEvent event, float x, float y, int pointer, Actor toActor) {
@@ -110,6 +145,24 @@ public class CreatorMenu {
             }
         });
         return button;
+    }
+
+    private void unhideSelectedSublist(SelectedSubList selectedSubList) {
+        Table list = getList(selectedSubList);
+        if (list != null) {
+            list.setPosition(dropDownTopLevelTable.getX() + CELL_WIDTH, dropDownTopLevelTable.getY());
+        }
+    }
+
+    private void hideSelectedList(SelectedSubList selectedSubList) {
+        Table list = getList(selectedSubList);
+        if (list != null) {
+            list.setPosition(0, 0);
+        }
+    }
+
+    private Table getList(SelectedSubList selectedSubList) {
+        return listTableMap.get(selectedSubList);
     }
 
     private List<Button> createElementButtons(Skin skin) {
@@ -154,6 +207,27 @@ public class CreatorMenu {
         return button;
     }
 
+    private List<Button> createBodyTypeButtons(Skin skin) {
+        return Arrays.stream(BodyDef.BodyType.values()).map(mode -> createBodyTypeButton(skin, mode)).collect(Collectors.toList());
+    }
+
+    private Button createBodyTypeButton(Skin skin, BodyDef.BodyType bodyType) {
+        Button button = new TextButton(bodyType.toString(), skin);
+        button.addListener(new InputListener(){
+            @Override
+            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                inputManager.drawMenu = false;
+                Gdx.input.setInputProcessor(inputManager.creatorInputProcessor);
+            }
+            @Override
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                inputManager.setBodyType(bodyType);
+                return true;
+            }
+        });
+        return button;
+    }
+
     private Skin createSkin(String name) {
         FileHandle atlasFileHandler = new FileHandle(String.valueOf(Gdx.files.getFileHandle(name + ".atlas", com.badlogic.gdx.Files.FileType.Internal)));
         FileHandle skinFileHandler = new FileHandle(String.valueOf(Gdx.files.getFileHandle(name + ".json", com.badlogic.gdx.Files.FileType.Internal)));
@@ -163,7 +237,8 @@ public class CreatorMenu {
 
     private enum SelectedSubList {
         ELEMENT,
-        MOUSEMODE
+        MOUSEMODE,
+        BODYTYPE
     }
 
 }

@@ -29,7 +29,7 @@ public class Snow extends MovableSolid {
     public void step(CellularMatrix matrix) {
         super.step(matrix);
         if (vel.y < -62) {
-            vel.y = Math.random() > 0.5 ? -62 : -124;
+            vel.y = Math.random() > 0.3 ? -62 : -124;
         }
     }
 

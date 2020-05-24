@@ -1,4 +1,4 @@
-package com.gdx.cellular.input;
+package com.gdx.cellular.input.processors;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
@@ -7,6 +7,9 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.elements.ElementType;
+import com.gdx.cellular.input.InputElement;
+import com.gdx.cellular.input.InputManager;
+import com.gdx.cellular.input.InputProcessors;
 
 import static com.gdx.cellular.input.MouseMode.RECTANGLE;
 
@@ -79,7 +82,7 @@ public class CreatorInputProcessor implements InputProcessor {
         if (button == Input.Buttons.LEFT) {
             inputManager.setTouchedLastFrame(false);
             if (inputManager.getMouseMode() == RECTANGLE) {
-                inputManager.spawnRect(matrix, camera, BodyDef.BodyType.DynamicBody);
+                inputManager.spawnRect(matrix, camera);
             }
         }
         return false;

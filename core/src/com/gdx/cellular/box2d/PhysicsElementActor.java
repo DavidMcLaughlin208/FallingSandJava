@@ -65,6 +65,9 @@ public class PhysicsElementActor {
                         if (elementAtNewPos == element) {
                             continue;
                         }
+                        if (elementAtNewPos == null) {
+                            matrix.setElementAtIndex(element.matrixX, element.matrixY, ElementType.EMPTYCELL.createElementByMatrix(element.matrixX, element.matrixY));
+                        }
                         if (elementAtNewPos != null && elementAtNewPos.owningBody != null) {
                             elementAtNewPos.owningBody.shouldCalculateCount = 2;
                         }
@@ -100,7 +103,7 @@ public class PhysicsElementActor {
             yAccumulator = 0;
             angleAccumulator = 0;
             shouldCalculateCount -= 1;
-            int drawLength = 1;
+            int drawLength = 2;
             for (int y = 0; y < elements.size; y++) {
                 Array<Element> row = elements.get(y);
                 for (int x = 0; x < row.size - drawLength; x++) {

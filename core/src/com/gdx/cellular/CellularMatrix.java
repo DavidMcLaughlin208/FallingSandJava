@@ -662,7 +662,7 @@ public class CellularMatrix {
             Array<Element> row = new Array<>();
             elementList.add(row);
             for (int x = minX; x < minX + xDistance; x++) {
-                type = (x % 2 == 0) ? ElementType.WOOD : ElementType.WOOD;
+                type = (x % 2 == 0) ? ElementType.STONE : ElementType.TITANIUM;
 
                 Element element = spawnElementByMatrix(x, y, type);
                 row.add(element);

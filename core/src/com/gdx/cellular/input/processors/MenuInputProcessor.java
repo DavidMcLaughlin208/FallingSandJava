@@ -1,10 +1,12 @@
-package com.gdx.cellular.input;
+package com.gdx.cellular.input.processors;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularMatrix;
+import com.gdx.cellular.input.InputManager;
+import com.gdx.cellular.input.InputProcessors;
 
 public class MenuInputProcessor implements InputProcessor {
 
