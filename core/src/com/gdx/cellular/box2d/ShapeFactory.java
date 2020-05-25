@@ -8,6 +8,7 @@ import com.gdx.cellular.CellularAutomaton;
 import com.gdx.cellular.box2d.douglaspeucker.Point;
 import com.gdx.cellular.box2d.douglaspeucker.PointImpl;
 import com.gdx.cellular.box2d.douglaspeucker.SeriesReducer;
+import com.gdx.cellular.box2d.marchingsquares.Pavlidis;
 import com.gdx.cellular.elements.Element;
 
 import org.dyn4j.geometry.Convex;
@@ -104,8 +105,8 @@ public class ShapeFactory {
         int yWidth = (elements.size / 2);
 
         List<List<Vector2>> verts = getOutliningVertices(elements);
-//        List<Vector2> allVerts = new ArrayList<>(verts.get(0));
-//        allVerts.addAll(verts.get(1));
+
+//        Pavlidis.getOutliningVerts(elements);
 
         List<Point> leftPoints = verts.get(0).stream().map(PointImpl::new).collect(Collectors.toList());
         List<Point> reducedLeftPoints = SeriesReducer.reduce(leftPoints, 0.000001f);
@@ -146,31 +147,6 @@ public class ShapeFactory {
                 polygonForFixture.dispose();
             }
         }
-
-//        ShortArray shortArray;
-//        if (earClip) {
-//            shortArray = ShortArray.with(earClippingTriangulator.computeTriangles(toFloatArray(reducedVerts)).toArray());
-//        } else {
-//            float[] vertsAsFloats = toFloatArray(reducedVerts);
-//            shortArray = ShortArray.with(delaunayTriangulator.computeTriangles(vertsAsFloats, true).toArray());
-////            delaunayTriangulator.trim(shortArray, vertsAsFloats, vertsAsFloats, 0, reducedVerts.size() * 2);
-//        }
-
-//        for (int i = 0; i < shortArray.size; i += 3) {
-//            PolygonShape polygon = new PolygonShape();
-//            Vector2[] triangleVerts = new Vector2[] {
-//                    reducedVerts.get(shortArray.items[i]),
-//                    reducedVerts.get(shortArray.items[i + 1]),
-//                    reducedVerts.get(shortArray.items[i + 2])
-//            };
-//            polygon.set(triangleVerts);
-//            FixtureDef fixtureDef = new FixtureDef();
-//            fixtureDef.shape = polygon;
-//            fixtureDef.density = 1;
-//            fixtureDef.friction = 0.8f;
-//            body.createFixture(fixtureDef);
-//            polygon.dispose();
-//        }
 
         body.setAngularVelocity((float) (Math.random() * 2));
 
@@ -268,24 +244,11 @@ public class ShapeFactory {
                 fixtureDef.shape = polygonForFixture;
                 fixtureDef.density = 1;
                 fixtureDef.friction = 0.8f;
-                fixtureDef.restitution = 0.1f;
+                fixtureDef.restitution = 0.2f;
                 body.createFixture(fixtureDef);
                 polygonForFixture.dispose();
             }
         }
-//        Vector2[] verticesAsArray = updatedVertices.toArray(new Vector2[0]);
-////        box.setAsBox(10, 10);
-//        box.set(verticesAsArray);
-//
-//
-//        FixtureDef fixtureDef = new FixtureDef();
-//        fixtureDef.shape = box;
-//        fixtureDef.density = 1;
-//        fixtureDef.friction = friction;
-//
-//        Fixture fixture = body.createFixture(fixtureDef);
-//
-//        box.dispose();
         body.setTransform(body.getPosition(), angle);
         return body;
     }

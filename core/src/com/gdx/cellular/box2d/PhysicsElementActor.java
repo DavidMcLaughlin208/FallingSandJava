@@ -50,7 +50,7 @@ public class PhysicsElementActor {
         xAccumulator += Math.abs(physicsBody.getPosition().x - lastPos.x);
         yAccumulator += Math.abs(physicsBody.getPosition().y - lastPos.y);
         angleAccumulator += Math.abs(physicsBody.getAngle() - lastAngle);
-        if (shouldCalculateCount > 0 || xAccumulator > .1 || yAccumulator > .1 | angleAccumulator > .5) {
+        if (shouldCalculateCount > 0 || xAccumulator > .2 || yAccumulator > .2 | angleAccumulator > .7) {
             for (int y = 0; y < elements.size; y++) {
                 Array<Element> row = elements.get(y);
                 for (int x = 0; x < row.size; x++) {
