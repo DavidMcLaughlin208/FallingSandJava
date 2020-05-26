@@ -37,6 +37,10 @@ public class ColorConstants {
 
     private static final Color TITANIUM = new Color(234/255f, 234/255f, 234/255f, 1);
 
+    private static final Color SLIME_MOLD_1 = new Color(255/255f, 142/255f, 243/255f, 1);
+    private static final Color SLIME_MOLD_2 = new Color(201/255f, 58/255f, 107/255f, 1);
+    private static final Color SLIME_MOLD_3 = new Color(234/255f, 35/255f, 213/255f, 1);
+
 
     // Liquids
     private static final Color WATER = new Color(28/255f, 86/255f, 234/255f, .8f);
@@ -92,6 +96,10 @@ public class ColorConstants {
         elementColorMap.get(ElementType.WOOD).add(WOOD_3);
 
         elementColorMap.get(ElementType.TITANIUM).add(TITANIUM);
+
+        elementColorMap.get(ElementType.SLIMEMOLD).add(SLIME_MOLD_1);
+        elementColorMap.get(ElementType.SLIMEMOLD).add(SLIME_MOLD_2);
+        elementColorMap.get(ElementType.SLIMEMOLD).add(SLIME_MOLD_3);
 
         elementColorMap.get(ElementType.WATER).add(WATER);
 

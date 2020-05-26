@@ -6,6 +6,7 @@ import com.gdx.cellular.elements.gas.FlammableGas;
 import com.gdx.cellular.elements.gas.Smoke;
 import com.gdx.cellular.elements.gas.Spark;
 import com.gdx.cellular.elements.liquid.*;
+import com.gdx.cellular.elements.solid.immoveable.SlimeMold;
 import com.gdx.cellular.elements.solid.immoveable.Stone;
 import com.gdx.cellular.elements.solid.immoveable.Titanium;
 import com.gdx.cellular.elements.solid.immoveable.Wood;
@@ -209,6 +210,18 @@ public enum ElementType {
         @Override
         public Element createElementByPixel(int x, int y) {
             return new Blood(x, y, true);
+        }
+
+    },
+    SLIMEMOLD(SlimeMold.class) {
+        @Override
+        public Element createElementByMatrix(int x, int y) {
+            return new SlimeMold(x, y, false);
+        }
+
+        @Override
+        public Element createElementByPixel(int x, int y) {
+            return new SlimeMold(x, y, true);
         }
 
     },

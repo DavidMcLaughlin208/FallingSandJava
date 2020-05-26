@@ -321,4 +321,9 @@ public abstract class Gas extends Element {
             return Math.min(avg, 124f);
         }
     }
+
+    @Override
+    public boolean infect(CellularMatrix matrix) {
+        return false;
+    }
 }

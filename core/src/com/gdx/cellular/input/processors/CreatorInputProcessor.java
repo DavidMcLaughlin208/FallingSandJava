@@ -50,9 +50,9 @@ public class CreatorInputProcessor implements InputProcessor {
         if (keycode == Input.Keys.P) {
             inputManager.togglePause();
         }
-        if (keycode == Input.Keys.M) {
-            inputManager.cycleMouseModes();
-        }
+//        if (keycode == Input.Keys.M) {
+//            inputManager.cycleMouseModes();
+//        }
         return false;
     }
 

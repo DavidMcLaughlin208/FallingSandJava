@@ -1,7 +1,7 @@
 package com.gdx.cellular.elements.solid.movable;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
+import com.gdx.cellular.CellularMatrix;
 
 public class Ember extends MovableSolid {
 
@@ -16,5 +16,10 @@ public class Ember extends MovableSolid {
         temperature = 5;
         flammabilityResistance = 0;
         resetFlammabilityResistance = 20;
+    }
+
+    @Override
+    public boolean infect(CellularMatrix matrix) {
+        return false;
     }
 }

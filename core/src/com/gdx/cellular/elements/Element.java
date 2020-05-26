@@ -219,7 +219,7 @@ public abstract class Element {
         return false;
     }
 
-    private void checkIfIgnited() {
+    public void checkIfIgnited() {
         if (this.flammabilityResistance <= 0) {
             this.isIgnited = true;
             modifyColor();
@@ -288,13 +288,17 @@ public abstract class Element {
             return;
         }
         if (isIgnited) {
-            health -= fireDamage;
-            if (isSurrounded(matrix)) {
-                flammabilityResistance = resetFlammabilityResistance;
-            }
-            checkIfIgnited();
+            takeFireDamage(matrix);
         }
         checkIfDead(matrix);
+    }
+
+    public void takeFireDamage(CellularMatrix matrix) {
+        health -= fireDamage;
+        if (isSurrounded(matrix)) {
+            flammabilityResistance = resetFlammabilityResistance;
+        }
+        checkIfIgnited();
     }
 
     private boolean isSurrounded(CellularMatrix matrix) {
@@ -331,6 +335,7 @@ public abstract class Element {
     public void checkLifeSpan(CellularMatrix matrix) {
         if (lifeSpan != null) {
             lifeSpan--;
+            lifeSpan--;
             if (lifeSpan <= 0) {
                 die(matrix);
             }
@@ -348,5 +353,13 @@ public abstract class Element {
     public void magmatize(CellularMatrix matrix, int damage) {
         this.health -= damage;
         checkIfDead(matrix);
+    }
+
+    public boolean infect(CellularMatrix matrix) {
+        if (Math.random() > 0.95f) {
+            this.dieAndReplace(matrix, ElementType.SLIMEMOLD);
+            return true;
+        }
+        return false;
     }
 }

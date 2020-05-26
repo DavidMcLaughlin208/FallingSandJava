@@ -129,8 +129,8 @@ public class ShapeFactory {
                 polygonForFixture.set(triangleVerts);
                 FixtureDef fixtureDef = new FixtureDef();
                 fixtureDef.shape = polygonForFixture;
-                fixtureDef.density = 1;
-                fixtureDef.friction = 0.8f;
+                fixtureDef.density = 10;
+                fixtureDef.friction = 1f;
                 fixtureDef.restitution = 0.1f;
                 body.createFixture(fixtureDef);
                 polygonForFixture.dispose();
