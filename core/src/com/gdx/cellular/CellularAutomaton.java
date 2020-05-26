@@ -13,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import com.gdx.cellular.box2d.PhysicsElementActor;
 import com.gdx.cellular.box2d.ShapeFactory;
 import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.input.InputManager;

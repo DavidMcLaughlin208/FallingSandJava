@@ -8,6 +8,7 @@ import com.gdx.cellular.CellularAutomaton;
 import com.gdx.cellular.box2d.douglaspeucker.Point;
 import com.gdx.cellular.box2d.douglaspeucker.PointImpl;
 import com.gdx.cellular.box2d.douglaspeucker.SeriesReducer;
+import com.gdx.cellular.box2d.linesimplification.Visvalingam;
 import com.gdx.cellular.box2d.marchingsquares.Pavlidis;
 import com.gdx.cellular.elements.Element;
 
@@ -18,6 +19,7 @@ import org.dyn4j.geometry.decompose.SweepLine;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Vector;
 import java.util.stream.Collectors;
 
 public class ShapeFactory {
@@ -104,15 +106,8 @@ public class ShapeFactory {
         int xWidth = (elements.get(0).size/2);
         int yWidth = (elements.size / 2);
 
-        List<List<Vector2>> verts = getOutliningVertices(elements);
-
-//        Pavlidis.getOutliningVerts(elements);
-
-        List<Point> leftPoints = verts.get(0).stream().map(PointImpl::new).collect(Collectors.toList());
-        List<Point> reducedLeftPoints = SeriesReducer.reduce(leftPoints, 0.000001f);
-
-        List<Point> rightPoints = verts.get(1).stream().map(PointImpl::new).collect(Collectors.toList());
-        List<Point> reducedRightPoints = SeriesReducer.reduce(rightPoints, 0.000001f);
+        List<Vector2> allVerts = Pavlidis.getOutliningVerts(elements);
+        List<Vector2> simplifiedVerts = Visvalingam.simplify(allVerts);
 
         Vector2 center = new Vector2((float) (xWidth + x) / mod, (float) (yWidth + y) / mod);
 
@@ -120,15 +115,8 @@ public class ShapeFactory {
 
         Body body = shapeFactory.world.createBody(bodyDef);
 
-        List<Vector2> reducedVerts = new ArrayList<>();
-        for (Point reducedLeftPoint : reducedLeftPoints) {
-            reducedVerts.add(reducedLeftPoint.getPosition());
-        }
-        for (Point point : reducedRightPoints) {
-            reducedVerts.add(point.getPosition());
-        }
-        reducedVerts = reducedVerts.stream().map(vector2 -> new Vector2((vector2.x - xWidth)/(mod/2), (vector2.y - yWidth)/(mod/2))).collect(Collectors.toList());
-        org.dyn4j.geometry.Vector2[] dyn4jVerts = reducedVerts.stream().map(vec -> new org.dyn4j.geometry.Vector2(vec.x, vec.y)).toArray(org.dyn4j.geometry.Vector2[]::new);
+        simplifiedVerts = simplifiedVerts.stream().map(vector2 -> new Vector2((vector2.x - xWidth)/(mod/2), (vector2.y - yWidth)/(mod/2))).collect(Collectors.toList());
+        org.dyn4j.geometry.Vector2[] dyn4jVerts = simplifiedVerts.stream().map(vec -> new org.dyn4j.geometry.Vector2(vec.x, vec.y)).toArray(org.dyn4j.geometry.Vector2[]::new);
         SweepLine sweepLine = new SweepLine();
         List<Convex> convexes = sweepLine.decompose(dyn4jVerts);
 
@@ -143,6 +131,7 @@ public class ShapeFactory {
                 fixtureDef.shape = polygonForFixture;
                 fixtureDef.density = 1;
                 fixtureDef.friction = 0.8f;
+                fixtureDef.restitution = 0.1f;
                 body.createFixture(fixtureDef);
                 polygonForFixture.dispose();
             }

@@ -11,10 +11,13 @@ import java.util.Map;
 
 public class Pavlidis {
 
-    private static Map<Direction, Map<DirectionalVector, Direction>> directionMap = new HashMap<>();
-    private static Map<Direction, Direction> nextDirectionMap = new HashMap<>();
+    private Pavlidis() { throw new IllegalStateException("Cannot instantiate Pavlidis"); }
+
+    private static final Map<Direction, Map<DirectionalVector, Direction>> directionMap = new HashMap<>();
+    private static final Map<Direction, Direction> rotateDirectionMap = new HashMap<>();
 
     static {
+        // This is used to determine the next relative direction when moving to a found element
         directionMap.put(Direction.North, new HashMap<>());
         Map<DirectionalVector, Direction> northMap = directionMap.get(Direction.North);
         northMap.put(DirectionalVector.UpLeft, Direction.West);
@@ -39,16 +42,16 @@ public class Pavlidis {
         westMap.put(DirectionalVector.Up, Direction.West);
         westMap.put(DirectionalVector.UpRight, Direction.North);
 
-        nextDirectionMap.put(Direction.North, Direction.East);
-        nextDirectionMap.put(Direction.East, Direction.South);
-        nextDirectionMap.put(Direction.South, Direction.West);
-        nextDirectionMap.put(Direction.West, Direction.North);
+        // This is used to rotate direction if no element is found at upLeft, up, or upRight
+        rotateDirectionMap.put(Direction.North, Direction.East);
+        rotateDirectionMap.put(Direction.East, Direction.South);
+        rotateDirectionMap.put(Direction.South, Direction.West);
+        rotateDirectionMap.put(Direction.West, Direction.North);
     }
 
 
     public static List<Vector2> getOutliningVerts(Array<Array<Element>> elements) {
         List<Vector2> outliningVerts = new ArrayList<>();
-        // Get starting point
         Element startingPoint = null;
         Vector2 startingVector = null;
         for (int y = elements.size - 1; y >= 0; y--) {
@@ -100,9 +103,10 @@ public class Pavlidis {
                 currentDirection = getRelativeDirection(currentDirection, DirectionalVector.UpRight);
                 continue;
             }
-            currentDirection = nextDirectionMap.get(currentDirection);
+            currentDirection = rotateDirectionMap.get(currentDirection);
 
         }
+        outliningVerts.remove(outliningVerts.size() - 1);
         return outliningVerts;
     }
 
