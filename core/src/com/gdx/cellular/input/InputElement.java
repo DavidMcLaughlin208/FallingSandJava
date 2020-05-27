@@ -33,6 +33,7 @@ public class InputElement {
         elementMap.put(Input.Keys.F, ElementType.SPARK);
         elementMap.put(Input.Keys.N, ElementType.SNOW);
         elementMap.put(Input.Keys.M, ElementType.SLIMEMOLD);
+        elementMap.put(Input.Keys.COMMA, ElementType.SLIMEMOLDMOVABLE);
     }
 
     public static ElementType getElementForKeycode(int keycode) {

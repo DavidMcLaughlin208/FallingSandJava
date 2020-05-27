@@ -19,7 +19,7 @@ public class Lava extends Liquid {
         dispersionRate = 1;
         temperature = 10;
         heated = true;
-        magmatizeDamage = 10;
+        magmatizeDamage = (int) (Math.random() * 10);
     }
 
     @Override

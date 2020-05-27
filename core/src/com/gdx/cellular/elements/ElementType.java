@@ -225,6 +225,18 @@ public enum ElementType {
         }
 
     },
+    SLIMEMOLDMOVABLE(SlimeMoldMovable.class) {
+        @Override
+        public Element createElementByMatrix(int x, int y) {
+            return new SlimeMoldMovable(x, y, false);
+        }
+
+        @Override
+        public Element createElementByPixel(int x, int y) {
+            return new SlimeMoldMovable(x, y, true);
+        }
+
+    },
     PARTICLE(Particle.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {

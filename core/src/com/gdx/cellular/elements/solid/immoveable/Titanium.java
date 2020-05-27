@@ -22,4 +22,9 @@ public class Titanium extends ImmovableSolid {
     public boolean corrode(CellularMatrix matrix) {
         return false;
     }
+
+    @Override
+    public boolean infect(CellularMatrix matrix) {
+        return false;
+    }
 }

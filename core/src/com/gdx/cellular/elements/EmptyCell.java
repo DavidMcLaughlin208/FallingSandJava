@@ -62,5 +62,9 @@ public class EmptyCell extends Element {
     @Override
     public void setYByMatrix(int providedVal) { }
 
+    @Override
+    public boolean infect(CellularMatrix matrix) {
+        return false;
+    }
 
 }

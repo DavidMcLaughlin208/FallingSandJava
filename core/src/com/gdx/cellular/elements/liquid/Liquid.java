@@ -318,4 +318,9 @@ public abstract class Liquid extends Element {
         }
     }
 
+    @Override
+    public boolean infect(CellularMatrix matrix) {
+        return false;
+    }
+
 }

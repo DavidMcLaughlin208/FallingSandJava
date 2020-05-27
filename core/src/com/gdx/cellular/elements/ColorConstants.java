@@ -85,6 +85,10 @@ public class ColorConstants {
         elementColorMap.get(ElementType.COAL).add(COAL_2);
         elementColorMap.get(ElementType.COAL).add(COAL_3);
 
+        elementColorMap.get(ElementType.SLIMEMOLDMOVABLE).add(SLIME_MOLD_1);
+        elementColorMap.get(ElementType.SLIMEMOLDMOVABLE).add(SLIME_MOLD_2);
+        elementColorMap.get(ElementType.SLIMEMOLDMOVABLE).add(SLIME_MOLD_3);
+
         elementColorMap.get(ElementType.EMBER).add(EMBER);
 
         elementColorMap.get(ElementType.SNOW).add(SNOW);
