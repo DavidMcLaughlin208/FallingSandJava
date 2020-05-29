@@ -122,9 +122,9 @@ public class CellularMatrix {
             Array<Element> row = getRow(y);
             for (int x = 0; x < row.size; x++) {
                 Element element = row.get(x);
-//                if (element.owningBody != null) {
-//                    continue;
-//                }
+                if (element.owningBody != null) {
+                    continue;
+                }
                 Color currentColor = element.color;
                 int toIndex = x;
                 for (int following = x; following < row.size; following++) {

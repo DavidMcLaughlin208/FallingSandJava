@@ -103,7 +103,7 @@ public class PhysicsElementActor {
             yAccumulator = 0;
             angleAccumulator = 0;
             shouldCalculateCount -= 1;
-            int drawLength = 2;
+            int drawLength = 1;
             for (int y = 0; y < elements.size; y++) {
                 Array<Element> row = elements.get(y);
                 for (int x = 0; x < row.size - drawLength; x++) {
@@ -111,6 +111,7 @@ public class PhysicsElementActor {
                     if (element != null) {
                         for (int length = 1; length <= drawLength; length++) {
                             Element nextElement = row.get(x + length);
+                            if (nextElement == null) continue;
                             if ((element.matrixX - nextElement.matrixX != length)) {
                                 matrix.setElementAtSecondLocation(element.matrixX + length, element.matrixY, element);
                             }
@@ -125,26 +126,22 @@ public class PhysicsElementActor {
     }
 
     public void draw(ShapeRenderer sr) {
-//        sr.begin();
+        sr.begin();
         sr.set(ShapeRenderer.ShapeType.Filled);
-        int mod = CellularAutomaton.pixelSizeModifier;
         for (int y = 0; y < elements.size; y++) {
             Array<Element> row = elements.get(y);
             for (int x = 0; x < row.size; x ++) {
                 Element element = row.get(x);
                 if (element != null) {
-                    int pixelX = element.toPixel(element.matrixX);
-                    int pixelY = element.toPixel(element.matrixY);
                     sr.setColor(element.color);
                     sr.rect(element.toPixel(element.matrixX), element.toPixel(element.matrixY), CellularAutomaton.pixelSizeModifier, CellularAutomaton.pixelSizeModifier);
                     if (element.secondaryMatrixCoords.size() > 0) {
                         element.secondaryMatrixCoords.forEach(vector2 -> sr.rect(element.toPixel((int) vector2.x), element.toPixel((int) vector2.y), CellularAutomaton.pixelSizeModifier, CellularAutomaton.pixelSizeModifier));
                     }
-//                    sr.rect(pixelX, pixelY, pixelX + 1, pixelY - 1, CellularAutomaton.pixelSizeModifier, CellularAutomaton.pixelSizeModifier, 1, 1, (float) Math.toDegrees(physicsBody.getAngle()));
                 }
             }
         }
-//        sr.end();
+        sr.end();
     }
 
     public Vector2 getMatrixCoords(Element element) {
@@ -161,10 +158,14 @@ public class PhysicsElementActor {
     }
 
     public boolean elementDeath(Element elementToDie, Element replacement) {
-        this.elements.get((int) elementToDie.owningBodyCoords.y + yCenterOffset).set((int) elementToDie.owningBodyCoords.x + xCenterOffset, replacement);
-        if (replacement != null) {
-            replacement.owningBody = this;
-            replacement.setOwningBodyCoords(elementToDie.owningBodyCoords);
+        Element newReplacement = replacement;
+        if (replacement instanceof EmptyCell) {
+            newReplacement = null;
+        }
+        this.elements.get((int) elementToDie.owningBodyCoords.y + yCenterOffset).set((int) elementToDie.owningBodyCoords.x + xCenterOffset, newReplacement);
+        if (newReplacement != null) {
+            newReplacement.owningBody = this;
+            newReplacement.setOwningBodyCoords(elementToDie.owningBodyCoords);
         }
         return true;
     }

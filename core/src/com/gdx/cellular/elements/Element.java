@@ -245,9 +245,7 @@ public abstract class Element {
         matrix.reportToChunkActive(matrixX, matrixY);
         if (owningBody != null) {
             owningBody.elementDeath(this, newElement);
-            if (secondaryMatrixCoords.size() > 0) {
-                secondaryMatrixCoords.stream().forEach(vector2 -> matrix.setElementAtIndex((int) vector2.x, (int) vector2.y, newElement));
-            }
+            secondaryMatrixCoords.forEach(vector2 -> matrix.setElementAtIndex((int) vector2.x, (int) vector2.y, ElementType.EMPTYCELL.createElementByMatrix(0, 0)));
         }
     }
 
@@ -256,23 +254,8 @@ public abstract class Element {
     }
 
     public void dieAndReplaceWithParticle(CellularMatrix matrix, Vector3 velocity) {
-        if (!(matrix.get(matrixX, matrixY) instanceof EmptyCell)) {
-            int yIndex = 1;
-            while (true) {
-                Element elementAtNewPos = matrix.get(matrixX, matrixY + yIndex);
-                if (elementAtNewPos == null) {
-                    break;
-                } else if (elementAtNewPos instanceof EmptyCell) {
-                    matrix.setElementAtIndex(matrixX, matrixY + yIndex, ElementType.createParticleByMatrix(matrix, matrixX, matrixY, velocity, elementType));
-                    matrix.reportToChunkActive(matrixX, matrixY + yIndex);
-                    break;
-                }
-                yIndex++;
-            }
-        } else {
-            matrix.setElementAtIndex(matrixX, matrixY, ElementType.createParticleByMatrix(matrix, matrixX, matrixY, velocity, elementType));
-            matrix.reportToChunkActive(matrixX, matrixY);
-        }
+        matrix.setElementAtIndex(matrixX, matrixY, ElementType.createParticleByMatrix(matrix, matrixX, matrixY, velocity, elementType));
+        matrix.reportToChunkActive(matrixX, matrixY);
     }
 
     public boolean didNotMove(Vector3 formerLocation) {

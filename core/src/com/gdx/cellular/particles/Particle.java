@@ -31,7 +31,27 @@ public class Particle extends Element {
 
     @Override
     public void dieAndReplace(CellularMatrix matrix, ElementType elementType) {
-        die(matrix, containedElementType);
+        particleDeathAndSpawn(matrix);
+    }
+
+    private void particleDeathAndSpawn(CellularMatrix matrix) {
+        if (matrix.get(this.matrixX, this.matrixY) instanceof EmptyCell) {
+            die(matrix, elementType);
+        } else {
+            int yIndex = 0;
+            while (true) {
+                Element elementAtNewPos = matrix.get(matrixX, matrixY + yIndex);
+                if (elementAtNewPos == null) {
+                    break;
+                } else if (elementAtNewPos instanceof EmptyCell) {
+                    die(matrix);
+                    matrix.setElementAtIndex(matrixX, matrixY + yIndex, containedElementType.createElementByMatrix(matrixX, matrixY + yIndex));
+                    matrix.reportToChunkActive(matrixX, matrixY + yIndex);
+                    break;
+                }
+                yIndex++;
+            }
+        }
     }
 
     @Override
@@ -39,7 +59,7 @@ public class Particle extends Element {
         if (stepped.get(0) == CellularAutomaton.stepped.get(0)) return;
         stepped.flip(0);
         vel.add(CellularAutomaton.gravity);
-        if (vel.y > -64 && vel.y < 0) {
+        if (vel.y > -64 && vel.y < 32) {
             vel.y = -64;
         }
 
