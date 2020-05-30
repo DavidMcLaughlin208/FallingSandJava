@@ -72,13 +72,14 @@ public class CellularAutomaton extends ApplicationAdapter {
 		Viewport viewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera);
 		inputManager = new InputManager(viewport);
 
-		matrix = new CellularMatrix(screenWidth, screenHeight, pixelSizeModifier);
+		b2dWorld = new World(new Vector2(0, -100), true);
+
+		matrix = new CellularMatrix(screenWidth, screenHeight, pixelSizeModifier, b2dWorld);
 		matrix.generateShuffledIndexesForThreads(numThreads);
 
 		matrixStage = new Stage(viewport);
 		matrixStage.addActor(new MatrixActor(shapeRenderer, matrix));
 
-		b2dWorld = new World(new Vector2(0, -100), true);
 		ShapeFactory.initialize(b2dWorld);
 		debugRenderer = new Box2DDebugRenderer();
 

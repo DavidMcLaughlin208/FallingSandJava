@@ -11,13 +11,10 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.*;
-import com.gdx.cellular.CellularAutomaton;
 import com.gdx.cellular.CellularMatrix;
-import com.gdx.cellular.box2d.PhysicsElementActor;
 import com.gdx.cellular.box2d.ShapeFactory;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
-import com.gdx.cellular.elements.solid.immoveable.Stone;
 import com.gdx.cellular.ui.CreatorMenu;
 import com.gdx.cellular.util.TextInputHandler;
 
@@ -140,7 +137,6 @@ public class InputManager {
 
     public void clearMatrix(CellularMatrix matrix) {
         matrix.clearAll();
-        matrix.physicsElementActors = new Array<>();
     }
 
     public void placeSpout(CellularMatrix matrix, OrthographicCamera camera) {
@@ -224,7 +220,7 @@ public class InputManager {
     }
 
     private void spawnRandomPolygon(int x, int y, Array<Array<Element>> randomPolygonArray, CellularMatrix matrix) {
-        Body body = ShapeFactory.createDynamicPolygonFromElementArray(x, y, randomPolygonArray, earClip);
+        Body body = ShapeFactory.createDynamicPolygonFromElementArray(x, y, randomPolygonArray);
 //        PhysicsElementActor physicsElementActor = new PhysicsElementActor(body, randomPolygonArray);
 //        matrix.physicsElementActors.add(physicsElementActor);
     }

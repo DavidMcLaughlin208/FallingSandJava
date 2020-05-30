@@ -1,5 +1,7 @@
 package com.gdx.cellular.box2d;
 
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
@@ -9,6 +11,7 @@ import com.gdx.cellular.box2d.douglaspeucker.Point;
 import com.gdx.cellular.box2d.douglaspeucker.PointImpl;
 import com.gdx.cellular.box2d.douglaspeucker.SeriesReducer;
 import com.gdx.cellular.box2d.linesimplification.Visvalingam;
+import com.gdx.cellular.box2d.marchingsquares.MooreNeighborTracing;
 import com.gdx.cellular.box2d.marchingsquares.Pavlidis;
 import com.gdx.cellular.elements.Element;
 
@@ -16,9 +19,7 @@ import org.dyn4j.geometry.Convex;
 import org.dyn4j.geometry.Triangle;
 import org.dyn4j.geometry.decompose.SweepLine;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.Vector;
 import java.util.stream.Collectors;
 
@@ -99,14 +100,28 @@ public class ShapeFactory {
         return body;
     }
 
-    public static Body createDynamicPolygonFromElementArray(int x, int y, Array<Array<Element>> elements, boolean earClip) {
+    public static Body createDynamicPolygonFromElementArray(int x, int y, Array<Array<Element>> elements) {
+        return createPolygonFromElementArray(x, y, elements, BodyDef.BodyType.DynamicBody);
+    }
+
+    public static Body createStaticPolygonFromElementArray(int x, int y, Array<Array<Element>> elements) {
+        return createPolygonFromElementArray(x, y, elements, BodyDef.BodyType.StaticBody);
+    }
+
+    public static Body createPolygonFromElementArray(int x, int y, Array<Array<Element>> elements, Body body) {
+        Body newBody = createPolygonFromElementArray(x, y, elements, body.getType());
+        shapeFactory.world.destroyBody(body);
+        return newBody;
+    }
+
+    public static Body createPolygonFromElementArray(int x, int y, Array<Array<Element>> elements, BodyDef.BodyType shapeType) {
         int mod = CellularAutomaton.box2dSizeModifier;
         BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.type = shapeType;
         int xWidth = (elements.get(0).size/2);
         int yWidth = (elements.size / 2);
 
-        List<Vector2> allVerts = Pavlidis.getOutliningVerts(elements);
+        List<Vector2> allVerts = MooreNeighborTracing.getOutliningVerts(elements);
         List<Vector2> simplifiedVerts = Visvalingam.simplify(allVerts);
 
         Vector2 center = new Vector2((float) (xWidth + x) / mod, (float) (yWidth + y) / mod);
@@ -115,21 +130,27 @@ public class ShapeFactory {
 
         Body body = shapeFactory.world.createBody(bodyDef);
 
-        simplifiedVerts = simplifiedVerts.stream().map(vector2 -> new Vector2((vector2.x - xWidth)/(mod/2), (vector2.y - yWidth)/(mod/2))).collect(Collectors.toList());
+        simplifiedVerts = simplifiedVerts.stream().map(vector2 -> new Vector2((vector2.x - xWidth)/(mod/2f), (vector2.y - yWidth)/(mod/2f))).collect(Collectors.toList());
         org.dyn4j.geometry.Vector2[] dyn4jVerts = simplifiedVerts.stream().map(vec -> new org.dyn4j.geometry.Vector2(vec.x, vec.y)).toArray(org.dyn4j.geometry.Vector2[]::new);
         SweepLine sweepLine = new SweepLine();
         List<Convex> convexes = sweepLine.decompose(dyn4jVerts);
 
         for (Convex convex : convexes) {
             org.dyn4j.geometry.Polygon polygon = (org.dyn4j.geometry.Polygon) convex;
-            List<Triangle> triangles = sweepLine.triangulate(polygon.getVertices());
+            org.dyn4j.geometry.Vector2[] convexVerts = polygon.getVertices();
+            List<Triangle> triangles = new ArrayList<>();
+            if (convexVerts.length == 3) {
+                triangles.add(new Triangle(convexVerts[0], convexVerts[1], convexVerts[2]));
+            } else {
+                triangles = sweepLine.triangulate(convexVerts);
+            }
             for (Triangle triangle : triangles) {
                 Vector2[] triangleVerts = Arrays.stream(triangle.getVertices()).map(vert -> new Vector2((float) vert.x, (float) vert.y)).toArray(Vector2[]::new);
                 PolygonShape polygonForFixture = new PolygonShape();
                 polygonForFixture.set(triangleVerts);
                 FixtureDef fixtureDef = new FixtureDef();
                 fixtureDef.shape = polygonForFixture;
-                fixtureDef.density = 10;
+                fixtureDef.density = 5;
                 fixtureDef.friction = 1f;
                 fixtureDef.restitution = 0.1f;
                 body.createFixture(fixtureDef);

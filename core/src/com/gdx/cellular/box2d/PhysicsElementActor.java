@@ -24,6 +24,7 @@ public class PhysicsElementActor {
     int xCenterOffset;
     int yCenterOffset;
     int shouldCalculateCount = 3;
+    private boolean shouldRecalculateBoundaries = false;
 
     public PhysicsElementActor(Body body, Array<Array<Element>> elements, int minX, int maxY) {
         this.physicsBody = body;
@@ -46,6 +47,9 @@ public class PhysicsElementActor {
         if (Math.abs(physicsBody.getWorldCenter().y) > 200 || Math.abs(physicsBody.getWorldCenter().x) > 200) {
             matrix.destroyPhysicsElementActor(this);
             return;
+        }
+        if (shouldRecalculateBoundaries) {
+//            recalculateBoundaries();
         }
         xAccumulator += Math.abs(physicsBody.getPosition().x - lastPos.x);
         yAccumulator += Math.abs(physicsBody.getPosition().y - lastPos.y);
@@ -167,7 +171,19 @@ public class PhysicsElementActor {
             newReplacement.owningBody = this;
             newReplacement.setOwningBodyCoords(elementToDie.owningBodyCoords);
         }
+        shouldRecalculateBoundaries = true;
         return true;
     }
 
+    public void recalculateBoundaries() {
+        Body newBody = ShapeFactory.createPolygonFromElementArray((int) this.physicsBody.getPosition().x, (int) this.physicsBody.getPosition().y, this.elements, this.physicsBody);
+        newBody.setAngularVelocity(this.physicsBody.getAngularVelocity());
+        newBody.setLinearVelocity(this.physicsBody.getLinearVelocity());
+        newBody.setTransform(this.physicsBody.getTransform().getPosition(), this.physicsBody.getTransform().getRotation());
+        this.physicsBody = newBody;
+    }
+
+    public Body getPhysicsBody() {
+        return physicsBody;
+    }
 }

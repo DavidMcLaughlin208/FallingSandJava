@@ -40,12 +40,14 @@ public class CellularMatrix {
     private Array<Array<Chunk>> chunks;
     public Array<Spout> spoutArray;
     public Array<PhysicsElementActor> physicsElementActors = new Array<>();
+    public World world;
 
-    public CellularMatrix(int width, int height, int pixelSizeModifier) {
+    public CellularMatrix(int width, int height, int pixelSizeModifier, World world) {
         this.pixelSizeModifier = pixelSizeModifier;
         this.innerArraySize = toMatrix(width);
         this.outerArraySize = toMatrix(height);
         this.matrix = generateMatrix();
+        this.world = world;
         if (useChunks) {
             this.chunks = generateChunks();
         }
@@ -296,6 +298,8 @@ public class CellularMatrix {
     public boolean clearAll() {
         matrix = generateMatrix();
         spoutArray = new Array<>();
+        physicsElementActors.forEach(pea -> world.destroyBody(pea.getPhysicsBody()));
+        physicsElementActors = new Array<>();
         return true;
     }
 
@@ -694,6 +698,7 @@ public class CellularMatrix {
     }
 
     public void destroyPhysicsElementActor(PhysicsElementActor physicsElementActor) {
+        this.world.destroyBody(physicsElementActor.getPhysicsBody());
         this.physicsElementActors.removeValue(physicsElementActor, true);
     }
 

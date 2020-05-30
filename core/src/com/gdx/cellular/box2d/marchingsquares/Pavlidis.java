@@ -54,6 +54,7 @@ public class Pavlidis {
         List<Vector2> outliningVerts = new ArrayList<>();
         Element startingPoint = null;
         Vector2 startingVector = null;
+        // Brute force from the bottom left of the matrix to find starting element
         for (int y = elements.size - 1; y >= 0; y--) {
             if (startingVector != null) break;
             Array<Element> row = elements.get(y);
@@ -82,7 +83,7 @@ public class Pavlidis {
                 currentElement = upLeft;
                 currentLocation.set(upLeftVector);
                 outliningVerts.add(currentLocation.cpy());
-                currentDirection = getRelativeDirection(currentDirection, DirectionalVector.UpLeft);
+                currentDirection = getNewRelativeDirection(currentDirection, DirectionalVector.UpLeft);
                 continue;
             }
             upVector = getDirectionalVector(currentLocation, currentDirection, DirectionalVector.Up);
@@ -91,7 +92,7 @@ public class Pavlidis {
                 currentElement = up;
                 currentLocation.set(upVector);
                 outliningVerts.add(currentLocation.cpy());
-                currentDirection = getRelativeDirection(currentDirection, DirectionalVector.Up);
+                currentDirection = getNewRelativeDirection(currentDirection, DirectionalVector.Up);
                 continue;
             }
             upRightVector = getDirectionalVector(currentLocation, currentDirection, DirectionalVector.UpRight);
@@ -100,7 +101,7 @@ public class Pavlidis {
                 currentElement = upRight;
                 currentLocation.set(upRightVector);
                 outliningVerts.add(currentLocation.cpy());
-                currentDirection = getRelativeDirection(currentDirection, DirectionalVector.UpRight);
+                currentDirection = getNewRelativeDirection(currentDirection, DirectionalVector.UpRight);
                 continue;
             }
             currentDirection = rotateDirectionMap.get(currentDirection);
@@ -110,7 +111,7 @@ public class Pavlidis {
         return outliningVerts;
     }
 
-    private static Direction getRelativeDirection(Direction currentDirection, DirectionalVector directionalVector) {
+    private static Direction getNewRelativeDirection(Direction currentDirection, DirectionalVector directionalVector) {
         return directionMap.get(currentDirection).get(directionalVector);
     }
 
