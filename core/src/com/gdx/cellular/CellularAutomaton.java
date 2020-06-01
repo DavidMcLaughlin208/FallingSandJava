@@ -99,8 +99,6 @@ public class CellularAutomaton extends ApplicationAdapter {
         if (useChunks) {
 			matrix.resetChunks();
 		}
-		Array<Body> bodies = new Array<>();
-		b2dWorld.getBodies(bodies);
 
         // Detect and act on input
         numThreads = inputManager.adjustThreadCount(numThreads);
@@ -148,8 +146,10 @@ public class CellularAutomaton extends ApplicationAdapter {
 		b2dWorld.step(1/120f, 10, 6);
 		matrix.stepPhysicsElementActors();
 		matrixStage.draw();
-		matrix.drawBox2d(shapeRenderer, bodies);
 		matrix.drawPhysicsElementActors(shapeRenderer);
+		Array<Body> bodies = new Array<>();
+		b2dWorld.getBodies(bodies);
+		matrix.drawBox2d(shapeRenderer, bodies);
 		debugRenderer.render(b2dWorld, camera.combined);
 		inputManager.drawMenu();
 	}

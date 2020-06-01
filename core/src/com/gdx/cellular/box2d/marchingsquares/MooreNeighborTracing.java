@@ -64,19 +64,26 @@ public class MooreNeighborTracing {
         if (startingPoint == null) {
             return outliningVerts;
         }
-        List<Element> elementList = new ArrayList<>();
+//        List<Element> elementList = new ArrayList<>();
         Element currentElement;
         Vector2 currentLocation = startingVector.cpy();
         IncomingDirection currentIncomingDirection = IncomingDirection.East;
         boolean endConditionMet = false;
         IncomingDirection incomingDirectionToFinalPoint = null;
+        int neighborsVisited = 0;
         while (!endConditionMet) {
+            if (neighborsVisited >= 10000) {
+                System.out.println("Stuck in infinite loop");
+                return outliningVerts;
+            }
+            neighborsVisited++;
             for (int i = 1; i <= 8; i++) {
                 Vector2 neighborLocation = getNeighboringElementLocationForIndexAndDirection(i, currentIncomingDirection, currentLocation, elements);
                 Element neighbor = getNeighboringElement(neighborLocation, elements);
                 if (neighbor == null) {
                     if (i == 8) {
                         // Element is an island
+                        endConditionMet = true;
                         break;
                     }
                     continue;
@@ -85,18 +92,15 @@ public class MooreNeighborTracing {
                 currentLocation = neighborLocation.cpy();
                 currentIncomingDirection = getNewIncomingDirection(i, currentIncomingDirection);
                 if (currentElement == startingPoint) {
-//                    if (incomingDirectionToFinalPoint == currentIncomingDirection) {
-//                        endConditionMet = true;
-//                    }
-//                    if (incomingDirectionToFinalPoint == null) {
-//                        incomingDirectionToFinalPoint = currentIncomingDirection;
-//                    }
                     endConditionMet = true;
                     break;
                 }
-                if (!elementList.contains(currentElement)) {
+                int indexOfCurrentLocation = outliningVerts.indexOf(currentLocation);
+                if (indexOfCurrentLocation == -1) {
                     outliningVerts.add(neighborLocation.cpy());
-                    elementList.add(currentElement);
+//                    elementList.add(currentElement);
+                } else {
+                    outliningVerts.remove(indexOfCurrentLocation);
                 }
                 break;
             }
@@ -115,7 +119,7 @@ public class MooreNeighborTracing {
     }
 
     private static Element getNeighboringElement(Vector2 neighborLocation, Array<Array<Element>> elements) {
-        if (neighborLocation.y >= elements.size || neighborLocation.y < 0 || neighborLocation.x >= elements.get(0).size || neighborLocation.x < 0) {
+        if (neighborLocation.y >= elements.size || neighborLocation.y < 0 || neighborLocation.x >= elements.get((int) neighborLocation.y).size || neighborLocation.x < 0) {
             return null;
         } else {
             return elements.get((int) neighborLocation.y).get((int) neighborLocation.x);

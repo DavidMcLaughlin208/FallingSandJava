@@ -20,7 +20,6 @@ import org.dyn4j.geometry.Triangle;
 import org.dyn4j.geometry.decompose.SweepLine;
 
 import java.util.*;
-import java.util.Vector;
 import java.util.stream.Collectors;
 
 public class ShapeFactory {
@@ -110,6 +109,7 @@ public class ShapeFactory {
 
     public static Body createPolygonFromElementArray(int x, int y, Array<Array<Element>> elements, Body body) {
         Body newBody = createPolygonFromElementArray(x, y, elements, body.getType());
+        if (newBody == null) return null;
         shapeFactory.world.destroyBody(body);
         return newBody;
     }
@@ -133,7 +133,17 @@ public class ShapeFactory {
         simplifiedVerts = simplifiedVerts.stream().map(vector2 -> new Vector2((vector2.x - xWidth)/(mod/2f), (vector2.y - yWidth)/(mod/2f))).collect(Collectors.toList());
         org.dyn4j.geometry.Vector2[] dyn4jVerts = simplifiedVerts.stream().map(vec -> new org.dyn4j.geometry.Vector2(vec.x, vec.y)).toArray(org.dyn4j.geometry.Vector2[]::new);
         SweepLine sweepLine = new SweepLine();
-        List<Convex> convexes = sweepLine.decompose(dyn4jVerts);
+        List<Convex> convexes;
+
+        if (dyn4jVerts.length > 3) {
+            convexes = sweepLine.decompose(dyn4jVerts);
+        } else if (dyn4jVerts.length == 3) {
+            Convex convex = new org.dyn4j.geometry.Polygon(dyn4jVerts);
+            convexes = new ArrayList<>();
+            convexes.add(convex);
+        } else {
+            return null;
+        }
 
         for (Convex convex : convexes) {
             org.dyn4j.geometry.Polygon polygon = (org.dyn4j.geometry.Polygon) convex;
@@ -146,6 +156,10 @@ public class ShapeFactory {
             }
             for (Triangle triangle : triangles) {
                 Vector2[] triangleVerts = Arrays.stream(triangle.getVertices()).map(vert -> new Vector2((float) vert.x, (float) vert.y)).toArray(Vector2[]::new);
+                float area = Math.abs(((triangleVerts[0].x * (triangleVerts[1].y - triangleVerts[2].y)) + (triangleVerts[1].x * (triangleVerts[2].y - triangleVerts[0].y)) + (triangleVerts[2].x * (triangleVerts[0].y - triangleVerts[1].y))) / 2f);
+                if (area < .00001) {
+                    continue;
+                }
                 PolygonShape polygonForFixture = new PolygonShape();
                 polygonForFixture.set(triangleVerts);
                 FixtureDef fixtureDef = new FixtureDef();
@@ -161,6 +175,24 @@ public class ShapeFactory {
         body.setAngularVelocity((float) (Math.random() * 2));
 
         return body;
+    }
+
+    private static org.dyn4j.geometry.Vector2[] removeDuplicateVerts(org.dyn4j.geometry.Vector2[] convexVerts) {
+        List<Integer> toRemove = new ArrayList<>();
+        for (int i = 0;i < convexVerts.length; i++) {
+            for (int k = i + 1; k < convexVerts.length; k++) {
+                if (k!=i && convexVerts[k].equals(convexVerts[i])) {
+                    toRemove.add(0, i);
+                }
+            }
+        }
+        List<org.dyn4j.geometry.Vector2> list = new ArrayList<>(Arrays.asList(convexVerts));
+        toRemove.forEach(index -> list.remove(index));
+        org.dyn4j.geometry.Vector2[] newVerts = new org.dyn4j.geometry.Vector2[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            newVerts[i] = list.get(i);
+        }
+        return newVerts;
     }
 
     private static float[] toFloatArray(List<Vector2> reducedVerts) {
@@ -241,13 +273,25 @@ public class ShapeFactory {
         updatedVertices = updatedVertices.stream().map(vert -> new Vector2(vert.x - center.x, vert.y - center.y)).collect(Collectors.toList());
         org.dyn4j.geometry.Vector2[] dyn4jVerts = updatedVertices.stream().map(vec -> new org.dyn4j.geometry.Vector2(vec.x, vec.y)).toArray(org.dyn4j.geometry.Vector2[]::new);
         SweepLine sweepLine = new SweepLine();
-        List<Convex> convexes = sweepLine.decompose(dyn4jVerts);
+        List<Convex> convexes;
+
+        if (dyn4jVerts.length > 3) {
+            convexes = sweepLine.decompose(dyn4jVerts);
+        } else {
+            Convex convex = new org.dyn4j.geometry.Polygon(dyn4jVerts);
+            convexes = new ArrayList<>();
+            convexes.add(convex);
+        }
 
         for (Convex convex : convexes) {
             org.dyn4j.geometry.Polygon polygon = (org.dyn4j.geometry.Polygon) convex;
             List<Triangle> triangles = sweepLine.triangulate(polygon.getVertices());
             for (Triangle triangle : triangles) {
                 Vector2[] triangleVerts = Arrays.stream(triangle.getVertices()).map(vert -> new Vector2((float) vert.x, (float) vert.y)).toArray(Vector2[]::new);
+                float area = Math.abs(((triangleVerts[0].x * (triangleVerts[1].y - triangleVerts[2].y)) + (triangleVerts[1].x * (triangleVerts[2].y - triangleVerts[0].y)) + (triangleVerts[2].x * (triangleVerts[0].y - triangleVerts[1].y))) / 2f);
+                if (area < .00001) {
+                    continue;
+                }
                 PolygonShape polygonForFixture = new PolygonShape();
                 polygonForFixture.set(triangleVerts);
                 FixtureDef fixtureDef = new FixtureDef();

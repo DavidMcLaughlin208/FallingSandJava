@@ -656,17 +656,15 @@ public class CellularMatrix {
             maxX = Math.max(toMatrix(worldPoint.x * mod), maxX);
             minY = Math.min(toMatrix(worldPoint.y * mod), minY);
             maxY = Math.max(toMatrix(worldPoint.y * mod), maxY);
-
         }
         Array<Array<Element>> elementList = new Array<>();
         int xDistance = maxX - minX;
         int yDistance = maxY - minY;
-        ElementType type;
+        ElementType type = currentlySelectedElement;
         for (int y = minY; y < minY + yDistance; y++) {
             Array<Element> row = new Array<>();
             elementList.add(row);
             for (int x = minX; x < minX + xDistance; x++) {
-                type = (x % 2 == 0) ? ElementType.STONE : ElementType.STONE;
 
                 Element element = spawnElementByMatrix(x, y, type);
                 row.add(element);

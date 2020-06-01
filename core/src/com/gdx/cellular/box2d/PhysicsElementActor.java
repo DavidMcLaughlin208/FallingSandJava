@@ -49,7 +49,7 @@ public class PhysicsElementActor {
             return;
         }
         if (shouldRecalculateBoundaries) {
-//            recalculateBoundaries();
+            recalculateBoundaries();
         }
         xAccumulator += Math.abs(physicsBody.getPosition().x - lastPos.x);
         yAccumulator += Math.abs(physicsBody.getPosition().y - lastPos.y);
@@ -107,22 +107,22 @@ public class PhysicsElementActor {
             yAccumulator = 0;
             angleAccumulator = 0;
             shouldCalculateCount -= 1;
-            int drawLength = 1;
-            for (int y = 0; y < elements.size; y++) {
-                Array<Element> row = elements.get(y);
-                for (int x = 0; x < row.size - drawLength; x++) {
-                    Element element = row.get(x);
-                    if (element != null) {
-                        for (int length = 1; length <= drawLength; length++) {
-                            Element nextElement = row.get(x + length);
-                            if (nextElement == null) continue;
-                            if ((element.matrixX - nextElement.matrixX != length)) {
-                                matrix.setElementAtSecondLocation(element.matrixX + length, element.matrixY, element);
-                            }
-                        }
-                    }
-                }
-            }
+//            int drawLength = 1;
+//            for (int y = 0; y < elements.size; y++) {
+//                Array<Element> row = elements.get(y);
+//                for (int x = 0; x < row.size - drawLength; x++) {
+//                    Element element = row.get(x);
+//                    if (element != null) {
+//                        for (int length = 1; length <= drawLength; length++) {
+//                            Element nextElement = row.get(x + length);
+//                            if (nextElement == null) continue;
+//                            if ((element.matrixX - nextElement.matrixX != length)) {
+//                                matrix.setElementAtSecondLocation(element.matrixX + length, element.matrixY, element);
+//                            }
+//                        }
+//                    }
+//                }
+//            }
         } else {
             this.lastAngle = physicsBody.getAngle();
             this.lastPos = physicsBody.getPosition().cpy();
@@ -172,11 +172,13 @@ public class PhysicsElementActor {
             newReplacement.setOwningBodyCoords(elementToDie.owningBodyCoords);
         }
         shouldRecalculateBoundaries = true;
+        shouldCalculateCount = 2;
         return true;
     }
 
     public void recalculateBoundaries() {
         Body newBody = ShapeFactory.createPolygonFromElementArray((int) this.physicsBody.getPosition().x, (int) this.physicsBody.getPosition().y, this.elements, this.physicsBody);
+        if (newBody == null) return;
         newBody.setAngularVelocity(this.physicsBody.getAngularVelocity());
         newBody.setLinearVelocity(this.physicsBody.getLinearVelocity());
         newBody.setTransform(this.physicsBody.getTransform().getPosition(), this.physicsBody.getTransform().getRotation());
