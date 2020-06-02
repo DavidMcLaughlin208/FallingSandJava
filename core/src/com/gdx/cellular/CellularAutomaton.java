@@ -2,6 +2,7 @@ package com.gdx.cellular;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -38,6 +39,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 //    private Pixmap pixmap;
     private CellularMatrix matrix;
     private OrthographicCamera camera;
+	AssetManager manager = new AssetManager();
 
     private int numThreads = 12;
     private boolean useMultiThreading = true;
@@ -114,7 +116,12 @@ public class CellularAutomaton extends ApplicationAdapter {
 
 		boolean isPaused = inputManager.getIsPaused();
 		if (isPaused) {
-			matrix.drawAll(shapeRenderer);
+			matrixStage.draw();
+			matrix.drawPhysicsElementActors(shapeRenderer);
+			Array<Body> bodies = new Array<>();
+			b2dWorld.getBodies(bodies);
+			matrix.drawBox2d(shapeRenderer, bodies);
+			debugRenderer.render(b2dWorld, camera.combined);
 			return;
 		}
 

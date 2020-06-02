@@ -121,7 +121,9 @@ public class ShapeFactory {
         int xWidth = (elements.get(0).size/2);
         int yWidth = (elements.size / 2);
 
+        elements.reverse();
         List<Vector2> allVerts = MooreNeighborTracing.getOutliningVerts(elements);
+        elements.reverse();
         List<Vector2> simplifiedVerts = Visvalingam.simplify(allVerts);
 
         Vector2 center = new Vector2((float) (xWidth + x) / mod, (float) (yWidth + y) / mod);

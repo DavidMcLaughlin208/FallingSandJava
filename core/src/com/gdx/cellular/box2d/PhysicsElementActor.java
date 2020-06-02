@@ -24,6 +24,8 @@ public class PhysicsElementActor {
     int xCenterOffset;
     int yCenterOffset;
     int shouldCalculateCount = 3;
+    int recalculateCount = 0;
+    final int recalculateThreshold = 5;
     private boolean shouldRecalculateBoundaries = false;
 
     public PhysicsElementActor(Body body, Array<Array<Element>> elements, int minX, int maxY) {
@@ -49,7 +51,12 @@ public class PhysicsElementActor {
             return;
         }
         if (shouldRecalculateBoundaries) {
-            recalculateBoundaries();
+            recalculateCount++;
+            if (recalculateCount > recalculateThreshold) {
+                recalculateBoundaries();
+                recalculateCount = 0;
+                shouldRecalculateBoundaries = false;
+            }
         }
         xAccumulator += Math.abs(physicsBody.getPosition().x - lastPos.x);
         yAccumulator += Math.abs(physicsBody.getPosition().y - lastPos.y);
@@ -139,9 +146,7 @@ public class PhysicsElementActor {
                 if (element != null) {
                     sr.setColor(element.color);
                     sr.rect(element.toPixel(element.matrixX), element.toPixel(element.matrixY), CellularAutomaton.pixelSizeModifier, CellularAutomaton.pixelSizeModifier);
-                    if (element.secondaryMatrixCoords.size() > 0) {
-                        element.secondaryMatrixCoords.forEach(vector2 -> sr.rect(element.toPixel((int) vector2.x), element.toPixel((int) vector2.y), CellularAutomaton.pixelSizeModifier, CellularAutomaton.pixelSizeModifier));
-                    }
+                    element.secondaryMatrixCoords.forEach(vector2 -> sr.rect(element.toPixel((int) vector2.x), element.toPixel((int) vector2.y), CellularAutomaton.pixelSizeModifier, CellularAutomaton.pixelSizeModifier));
                 }
             }
         }

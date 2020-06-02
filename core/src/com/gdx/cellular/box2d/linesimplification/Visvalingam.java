@@ -12,7 +12,11 @@ public class Visvalingam {
     private Visvalingam() { throw new IllegalStateException("Should not instantiate Visvalingam"); }
 
     public static List<Vector2> simplify(List<Vector2> verts) {
-        return simplify(verts, DEFAULT_THRESHOLD);
+        List<Vector2> simplifiedOnce = simplify(verts, DEFAULT_THRESHOLD);
+//        return simplifiedOnce;
+//        List<Vector2> simplifiedTwice = simplify(simplifiedOnce, DEFAULT_THRESHOLD);
+        return simplify(simplifiedOnce, DEFAULT_THRESHOLD);
+//        return simplify(simplifiedTwice, DEFAULT_THRESHOLD);
     }
 
     public static List<Vector2> simplify(List<Vector2> verts, float threshold) {
@@ -32,7 +36,8 @@ public class Visvalingam {
                 if (skippedCount > 20) {
                     int index = simplifiedVerts.size() - 1;
                     if (!(index < 0)) {
-                        simplifiedVerts.add(index, verts.get(i - (skippedCount / 2)));
+                        simplifiedVerts.add(index, verts.get(i - (skippedCount / 3)));
+                        simplifiedVerts.add(index, verts.get(i - (2*(skippedCount / 3))));
                     }
                 }
                 skippedCount = 0;

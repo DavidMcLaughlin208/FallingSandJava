@@ -1,6 +1,10 @@
 package com.gdx.cellular.ui;
 
+import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetLoaderParameters;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.SkinLoader;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -18,6 +22,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.gdx.cellular.input.InputManager;
 import com.gdx.cellular.input.MouseMode;
 import com.gdx.cellular.elements.ElementType;
+import org.w3c.dom.Text;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -37,6 +42,7 @@ public class CreatorMenu {
     public Table dropDownBodyType;
     public Stage dropDownStage;
     public SelectedSubList selectedSubList;
+    AssetManager manager = new AssetManager();
 
     public Map<SelectedSubList, Table> listTableMap = new HashMap<>();
 
@@ -229,10 +235,11 @@ public class CreatorMenu {
     }
 
     private Skin createSkin(String name) {
-        FileHandle atlasFileHandler = new FileHandle(String.valueOf(Gdx.files.getFileHandle(name + ".atlas", com.badlogic.gdx.Files.FileType.Internal)));
-        FileHandle skinFileHandler = new FileHandle(String.valueOf(Gdx.files.getFileHandle(name + ".json", com.badlogic.gdx.Files.FileType.Internal)));
-        FileHandle imagesFileHandler = new FileHandle(String.valueOf(Gdx.files.getFileHandle("", com.badlogic.gdx.Files.FileType.Internal)));
-        return new Skin(skinFileHandler, new TextureAtlas(atlasFileHandler, imagesFileHandler));
+        manager.load(name + ".atlas", TextureAtlas.class);
+        SkinLoader.SkinParameter parameter = new SkinLoader.SkinParameter(name + ".atlas");
+        manager.load(name + ".json", Skin.class, parameter);
+        manager.finishLoading();
+        return manager.get(name + ".json", Skin.class);
     }
 
     private enum SelectedSubList {
