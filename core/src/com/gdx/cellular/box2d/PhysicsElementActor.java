@@ -97,14 +97,6 @@ public class PhysicsElementActor {
                         } else {
                             matrix.setElementAtIndex(element.matrixX, element.matrixY, ElementType.EMPTYCELL.createElementByMatrix(element.matrixX, element.matrixY));
                         }
-                        //                    if (elementAtNewPos instanceof MovableSolid) {
-                        //                        if (matrix.isWithinBounds(matrixCoords)) {
-                        //                            matrix.setElementAtIndex((int) matrixCoords.x, (int) matrixCoords.y, element);
-                        //                        }
-                        //                        elementAtNewPos.dieAndReplaceWithParticle(matrix, matrix.generateRandomVelocityWithBounds(-150, 150));
-                        //                        physicsBody.setLinearVelocity(physicsBody.getLinearVelocity().scl(.9f));
-                        //                        physicsBody.setAngularVelocity(physicsBody.getAngularVelocity() * .98f);
-                        //                    }
                     }
                 }
             }
@@ -182,7 +174,7 @@ public class PhysicsElementActor {
     }
 
     public void recalculateBoundaries() {
-        Body newBody = ShapeFactory.createPolygonFromElementArray((int) this.physicsBody.getPosition().x, (int) this.physicsBody.getPosition().y, this.elements, this.physicsBody);
+        Body newBody = ShapeFactory.createPolygonFromElementArrayDeleteOldBody((int) this.physicsBody.getPosition().x, (int) this.physicsBody.getPosition().y, this.elements, this.physicsBody);
         if (newBody == null) return;
         newBody.setAngularVelocity(this.physicsBody.getAngularVelocity());
         newBody.setLinearVelocity(this.physicsBody.getLinearVelocity());

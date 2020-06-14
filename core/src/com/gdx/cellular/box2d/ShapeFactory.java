@@ -1,18 +1,11 @@
 package com.gdx.cellular.box2d;
 
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.*;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ShortArray;
 import com.gdx.cellular.CellularAutomaton;
-import com.gdx.cellular.box2d.douglaspeucker.Point;
-import com.gdx.cellular.box2d.douglaspeucker.PointImpl;
-import com.gdx.cellular.box2d.douglaspeucker.SeriesReducer;
 import com.gdx.cellular.box2d.linesimplification.Visvalingam;
 import com.gdx.cellular.box2d.marchingsquares.MooreNeighborTracing;
-import com.gdx.cellular.box2d.marchingsquares.Pavlidis;
 import com.gdx.cellular.elements.Element;
 
 import org.dyn4j.geometry.Convex;
@@ -107,7 +100,7 @@ public class ShapeFactory {
         return createPolygonFromElementArray(x, y, elements, BodyDef.BodyType.StaticBody);
     }
 
-    public static Body createPolygonFromElementArray(int x, int y, Array<Array<Element>> elements, Body body) {
+    public static Body createPolygonFromElementArrayDeleteOldBody(int x, int y, Array<Array<Element>> elements, Body body) {
         Body newBody = createPolygonFromElementArray(x, y, elements, body.getType());
         if (newBody == null) return null;
         shapeFactory.world.destroyBody(body);
@@ -115,7 +108,7 @@ public class ShapeFactory {
     }
 
     public static Body createPolygonFromElementArray(int x, int y, Array<Array<Element>> elements, BodyDef.BodyType shapeType) {
-        int mod = CellularAutomaton.box2dSizeModifier;
+        int mod = CellularAutomaton.box2dSizeModifier/2;
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = shapeType;
         int xWidth = (elements.get(0).size/2);
@@ -132,7 +125,7 @@ public class ShapeFactory {
 
         Body body = shapeFactory.world.createBody(bodyDef);
 
-        simplifiedVerts = simplifiedVerts.stream().map(vector2 -> new Vector2((vector2.x - xWidth)/(mod/2f), (vector2.y - yWidth)/(mod/2f))).collect(Collectors.toList());
+        simplifiedVerts = simplifiedVerts.stream().map(vector2 -> new Vector2((vector2.x - xWidth)/(mod), (vector2.y - yWidth)/(mod))).collect(Collectors.toList());
         org.dyn4j.geometry.Vector2[] dyn4jVerts = simplifiedVerts.stream().map(vec -> new org.dyn4j.geometry.Vector2(vec.x, vec.y)).toArray(org.dyn4j.geometry.Vector2[]::new);
         SweepLine sweepLine = new SweepLine();
         List<Convex> convexes;
@@ -159,7 +152,7 @@ public class ShapeFactory {
             for (Triangle triangle : triangles) {
                 Vector2[] triangleVerts = Arrays.stream(triangle.getVertices()).map(vert -> new Vector2((float) vert.x, (float) vert.y)).toArray(Vector2[]::new);
                 float area = Math.abs(((triangleVerts[0].x * (triangleVerts[1].y - triangleVerts[2].y)) + (triangleVerts[1].x * (triangleVerts[2].y - triangleVerts[0].y)) + (triangleVerts[2].x * (triangleVerts[0].y - triangleVerts[1].y))) / 2f);
-                if (area < .00001) {
+                if (area < .08) {
                     continue;
                 }
                 PolygonShape polygonForFixture = new PolygonShape();
@@ -174,7 +167,7 @@ public class ShapeFactory {
             }
         }
 
-        body.setAngularVelocity((float) (Math.random() * 2));
+//        body.setAngularVelocity((float) (Math.random() * 2));
 
         return body;
     }

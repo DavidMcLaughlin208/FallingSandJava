@@ -14,7 +14,7 @@ public class FlammableGas extends Gas {
         frictionFactor = 1f;
         density = 1;
         dispersionRate = 2;
-        lifeSpan = getRandomInt(500) + 1000;
+        lifeSpan = getRandomInt(500) + 3000;
         flammabilityResistance = 10;
         resetFlammabilityResistance = 10;
     }

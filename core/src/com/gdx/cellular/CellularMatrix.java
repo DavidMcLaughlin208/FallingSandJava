@@ -37,7 +37,7 @@ public class CellularMatrix {
     private int threadedIndexOffset = 0;
 
     private Array<Array<Element>> matrix;
-    private Array<Array<Chunk>> chunks;
+    private final Array<Array<Chunk>> chunks;
     public Array<Spout> spoutArray;
     public Array<PhysicsElementActor> physicsElementActors = new Array<>();
     public World world;
@@ -48,9 +48,7 @@ public class CellularMatrix {
         this.outerArraySize = toMatrix(height);
         this.matrix = generateMatrix();
         this.world = world;
-        if (useChunks) {
-            this.chunks = generateChunks();
-        }
+        this.chunks = generateChunks();
         this.shuffledXIndexes = generateShuffledIndexes(innerArraySize);
 
         calculateAndSetThreadedXIndexOffset();
@@ -364,6 +362,7 @@ public class CellularMatrix {
 
     public Element spawnElementByMatrix(int matrixX, int matrixY, ElementType elementType) {
         if (isWithinBounds(matrixX, matrixY) && get(matrixX, matrixY).getClass() != elementType.clazz) {
+            get(matrixX, matrixY).die(this);
             Element newElement = elementType.createElementByMatrix(matrixX, matrixY);
             setElementAtIndex(matrixX, matrixY, newElement);
             reportToChunkActive(newElement);
@@ -633,29 +632,66 @@ public class CellularMatrix {
         }
     }
 
+//    public void spawnRect(Vector3 mouseDownPos, Vector3 mouseUpPos, ElementType currentlySelectedElement, BodyDef.BodyType bodyType) {
+//        int mod = CellularAutomaton.box2dSizeModifier;
+//        int matrixMouseDownX = toMatrix(mouseDownPos.x);
+//        int matrixMouseDownY = toMatrix(mouseDownPos.y);
+//        int matrixMouseUpX = toMatrix(mouseUpPos.x);
+//        int matrixMouseUpY = toMatrix(mouseUpPos.y);
+//        Vector3 boxCenter = new Vector3((float) (matrixMouseDownX + matrixMouseUpX) / 2, (float) (matrixMouseDownY + matrixMouseUpY) / 2, 0);
+//        List<Vector2> vertices = getRectVertices(matrixMouseDownX, matrixMouseUpX, matrixMouseDownY, matrixMouseUpY);
+//
+//        Body body = ShapeFactory.createBoxByBodyType(boxCenter, vertices, bodyType);
+//        PolygonShape shape = (PolygonShape) body.getFixtureList().get(0).getShape();
+//        Vector2 point = new Vector2();
+//        int minX = innerArraySize;
+//        int maxX = 0;
+//        int minY = innerArraySize;
+//        int maxY = 0;
+//        for (int i = 0; i < shape.getVertexCount(); i++) {
+//            shape.getVertex(i, point);
+//            Vector2 worldPoint = body.getWorldPoint(point);
+//            minX = Math.min(toMatrix(worldPoint.x * mod), minX);
+//            maxX = Math.max(toMatrix(worldPoint.x * mod), maxX);
+//            minY = Math.min(toMatrix(worldPoint.y * mod), minY);
+//            maxY = Math.max(toMatrix(worldPoint.y * mod), maxY);
+//        }
+//        Array<Array<Element>> elementList = new Array<>();
+//        int xDistance = maxX - minX;
+//        int yDistance = maxY - minY;
+//        ElementType type = currentlySelectedElement;
+//        for (int y = minY; y < minY + yDistance; y++) {
+//            Array<Element> row = new Array<>();
+//            elementList.add(row);
+//            for (int x = minX; x < minX + xDistance; x++) {
+//
+//                Element element = spawnElementByMatrix(x, y, type);
+//                row.add(element);
+//            }
+//        }
+//        PhysicsElementActor newActor = new PhysicsElementActor(body, elementList, minX, maxY);
+//        physicsElementActors.add(newActor);
+//    }
+
     public void spawnRect(Vector3 mouseDownPos, Vector3 mouseUpPos, ElementType currentlySelectedElement, BodyDef.BodyType bodyType) {
         int mod = CellularAutomaton.box2dSizeModifier;
         int matrixMouseDownX = toMatrix(mouseDownPos.x);
         int matrixMouseDownY = toMatrix(mouseDownPos.y);
         int matrixMouseUpX = toMatrix(mouseUpPos.x);
         int matrixMouseUpY = toMatrix(mouseUpPos.y);
-        Vector3 boxCenter = new Vector3((float) (matrixMouseDownX + matrixMouseUpX) / 2, (float) (matrixMouseDownY + matrixMouseUpY) / 2, 0);
+        Vector2 boxCenter = new Vector2((float) (matrixMouseDownX + matrixMouseUpX) / 2, (float) (matrixMouseDownY + matrixMouseUpY) / 2);
         List<Vector2> vertices = getRectVertices(matrixMouseDownX, matrixMouseUpX, matrixMouseDownY, matrixMouseUpY);
 
-        Body body = ShapeFactory.createBoxByBodyType(boxCenter, vertices, bodyType);
-        PolygonShape shape = (PolygonShape) body.getFixtureList().get(0).getShape();
-        Vector2 point = new Vector2();
+        // min max are matrix coords
         int minX = innerArraySize;
         int maxX = 0;
-        int minY = innerArraySize;
+        int minY = outerArraySize;
         int maxY = 0;
-        for (int i = 0; i < shape.getVertexCount(); i++) {
-            shape.getVertex(i, point);
-            Vector2 worldPoint = body.getWorldPoint(point);
-            minX = Math.min(toMatrix(worldPoint.x * mod), minX);
-            maxX = Math.max(toMatrix(worldPoint.x * mod), maxX);
-            minY = Math.min(toMatrix(worldPoint.y * mod), minY);
-            maxY = Math.max(toMatrix(worldPoint.y * mod), maxY);
+        for (Vector2 point : vertices) {
+            minX = Math.min((int) point.x, minX);
+            maxX = Math.max((int) point.x, maxX);
+            minY = Math.min((int) point.y, minY);
+            maxY = Math.max((int) point.y, maxY);
         }
         Array<Array<Element>> elementList = new Array<>();
         int xDistance = maxX - minX;
@@ -665,11 +701,12 @@ public class CellularMatrix {
             Array<Element> row = new Array<>();
             elementList.add(row);
             for (int x = minX; x < minX + xDistance; x++) {
-
                 Element element = spawnElementByMatrix(x, y, type);
                 row.add(element);
             }
         }
+        Body body = ShapeFactory.createPolygonFromElementArray(minX, minY, elementList, bodyType);
+        if (body == null) return;
         PhysicsElementActor newActor = new PhysicsElementActor(body, elementList, minX, maxY);
         physicsElementActors.add(newActor);
     }

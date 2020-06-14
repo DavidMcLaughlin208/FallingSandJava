@@ -223,11 +223,11 @@ public class InputManager {
     }
 
     private void spawnRandomPolygon(int x, int y, Array<Array<Element>> randomPolygonArray, CellularMatrix matrix) {
-        Body body = ShapeFactory.createDynamicPolygonFromElementArray(x, y, randomPolygonArray);
+        Body body = ShapeFactory.createDynamicPolygonFromElementArray(matrix.toMatrix(x), matrix.toMatrix(y), randomPolygonArray);
         int mod = CellularAutomaton.box2dSizeModifier;
         Array<Fixture> fixtureList = body.getFixtureList();
         Vector2 point = new Vector2();
-        int minX = randomPolygonArray.get(0).size;
+        int minX = matrix.innerArraySize;
         int maxY = 0;
         for (Fixture fixture : fixtureList) {
             PolygonShape shape = (PolygonShape) fixture.getShape();
@@ -236,7 +236,6 @@ public class InputManager {
                 Vector2 worldPoint = body.getWorldPoint(point);
                 minX = Math.min(matrix.toMatrix(worldPoint.x * mod), minX);
                 maxY = Math.max(matrix.toMatrix(worldPoint.y * mod), maxY);
-
             }
         }
         PhysicsElementActor physicsElementActor = new PhysicsElementActor(body, randomPolygonArray, minX, maxY);

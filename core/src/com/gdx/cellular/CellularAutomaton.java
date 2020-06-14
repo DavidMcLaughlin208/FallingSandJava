@@ -21,6 +21,7 @@ import com.gdx.cellular.input.InputProcessors;
 import com.gdx.cellular.ui.MatrixActor;
 import com.gdx.cellular.util.ElementColumnStepper;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -116,6 +117,8 @@ public class CellularAutomaton extends ApplicationAdapter {
 
 		boolean isPaused = inputManager.getIsPaused();
 		if (isPaused) {
+			matrix.useChunks = false;
+			useChunks = false;
 			matrixStage.draw();
 			matrix.drawPhysicsElementActors(shapeRenderer);
 			Array<Body> bodies = new Array<>();
@@ -152,12 +155,15 @@ public class CellularAutomaton extends ApplicationAdapter {
 		b2dWorld.step(1/120f, 10, 6);
 		b2dWorld.step(1/120f, 10, 6);
 		matrix.stepPhysicsElementActors();
+
 		matrixStage.draw();
 		matrix.drawPhysicsElementActors(shapeRenderer);
+
 		Array<Body> bodies = new Array<>();
 		b2dWorld.getBodies(bodies);
 		matrix.drawBox2d(shapeRenderer, bodies);
 		debugRenderer.render(b2dWorld, camera.combined);
+
 		inputManager.drawMenu();
 	}
 

@@ -25,11 +25,12 @@ public abstract class MovableSolid extends Solid {
 //    }
 
     public void step(CellularMatrix matrix) {
-        if (this.owningBody != null) {
-            stepAsPartOfPhysicsBody(matrix);
-        }
         if (stepped.get(0) == CellularAutomaton.stepped.get(0)) return;
         stepped.flip(0);
+        if (this.owningBody != null) {
+            stepAsPartOfPhysicsBody(matrix);
+            return;
+        }
         if (matrix.useChunks && !matrix.shouldElementInChunkStep(this)) {
             return;
         }
