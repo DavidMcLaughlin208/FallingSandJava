@@ -318,7 +318,6 @@ public abstract class Element {
     public void checkLifeSpan(CellularMatrix matrix) {
         if (lifeSpan != null) {
             lifeSpan--;
-            lifeSpan--;
             if (lifeSpan <= 0) {
                 die(matrix);
             }

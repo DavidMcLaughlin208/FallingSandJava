@@ -3,6 +3,7 @@ package com.gdx.cellular.elements.liquid;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.elements.Element;
+import com.gdx.cellular.elements.ElementType;
 
 public class Water extends Liquid {
 
@@ -24,7 +25,8 @@ public class Water extends Liquid {
 
     @Override
     public boolean receiveHeat(CellularMatrix matrix, int heat) {
-        return false;
+        dieAndReplace(matrix, ElementType.STEAM);
+        return true;
     }
 
     @Override
@@ -33,7 +35,7 @@ public class Water extends Liquid {
             other.receiveCooling(matrix, coolingFactor);
             coolingFactor--;
             if (coolingFactor <= 0) {
-                die(matrix);
+                dieAndReplace(matrix, ElementType.STEAM);
                 return true;
             }
             return false;

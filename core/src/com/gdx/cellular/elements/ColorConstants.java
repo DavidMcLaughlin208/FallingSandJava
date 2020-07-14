@@ -61,6 +61,8 @@ public class ColorConstants {
 
     private static final Color SPARK = new Color(89/255f, 35/255f, 13/255f, 1);
 
+    private static final Color STEAM = new Color(204/255f, 204/255f, 204/255f, 0.8f);
+
     // Effects
     private static final String FIRE_NAME = "Fire";
     private static final Color FIRE_1 = new Color(89/255f, 35/255f, 13/255f, 1);
@@ -116,6 +118,8 @@ public class ColorConstants {
         elementColorMap.get(ElementType.BLOOD).add(BLOOD);
 
         elementColorMap.get(ElementType.SMOKE).add(SMOKE);
+
+        elementColorMap.get(ElementType.STEAM).add(STEAM);
 
         elementColorMap.get(ElementType.FLAMMABLEGAS).add(FLAMMABLE_GAS);
 

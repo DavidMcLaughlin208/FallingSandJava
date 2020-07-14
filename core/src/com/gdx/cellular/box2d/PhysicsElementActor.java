@@ -25,14 +25,14 @@ public class PhysicsElementActor {
     int yCenterOffset;
     int shouldCalculateCount = 3;
     int recalculateCount = 0;
-    final int recalculateThreshold = 5;
+    final int recalculateThreshold = 3;
     private boolean shouldRecalculateBoundaries = false;
 
     public PhysicsElementActor(Body body, Array<Array<Element>> elements, int minX, int maxY) {
         this.physicsBody = body;
         this.elements = elements;
-        xCenterOffset = (int) Math.abs(body.getPosition().x*5 - minX);
-        yCenterOffset = (int) Math.abs(body.getPosition().y*5 - maxY);
+        xCenterOffset = (int) Math.abs(body.getPosition().x*5 - minX) + 1;
+        yCenterOffset = (int) Math.abs(body.getPosition().y*5 - maxY) - 1;
         for (int y = 0; y < elements.size; y++) {
             Array<Element> row = elements.get(y);
             for (int x = 0; x < row.size; x++) {
@@ -78,11 +78,12 @@ public class PhysicsElementActor {
                         }
                         if (elementAtNewPos == null) {
                             matrix.setElementAtIndex(element.matrixX, element.matrixY, ElementType.EMPTYCELL.createElementByMatrix(element.matrixX, element.matrixY));
+                            continue;
                         }
-                        if (elementAtNewPos != null && elementAtNewPos.owningBody != null) {
+                        if (elementAtNewPos.owningBody != null) {
                             elementAtNewPos.owningBody.shouldCalculateCount = 2;
                         }
-                        if (elementAtNewPos instanceof EmptyCell || (elementAtNewPos != null && elementAtNewPos.owningBody == this)) {
+                        if (elementAtNewPos instanceof EmptyCell || elementAtNewPos.owningBody == this) {
                             matrix.setElementAtIndex(element.matrixX, element.matrixY, ElementType.EMPTYCELL.createElementByMatrix(element.matrixX, element.matrixY));
                             if (matrix.isWithinBounds(matrixCoords)) {
                                 matrix.setElementAtIndex((int) matrixCoords.x, (int) matrixCoords.y, element);
@@ -106,7 +107,7 @@ public class PhysicsElementActor {
             yAccumulator = 0;
             angleAccumulator = 0;
             shouldCalculateCount -= 1;
-//            int drawLength = 1;
+//            int drawLength = 2;
 //            for (int y = 0; y < elements.size; y++) {
 //                Array<Element> row = elements.get(y);
 //                for (int x = 0; x < row.size - drawLength; x++) {
@@ -151,10 +152,10 @@ public class PhysicsElementActor {
         int bodyCenterMatrixY = (int) ((bodyPos.y * CellularAutomaton.box2dSizeModifier)/2);
         Vector2 matrixPoint = new Vector2(bodyCenterMatrixX + element.owningBodyCoords.x, bodyCenterMatrixY - element.owningBodyCoords.y);
         float angle = physicsBody.getAngle();
-        float new_x = (float) (((matrixPoint.x-bodyCenterMatrixX) * Math.cos(angle) - (matrixPoint.y-bodyCenterMatrixY) * Math.sin(angle)) + bodyCenterMatrixX);
-        float new_y = (float) (((matrixPoint.y-bodyCenterMatrixY) * Math.cos(angle) + (matrixPoint.x-bodyCenterMatrixX) * Math.sin(angle)) + bodyCenterMatrixY);
-        matrixPoint.x = Math.round(new_x);
-        matrixPoint.y = Math.round(new_y);
+        float newX = (float) (((matrixPoint.x-bodyCenterMatrixX) * Math.cos(angle) - (matrixPoint.y-bodyCenterMatrixY) * Math.sin(angle)) + bodyCenterMatrixX);
+        float newY = (float) (((matrixPoint.y-bodyCenterMatrixY) * Math.cos(angle) + (matrixPoint.x-bodyCenterMatrixX) * Math.sin(angle)) + bodyCenterMatrixY);
+        matrixPoint.x = Math.round(newX);
+        matrixPoint.y = Math.round(newY);
         return matrixPoint;
     }
 
