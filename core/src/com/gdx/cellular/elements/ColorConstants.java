@@ -1,11 +1,19 @@
 package com.gdx.cellular.elements;
 
 import com.badlogic.gdx.graphics.Color;
+import com.gdx.cellular.util.MaterialMap;
+import com.sun.tools.javac.util.StringUtils;
 
+import java.io.File;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class ColorConstants {
+
+    private static final Map<String, Color> colorCache = new ConcurrentHashMap<>();
+
+    private static final Map<String, MaterialMap> materialsMap = new HashMap<>();
 
     private static final Map<ElementType, List<Color>> elementColorMap = new HashMap<>();
     private static final Map<String, List<Color>> effectsColorMap = new HashMap<>();
@@ -61,7 +69,9 @@ public class ColorConstants {
 
     private static final Color SPARK = new Color(89/255f, 35/255f, 13/255f, 1);
 
-    private static final Color STEAM = new Color(204/255f, 204/255f, 204/255f, 0.8f);
+    private static final Color STEAM_1 = new Color(204/255f, 204/255f, 204/255f, 0.8f);
+    private static final Color STEAM_2 = new Color(204/255f, 204/255f, 204/255f, 0.1f);
+    private static final Color STEAM_3 = new Color(204/255f, 204/255f, 204/255f, 0.45f);
 
     // Effects
     private static final String FIRE_NAME = "Fire";
@@ -119,7 +129,9 @@ public class ColorConstants {
 
         elementColorMap.get(ElementType.SMOKE).add(SMOKE);
 
-        elementColorMap.get(ElementType.STEAM).add(STEAM);
+        elementColorMap.get(ElementType.STEAM).add(STEAM_1);
+        elementColorMap.get(ElementType.STEAM).add(STEAM_2);
+        elementColorMap.get(ElementType.STEAM).add(STEAM_3);
 
         elementColorMap.get(ElementType.FLAMMABLEGAS).add(FLAMMABLE_GAS);
 
@@ -140,11 +152,33 @@ public class ColorConstants {
         if (missingElements.size() > 0) {
             throw new IllegalStateException("Elements " + missingElements.toString() + "have no assigned colors");
         }
+
+        // Load custom textures
+        File folder = new File("elementtextures");
+        File[] listOfFiles = folder.listFiles();
+        if (listOfFiles != null) {
+            for (File file : listOfFiles) {
+                materialsMap.put(file.getName().toUpperCase(), new MaterialMap(file));
+            }
+        }
     }
 
     public static Color getColorForElementType(ElementType elementType) {
         List<Color> colorList = elementColorMap.get(elementType);
         return elementColorMap.get(elementType).get(random.nextInt(colorList.size()));
+    }
+
+    public static Color getColorForElementType(ElementType elementType, int x, int y) {
+        if (materialsMap.get(elementType.name() + ".PNG") != null) {
+            int rgb = materialsMap.get(elementType.name() + ".PNG").getRGB(x, y);
+            return colorCache.computeIfAbsent(String.valueOf(rgb), k-> {
+                Color color = new Color();
+                Color.argb8888ToColor(color, rgb);
+                return color;
+            });
+        } else {
+            return getColorForElementType(elementType);
+        }
     }
 
 

@@ -52,11 +52,13 @@ public abstract class Element {
 
     public Element(int x, int y, boolean isPixel) {
         this.elementType = getEnumType();
-        this.color = ColorConstants.getColorForElementType(this.elementType);
         if (isPixel) {
             setCoordinatesByPixel(x, y);
+            this.color = ColorConstants.getColorForElementType(this.elementType,
+                    x/CellularAutomaton.pixelSizeModifier, y/CellularAutomaton.pixelSizeModifier);
         } else {
             setCoordinatesByMatrix(x, y);
+            this.color = ColorConstants.getColorForElementType(this.elementType, x, y);
         }
         stepped.set(0, CellularAutomaton.stepped.get(0));
     }
@@ -225,7 +227,7 @@ public abstract class Element {
             modifyColor();
         } else {
             this.isIgnited = false;
-            this.color = ColorConstants.getColorForElementType(elementType);
+            this.color = ColorConstants.getColorForElementType(elementType, this.matrixX, this.matrixY);
         }
     }
 

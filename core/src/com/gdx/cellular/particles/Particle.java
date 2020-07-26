@@ -26,7 +26,7 @@ public class Particle extends Element {
         Vector3 localVel = vel == null ? new Vector3(0, -124, 0) : vel;
         this.vel.x = localVel.x;
         this.vel.y = localVel.y;
-        this.color = ColorConstants.getColorForElementType(elementType);
+        this.color = ColorConstants.getColorForElementType(elementType, this.matrixX, this.matrixY);
     }
 
     @Override
@@ -35,8 +35,11 @@ public class Particle extends Element {
     }
 
     private void particleDeathAndSpawn(CellularMatrix matrix) {
-        if (matrix.get(this.matrixX, this.matrixY) instanceof EmptyCell) {
-            die(matrix, elementType);
+        Element currentLocation = matrix.get(this.matrixX, this.matrixY);
+        if (currentLocation == this || currentLocation instanceof EmptyCell) {
+            die(matrix);
+            matrix.setElementAtIndex(matrixX, matrixY, containedElementType.createElementByMatrix(matrixX, matrixY));
+            matrix.reportToChunkActive(matrixX, matrixY);
         } else {
             int yIndex = 0;
             while (true) {

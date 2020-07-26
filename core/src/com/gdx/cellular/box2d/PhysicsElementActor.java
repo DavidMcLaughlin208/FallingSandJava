@@ -72,6 +72,7 @@ public class PhysicsElementActor {
                             element.resetSecondaryCoordinates();
                         }
                         Vector2 matrixCoords = getMatrixCoords(element);
+                        matrix.reportToChunkActive((int) matrixCoords.x, (int) matrixCoords.y);
                         Element elementAtNewPos = matrix.get((int) matrixCoords.x, (int) matrixCoords.y);
                         if (elementAtNewPos == element) {
                             continue;

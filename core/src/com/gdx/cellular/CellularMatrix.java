@@ -112,7 +112,7 @@ public class CellularMatrix {
 
     public void drawAll(ShapeRenderer sr) {
         drawElements(sr);
-        drawChunks(sr);
+//        drawChunks(sr);
     }
 
     private void drawElements(ShapeRenderer sr) {
@@ -584,7 +584,7 @@ public class CellularMatrix {
     }
 
     public void reportToChunkActive(int x, int y) {
-        if (useChunks) {
+        if (useChunks && isWithinBounds(x, y)) {
             if (x % Chunk.size == 0) {
                 Chunk chunk = getChunkForCoordinates(x - 1 , y);
                 if (chunk != null) chunk.setShouldStepNextFrame(true);

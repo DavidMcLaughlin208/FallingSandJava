@@ -60,7 +60,7 @@ public class SlimeMoldMovable extends MovableSolid {
         if (isIgnited) {
             color = EffectColors.getRandomFireColor();
         } else {
-            color = ColorConstants.getColorForElementType(ElementType.SLIMEMOLD);
+            color = ColorConstants.getColorForElementType(ElementType.SLIMEMOLD, this.matrixX, this.matrixY);
         }
     }
 }

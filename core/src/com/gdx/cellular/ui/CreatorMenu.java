@@ -1,11 +1,8 @@
 package com.gdx.cellular.ui;
 
-import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetLoaderParameters;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.SkinLoader;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -22,13 +19,11 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import com.gdx.cellular.input.InputManager;
 import com.gdx.cellular.input.MouseMode;
 import com.gdx.cellular.elements.ElementType;
-import org.w3c.dom.Text;
 
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class CreatorMenu {
