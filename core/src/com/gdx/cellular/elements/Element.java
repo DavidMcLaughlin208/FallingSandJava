@@ -286,6 +286,12 @@ public abstract class Element {
         checkIfIgnited();
     }
 
+//    private boolean isSurrounded(CellularMatrix matrix) {
+//        List<Class> elementList = new ArrayList<>();
+//        elementList.add(EmptyCell.class);
+//        return isSurrounded(matrix, elementList);
+//    }
+
     private boolean isSurrounded(CellularMatrix matrix) {
         if (matrix.get(this.matrixX, this.matrixY + 1) instanceof EmptyCell) {
             return false;

@@ -35,6 +35,9 @@ public class Spark extends Gas {
             }
         } else if (neighbor instanceof Spark) {
             return false;
+        } else if (neighbor instanceof Smoke) {
+            neighbor.die(matrix);
+            return false;
         } else if (neighbor instanceof Liquid || neighbor instanceof Solid || neighbor instanceof Gas) {
             neighbor.receiveHeat(matrix, heatFactor);
             die(matrix);

@@ -36,6 +36,8 @@ public class ColorConstants {
 
     private static final Color SNOW = new Color(1, 1, 1, 1);
 
+    private static final Color PLAYERMEAT = new Color(255/255f, 255/255f, 0/255f, 1);
+
     // Immovable Solids
     private static final Color STONE = new Color(150/255f, 150/255f, 150/255f, 1);
 
@@ -48,6 +50,9 @@ public class ColorConstants {
     private static final Color SLIME_MOLD_1 = new Color(255/255f, 142/255f, 243/255f, 1);
     private static final Color SLIME_MOLD_2 = new Color(201/255f, 58/255f, 107/255f, 1);
     private static final Color SLIME_MOLD_3 = new Color(234/255f, 35/255f, 213/255f, 1);
+
+
+    private static final Color GROUND = new Color(68/255f, 37/255f, 37/255f, 1);
 
 
     // Liquids
@@ -101,6 +106,8 @@ public class ColorConstants {
         elementColorMap.get(ElementType.SLIMEMOLDMOVABLE).add(SLIME_MOLD_2);
         elementColorMap.get(ElementType.SLIMEMOLDMOVABLE).add(SLIME_MOLD_3);
 
+        elementColorMap.get(ElementType.PLAYERMEAT).add(PLAYERMEAT);
+
         elementColorMap.get(ElementType.EMBER).add(EMBER);
 
         elementColorMap.get(ElementType.SNOW).add(SNOW);
@@ -112,6 +119,8 @@ public class ColorConstants {
         elementColorMap.get(ElementType.WOOD).add(WOOD_3);
 
         elementColorMap.get(ElementType.TITANIUM).add(TITANIUM);
+
+        elementColorMap.get(ElementType.GROUND).add(GROUND);
 
         elementColorMap.get(ElementType.SLIMEMOLD).add(SLIME_MOLD_1);
         elementColorMap.get(ElementType.SLIMEMOLD).add(SLIME_MOLD_2);

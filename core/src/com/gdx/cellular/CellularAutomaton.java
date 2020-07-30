@@ -18,8 +18,10 @@ import com.gdx.cellular.box2d.ShapeFactory;
 import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.input.InputManager;
 import com.gdx.cellular.input.InputProcessors;
+import com.gdx.cellular.player.Player;
 import com.gdx.cellular.ui.MatrixActor;
 import com.gdx.cellular.util.ElementColumnStepper;
+import com.gdx.cellular.util.GameManager;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -38,7 +40,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 //    private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
 //    private Pixmap pixmap;
-    private CellularMatrix matrix;
+    public CellularMatrix matrix;
     private OrthographicCamera camera;
 	AssetManager manager = new AssetManager();
 
@@ -54,6 +56,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 	public Box2DDebugRenderer debugRenderer;
 	public InputProcessors inputProcessors;
 	public Stage matrixStage;
+	public GameManager gameManager;
 
 	@Override
 	public void create () {
@@ -88,6 +91,9 @@ public class CellularAutomaton extends ApplicationAdapter {
 
 		inputProcessors = new InputProcessors(inputManager, matrix, camera);
 		setUpBasicBodies();
+
+		this.gameManager = new GameManager(this);
+		this.gameManager.createPlayer(matrix.innerArraySize/2, matrix.outerArraySize/2);
 	}
 
 	@Override

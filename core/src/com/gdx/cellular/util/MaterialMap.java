@@ -8,8 +8,8 @@ import java.io.IOException;
 public class MaterialMap {
 
     BufferedImage img;
-    int w;
-    int h;
+    public int w;
+    public int h;
 
     public MaterialMap(File file) {
         try {

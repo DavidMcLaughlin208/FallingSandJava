@@ -7,10 +7,8 @@ import com.gdx.cellular.elements.gas.Smoke;
 import com.gdx.cellular.elements.gas.Spark;
 import com.gdx.cellular.elements.gas.Steam;
 import com.gdx.cellular.elements.liquid.*;
-import com.gdx.cellular.elements.solid.immoveable.SlimeMold;
-import com.gdx.cellular.elements.solid.immoveable.Stone;
-import com.gdx.cellular.elements.solid.immoveable.Titanium;
-import com.gdx.cellular.elements.solid.immoveable.Wood;
+import com.gdx.cellular.elements.player.PlayerMeat;
+import com.gdx.cellular.elements.solid.immoveable.*;
 import com.gdx.cellular.elements.solid.movable.*;
 import com.gdx.cellular.particles.Particle;
 
@@ -24,6 +22,17 @@ public enum ElementType {
         @Override
         public Element createElementByPixel(int x, int y) {
             return EmptyCell.getInstance();
+        }
+    },
+    GROUND(Ground.class) {
+        @Override
+        public Element createElementByMatrix(int x, int y) {
+            return new Ground(x, y, false);
+        }
+
+        @Override
+        public Element createElementByPixel(int x, int y) {
+            return new Ground(x, y, true);
         }
     },
     STONE(Stone.class) {
@@ -247,6 +256,18 @@ public enum ElementType {
         @Override
         public Element createElementByPixel(int x, int y) {
             return new Steam(x, y, true);
+        }
+
+    },
+    PLAYERMEAT(PlayerMeat.class) {
+        @Override
+        public Element createElementByMatrix(int x, int y) {
+            return new PlayerMeat(x, y, false);
+        }
+
+        @Override
+        public Element createElementByPixel(int x, int y) {
+            return new PlayerMeat(x, y, true);
         }
 
     },
