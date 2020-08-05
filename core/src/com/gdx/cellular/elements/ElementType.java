@@ -91,6 +91,18 @@ public enum ElementType {
         }
 
     },
+    CEMENT(Cement.class) {
+        @Override
+        public Element createElementByMatrix(int x, int y) {
+            return new Cement(x, y, false);
+        }
+
+        @Override
+        public Element createElementByPixel(int x, int y) {
+            return new Cement(x, y, true);
+        }
+
+    },
     OIL(Oil.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {

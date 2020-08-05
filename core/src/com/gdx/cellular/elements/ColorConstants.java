@@ -66,6 +66,8 @@ public class ColorConstants {
 
     private static final Color BLOOD = new Color(234/255f, 0 /255f,0/255f, .8f);
 
+    private static final Color CEMENT = new Color(209/255f, 209/255f,209/255f, 1f);
+
 
     // Gasses
     private static final Color SMOKE = new Color(147/255f, 147/255f, 147/255f, 0.5f);
@@ -137,6 +139,8 @@ public class ColorConstants {
         elementColorMap.get(ElementType.BLOOD).add(BLOOD);
 
         elementColorMap.get(ElementType.SMOKE).add(SMOKE);
+
+        elementColorMap.get(ElementType.CEMENT).add(CEMENT);
 
         elementColorMap.get(ElementType.STEAM).add(STEAM_1);
         elementColorMap.get(ElementType.STEAM).add(STEAM_2);
