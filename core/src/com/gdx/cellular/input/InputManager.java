@@ -4,12 +4,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.*;
 import com.gdx.cellular.CellularAutomaton;
@@ -19,6 +21,7 @@ import com.gdx.cellular.box2d.ShapeFactory;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.ui.CreatorMenu;
+import com.gdx.cellular.ui.CursorActor;
 import com.gdx.cellular.util.TextInputHandler;
 
 import java.io.File;
@@ -54,16 +57,22 @@ public class InputManager {
     private boolean readyToSave = false;
     private boolean readyToLoad = false;
     public boolean drawMenu = false;
+    private boolean drawCursor = true;
 
     public boolean earClip = false;
 
     public InputProcessor creatorInputProcessor;
-    private CreatorMenu creatorMenu;
+    private final CreatorMenu creatorMenu;
+    public Stage cursorStage;
+    public Cursor cursor;
 
     private Vector3 rectStartPos = new Vector3();
 
-    public InputManager(Viewport viewport) {
+    public InputManager(Viewport viewport, ShapeRenderer shapeRenderer) {
         this.creatorMenu = new CreatorMenu(this, viewport);
+        this.cursorStage = new Stage(viewport);
+        this.cursor = new Cursor(this.mouseMode, this.brushSize, 0, 0);
+        this.cursorStage.addActor(new CursorActor(shapeRenderer, this.cursor));
     }
 
     public void setCurrentlySelectedElement(ElementType elementType) {
@@ -439,9 +448,6 @@ public class InputManager {
         return true;
     }
 
-    public void drawRect() {
-    }
-
     public void drawMenu() {
         if (drawMenu) {
             this.creatorMenu.dropDownStage.act();
@@ -455,6 +461,18 @@ public class InputManager {
         Gdx.input.setInputProcessor(this.creatorMenu.dropDownStage);
     }
 
+    public void updateCursor(OrthographicCamera camera) {
+        Vector3 touchPos = new Vector3();
+        touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+        camera.unproject(touchPos);
+        this.cursor.update(this.mouseMode, this.brushSize, (int) touchPos.x, (int) touchPos.y, camera);
+    }
+
+    public void drawCursor(ShapeRenderer sr) {
+        if (drawCursor) {
+            cursorStage.draw();
+        }
+    }
 
     public void setMouseMode(MouseMode mode) {
         this.mouseMode = mode;

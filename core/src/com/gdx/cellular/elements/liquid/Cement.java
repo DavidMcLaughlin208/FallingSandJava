@@ -16,7 +16,7 @@ public class Cement extends Liquid {
         density = 9;
         dispersionRate = 1;
         coolingFactor = 5;
-        stoppedMovingThreshold = 1000;
+        stoppedMovingThreshold = 900;
     }
 
     @Override

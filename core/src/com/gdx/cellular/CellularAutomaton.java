@@ -76,7 +76,7 @@ public class CellularAutomaton extends ApplicationAdapter {
         stepped.set(0, true);
 
 		Viewport viewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera);
-		inputManager = new InputManager(viewport);
+		inputManager = new InputManager(viewport, shapeRenderer);
 
 		b2dWorld = new World(new Vector2(0, -100), true);
 
@@ -171,11 +171,14 @@ public class CellularAutomaton extends ApplicationAdapter {
 		debugRenderer.render(b2dWorld, camera.combined);
 
 		inputManager.drawMenu();
+		inputManager.updateCursor(camera);
+		inputManager.drawCursor(shapeRenderer);
 	}
 
 	@Override
 	public void resize (int width, int height) {
 		matrixStage.getViewport().update(width, height, true);
+		inputManager.cursorStage.getViewport().update(width, height, true);
 	}
 
 	private void incrementFrameCount() {
