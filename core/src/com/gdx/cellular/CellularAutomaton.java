@@ -172,7 +172,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 
 		inputManager.drawMenu();
 		inputManager.updateCursor(camera);
-		inputManager.drawCursor(shapeRenderer);
+		inputManager.drawCursor();
 	}
 
 	@Override

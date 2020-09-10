@@ -15,6 +15,7 @@ import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.elements.EmptyCell;
 import com.gdx.cellular.elements.liquid.Liquid;
 import com.gdx.cellular.elements.solid.movable.MovableSolid;
+import com.gdx.cellular.input.InputManager;
 import com.gdx.cellular.spouts.ElementSpout;
 import com.gdx.cellular.spouts.ParticleSpout;
 import com.gdx.cellular.spouts.Spout;
@@ -332,32 +333,16 @@ public class CellularMatrix {
         return false;
     }
 
-    public void spawnElementByPixelWithBrush(int pixelX, int pixelY, ElementType elementType, int localBrushSize) {
+    public void spawnElementByPixelWithBrush(int pixelX, int pixelY, ElementType elementType, int localBrushSize, InputManager.BRUSHTYPE brushtype) {
         int matrixX = toMatrix(pixelX);
         int matrixY = toMatrix(pixelY);
-        spawnElementByMatrixWithBrush(createFunctionInput(matrixX, matrixY, elementType, localBrushSize, null));
+        spawnElementByMatrixWithBrush(createFunctionInput(matrixX, matrixY, elementType, localBrushSize, null, brushtype));
     }
 
     public void spawnElementByPixel(int pixelX, int pixelY, ElementType elementType) {
         int matrixX = toMatrix(pixelX);
         int matrixY = toMatrix(pixelY);
         spawnElementByMatrix(matrixX, matrixY, elementType);
-    }
-
-    public void spawnElementByMatrixWithBrush(FunctionInput input) {//int matrixX, int matrixY, ElementType elementType, int localBrushSize) {
-        int matrixX = input.getMatrixX();
-        int matrixY = input.getMatrixY();
-        int localBrushSize = input.getBrushSize();
-        ElementType elementType = input.getElementType();
-        int halfBrush = (int) Math.floor(localBrushSize / 2);
-        for (int x = matrixX - halfBrush; x <= matrixX + halfBrush; x++) {
-            for (int y = matrixY - halfBrush; y <= matrixY + halfBrush; y++) {
-                int distance = distanceBetweenTwoPoints(matrixX, x, matrixY, y);
-                if (distance < halfBrush) {
-                    spawnElementByMatrix(x, y, elementType);
-                }
-            }
-        }
     }
 
     public Element spawnElementByMatrix(int matrixX, int matrixY, ElementType elementType) {
@@ -433,31 +418,32 @@ public class CellularMatrix {
         shuffledXIndexesForThreads.forEach(Collections::shuffle);
     }
 
-    public void applyHeatBetweenTwoPoints(Vector3 pos1, Vector3 pos2, int brushSize) {
-        iterateAndApplyMethodBetweenTwoPoints(pos1, pos2, null, brushSize, null, this:: applyHeatByBrush);
+    public void applyHeatBetweenTwoPoints(Vector3 pos1, Vector3 pos2, int brushSize, InputManager.BRUSHTYPE brushtype) {
+        iterateAndApplyMethodBetweenTwoPoints(pos1, pos2, null, brushSize, brushtype, null, this:: applyHeatByBrush);
     }
 
-    public void spawnElementBetweenTwoPoints(Vector3 pos1, Vector3 pos2, ElementType elementType, int brushSize) {
-        iterateAndApplyMethodBetweenTwoPoints(pos1, pos2, elementType, brushSize, null, this::spawnElementByMatrixWithBrush);
+    public void spawnElementBetweenTwoPoints(Vector3 pos1, Vector3 pos2, ElementType elementType, int brushSize, InputManager.BRUSHTYPE brushtype) {
+        iterateAndApplyMethodBetweenTwoPoints(pos1, pos2, elementType, brushSize, brushtype, null, this::spawnElementByMatrixWithBrush);
     }
 
-    public void spawnParticleBetweenTwoPoints(Vector3 pos1, Vector3 pos2, ElementType elementType, int brushSize) {
-        iterateAndApplyMethodBetweenTwoPoints(pos1, pos2, elementType, brushSize, null, this::spawnParticleByMatrixWithBrush);
+    public void spawnParticleBetweenTwoPoints(Vector3 pos1, Vector3 pos2, ElementType elementType, int brushSize, InputManager.BRUSHTYPE brushtype) {
+        iterateAndApplyMethodBetweenTwoPoints(pos1, pos2, elementType, brushSize, brushtype, null, this::spawnParticleByMatrixWithBrush);
     }
 
-    public void particalizeBetweenTwoPoints(Vector3 pos1, Vector3 pos2, int brushSize) {
-        iterateAndApplyMethodBetweenTwoPoints(pos1, pos2, null, brushSize, null, this::particalizeByMatrixWithBrush);
+    public void particalizeBetweenTwoPoints(Vector3 pos1, Vector3 pos2, int brushSize, InputManager.BRUSHTYPE brushtype) {
+        iterateAndApplyMethodBetweenTwoPoints(pos1, pos2, null, brushSize, brushtype, null, this::particalizeByMatrixWithBrush);
     }
 
-    public void iterateAndApplyMethodBetweenTwoPoints(Vector3 pos1, Vector3 pos2, ElementType elementType, int brushSize, Vector3 velocity, Consumer<FunctionInput> function) {
+    public void iterateAndApplyMethodBetweenTwoPoints(Vector3 pos1, Vector3 pos2, ElementType elementType, int brushSize, InputManager.BRUSHTYPE brushtype, Vector3 velocity, Consumer<FunctionInput> function) {
 
         int matrixX1 = toMatrix((int) pos1.x);
         int matrixY1 = toMatrix((int) pos1.y);
         int matrixX2 = toMatrix((int) pos2.x);
         int matrixY2 = toMatrix((int) pos2.y);
 
+        // If the two points are the same no need to iterate. Just run the provided function
         if (pos1.epsilonEquals(pos2)) {
-            FunctionInput input = createFunctionInput(matrixX1, matrixY1, elementType, brushSize, velocity);
+            FunctionInput input = createFunctionInput(matrixX1, matrixY1, elementType, brushSize, velocity, brushtype);
             function.accept(input);
             return;
         }
@@ -475,7 +461,7 @@ public class CellularMatrix {
 
         int smallerCount = 0;
         for (int i = 1; i <= upperBound; i++) {
-            if (freq != 0 && i % freq == 0 && min != smallerCount) {
+            if (freq != 0 && i % freq == 0 && min >= smallerCount) {
                 smallerCount += 1;
             }
             int yIncrease, xIncrease;
@@ -489,8 +475,28 @@ public class CellularMatrix {
             int currentY = matrixY1 + (yIncrease * yModifier);
             int currentX = matrixX1 + (xIncrease * xModifier);
             if (isWithinBounds(currentX, currentY)) {
-                FunctionInput input = createFunctionInput(currentX, currentY, elementType, brushSize, velocity);
+                FunctionInput input = createFunctionInput(currentX, currentY, elementType, brushSize, velocity, brushtype);
                 function.accept(input);
+            }
+        }
+    }
+
+    public void spawnElementByMatrixWithBrush(FunctionInput input) {//int matrixX, int matrixY, ElementType elementType, int localBrushSize) {
+        int matrixX = input.getMatrixX();
+        int matrixY = input.getMatrixY();
+        int localBrushSize = input.getBrushSize();
+        ElementType elementType = input.getElementType();
+        int halfBrush = (int) Math.floor(localBrushSize / 2);
+        for (int x = matrixX - halfBrush; x <= matrixX + halfBrush; x++) {
+            for (int y = matrixY - halfBrush; y <= matrixY + halfBrush; y++) {
+                if (input.getBrushType().equals(InputManager.BRUSHTYPE.CIRCLE)) {
+                    int distance = distanceBetweenTwoPoints(matrixX, x, matrixY, y);
+                    if (distance < halfBrush) {
+                        spawnElementByMatrix(x, y, elementType);
+                    }
+                } else {
+                    spawnElementByMatrix(x, y, elementType);
+                }
             }
         }
     }
@@ -502,18 +508,26 @@ public class CellularMatrix {
         int halfBrush = (int) Math.floor(localBrushSize / 2);
         for (int x = matrixX - halfBrush; x <= matrixX + halfBrush; x++) {
             for (int y = matrixY - halfBrush; y <= matrixY + halfBrush; y++) {
-                Element element = get(x, y);
-                if (element != null) element.receiveHeat(this, 5);
+                if (input.getBrushType().equals(InputManager.BRUSHTYPE.CIRCLE)) {
+                    int distance = distanceBetweenTwoPoints(matrixX, x, matrixY, y);
+                    if (distance < halfBrush) {
+                        Element element = get(x, y);
+                        if (element != null) element.receiveHeat(this, 5);
+                    }
+                } else {
+                    Element element = get(x, y);
+                    if (element != null) element.receiveHeat(this, 5);
+                }
             }
         }
     }
 
-    public FunctionInput createFunctionInput(int matrixX, int matrixY, ElementType elementType, int brushSize, Vector3 velocity) {
-        return new FunctionInput(matrixX, matrixY, elementType, brushSize, velocity);
+    public FunctionInput createFunctionInput(int matrixX, int matrixY, ElementType elementType, int brushSize, Vector3 velocity, InputManager.BRUSHTYPE brushtype) {
+        return new FunctionInput(matrixX, matrixY, elementType, brushSize, velocity, brushtype);
     }
 
-    public void spawnParticleByPixelWithBrush(int pixelX, int pixelY, ElementType elementType, int brushSize) {
-        spawnParticleByMatrixWithBrush(createFunctionInput(toMatrix(pixelX), toMatrix(pixelY), elementType, brushSize, null));
+    public void spawnParticleByPixelWithBrush(int pixelX, int pixelY, ElementType elementType, int brushSize, InputManager.BRUSHTYPE brushtype) {
+        spawnParticleByMatrixWithBrush(createFunctionInput(toMatrix(pixelX), toMatrix(pixelY), elementType, brushSize, null, brushtype));
     }
 
     public void spawnParticleByMatrixWithBrush(FunctionInput input) {
@@ -523,8 +537,13 @@ public class CellularMatrix {
         ElementType elementType = input.getElementType();
         for (int x = matrixX - halfBrush; x <= matrixX + halfBrush; x++) {
             for (int y = matrixY - halfBrush; y <= matrixY + halfBrush; y++) {
-                int distance = distanceBetweenTwoPoints(matrixX, x, matrixY, y);
-                if (distance < halfBrush) {
+                if (input.getBrushType().equals(InputManager.BRUSHTYPE.CIRCLE)) {
+                    int distance = distanceBetweenTwoPoints(matrixX, x, matrixY, y);
+                    if (distance < halfBrush) {
+                        Vector3 velocity = generateRandomVelocityWithBounds(-200, 200);
+                        spawnParticleByMatrix(x, y, elementType, velocity);
+                    }
+                } else {
                     Vector3 velocity = generateRandomVelocityWithBounds(-200, 200);
                     spawnParticleByMatrix(x, y, elementType, velocity);
                 }
@@ -538,8 +557,13 @@ public class CellularMatrix {
         int halfBrush = input.getBrushSize()/2;
         for (int x = matrixX - halfBrush; x <= matrixX + halfBrush; x++) {
             for (int y = matrixY - halfBrush; y <= matrixY + halfBrush; y++) {
-                int distance = distanceBetweenTwoPoints(matrixX, x, matrixY, y);
-                if (distance < halfBrush) {
+                if (input.getBrushType().equals(InputManager.BRUSHTYPE.CIRCLE)) {
+                    int distance = distanceBetweenTwoPoints(matrixX, x, matrixY, y);
+                    if (distance < halfBrush) {
+                        Vector3 velocity = generateRandomVelocityWithBounds(-300, 300);
+                        particalizeByMatrix(x, y, velocity);
+                    }
+                } else {
                     Vector3 velocity = generateRandomVelocityWithBounds(-300, 300);
                     particalizeByMatrix(x, y, velocity);
                 }
@@ -556,10 +580,10 @@ public class CellularMatrix {
         }
     }
 
-    public void particalizeByPixelWithBrush(int x, int y, int brushSize) {
+    public void particalizeByPixelWithBrush(int x, int y, int brushSize, InputManager.BRUSHTYPE brushtype) {
         int matrixX = toMatrix(x);
         int matrixY = toMatrix(y);
-        particalizeByMatrixWithBrush(createFunctionInput(matrixX, matrixY, null, brushSize, new Vector3(0, -124, 0)));
+        particalizeByMatrixWithBrush(createFunctionInput(matrixX, matrixY, null, brushSize, new Vector3(0, -124, 0), brushtype));
     }
 
     public void particalizeByMatrix(int x, int y, Vector3 velocity) {
@@ -745,6 +769,7 @@ public class CellularMatrix {
         public static final String Y = "y";
         public static final String ELEMENT_TYPE = "elementType";
         public static final String BRUSH_SIZE = "brushSize";
+        public static final String BRUSH_TYPE = "brushType";
         public static final String VELOCITY = "velocity";
 
         public FunctionInput() {
@@ -755,6 +780,14 @@ public class CellularMatrix {
             inputs.put(X, matrixX);
             inputs.put(Y, matrixY);
             inputs.put(BRUSH_SIZE, brushSize);
+            inputs.put(BRUSH_TYPE, InputManager.BRUSHTYPE.CIRCLE);
+        }
+
+        public FunctionInput(int matrixX, int matrixY, int brushSize, InputManager.BRUSHTYPE brushType) {
+            inputs.put(X, matrixX);
+            inputs.put(Y, matrixY);
+            inputs.put(BRUSH_SIZE, brushSize);
+            inputs.put(BRUSH_TYPE, brushType);
         }
 
         public FunctionInput(int matrixX, int matrixY, int brushSize, ElementType elementType) {
@@ -764,11 +797,12 @@ public class CellularMatrix {
             inputs.put(ELEMENT_TYPE, elementType);
         }
 
-        public FunctionInput(int matrixX, int matrixY, ElementType elementType, int brushSize, Vector3 velocity) {
+        public FunctionInput(int matrixX, int matrixY, ElementType elementType, int brushSize, Vector3 velocity, InputManager.BRUSHTYPE brushType) {
             inputs.put(X, matrixX);
             inputs.put(Y, matrixY);
             inputs.put(ELEMENT_TYPE, elementType);
             inputs.put(BRUSH_SIZE, brushSize);
+            inputs.put(BRUSH_TYPE, brushType);
             inputs.put(VELOCITY, velocity);
         }
 
@@ -792,8 +826,11 @@ public class CellularMatrix {
             return (int) inputs.get(BRUSH_SIZE);
         }
 
+        public InputManager.BRUSHTYPE getBrushType() { return (InputManager.BRUSHTYPE) inputs.get(BRUSH_TYPE); }
+
         public Vector3 getVelocity() {
             return (Vector3) inputs.get(VELOCITY);
         }
     }
+
 }

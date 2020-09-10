@@ -50,10 +50,16 @@ public class CreatorInputProcessor implements InputProcessor {
         if (keycode == Input.Keys.P) {
             inputManager.togglePause();
         }
-//        if (keycode == Input.Keys.M) {
-//            inputManager.cycleMouseModes();
-//        }
+        if (keycode == Input.Keys.M) {
+            inputManager.cycleBrushType();
+        }
         return false;
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        inputManager.calculateNewBrushSize(amount * -2);
+        return true;
     }
 
     @Override
@@ -99,8 +105,4 @@ public class CreatorInputProcessor implements InputProcessor {
         return false;
     }
 
-    @Override
-    public boolean scrolled(int amount) {
-        return false;
-    }
 }

@@ -13,6 +13,7 @@ public class Cursor {
 
     public MouseMode mode = SPAWN;
     public int brushSize;
+    public InputManager.BRUSHTYPE brushtype;
     public int pixelX;
     public int pixelY;
 
@@ -26,11 +27,19 @@ public class Cursor {
     public void draw(ShapeRenderer sr) {
         switch(mode) {
             case SPAWN:
-                sr.begin();
-                sr.set(ShapeRenderer.ShapeType.Line);
-                sr.setColor(Color.RED);
-                sr.circle(this.pixelX, this.pixelY, this.brushSize - 2);
-                sr.end();
+                if (brushtype == InputManager.BRUSHTYPE.CIRCLE) {
+                    sr.begin();
+                    sr.set(ShapeRenderer.ShapeType.Line);
+                    sr.setColor(Color.RED);
+                    sr.circle(this.pixelX, this.pixelY, this.brushSize - 2);
+                    sr.end();
+                } else if (brushtype == InputManager.BRUSHTYPE.SQUARE) {
+                    sr.begin();
+                    sr.set(ShapeRenderer.ShapeType.Line);
+                    sr.setColor(Color.RED);
+                    sr.rect(pixelX - brushSize, pixelY - brushSize, brushSize*2, brushSize*2);
+                    sr.end();
+                }
                 break;
 
             default:
@@ -38,9 +47,10 @@ public class Cursor {
 
     }
 
-    public void update(MouseMode mode, int brushSize, int pixelX, int pixelY, OrthographicCamera camera) {
+    public void update(MouseMode mode, int brushSize, int pixelX, int pixelY, InputManager.BRUSHTYPE brushtype) {
         this.mode = mode;
         this.brushSize = brushSize;
+        this.brushtype = brushtype;
         this.pixelX = pixelX/CellularAutomaton.pixelSizeModifier * CellularAutomaton.pixelSizeModifier + 1;
         this.pixelY = pixelY/CellularAutomaton.pixelSizeModifier * CellularAutomaton.pixelSizeModifier + 1;
     }

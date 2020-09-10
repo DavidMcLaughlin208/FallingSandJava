@@ -24,6 +24,7 @@ public abstract class ImmovableSolid extends Solid {
         takeEffectsDamage(matrix);
         spawnSparkIfIgnited(matrix);
         modifyColor();
+        customElementFunctions(matrix);
     }
 
     @Override

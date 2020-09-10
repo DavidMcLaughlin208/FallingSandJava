@@ -35,13 +35,14 @@ import java.util.List;
 
 public class InputManager {
 
-    private final int maxBrushSize = 55;
+    private final int maxBrushSize = 85;
     private final int minBrushSize = 3;
     private MouseMode mouseMode = MouseMode.SPAWN;
 
     private final int maxThreads = 50;
 
     private int brushSize = 5;
+    private BRUSHTYPE brushType = BRUSHTYPE.CIRCLE;
 
     private Vector3 lastTouchPos = new Vector3();
     private boolean touchedLastFrame = false;
@@ -173,31 +174,31 @@ public class InputManager {
             switch (mouseMode) {
                 case SPAWN:
                     if (touchedLastFrame) {
-                        matrix.spawnElementBetweenTwoPoints(lastTouchPos, touchPos, currentlySelectedElement, brushSize);
+                        matrix.spawnElementBetweenTwoPoints(lastTouchPos, touchPos, currentlySelectedElement, brushSize, brushType);
                     } else {
-                        matrix.spawnElementByPixelWithBrush((int) touchPos.x, (int) touchPos.y, currentlySelectedElement, brushSize);
+                        matrix.spawnElementByPixelWithBrush((int) touchPos.x, (int) touchPos.y, currentlySelectedElement, brushSize, brushType);
                     }
                     break;
                 case HEAT:
                     if (touchedLastFrame) {
-                        matrix.applyHeatBetweenTwoPoints(lastTouchPos, touchPos, brushSize);
+                        matrix.applyHeatBetweenTwoPoints(lastTouchPos, touchPos, brushSize, brushType);
                     } else {
-                        CellularMatrix.FunctionInput input = new CellularMatrix.FunctionInput(matrix.toMatrix(touchPos.x), matrix.toMatrix(touchPos.y), brushSize);
+                        CellularMatrix.FunctionInput input = new CellularMatrix.FunctionInput(matrix.toMatrix(touchPos.x), matrix.toMatrix(touchPos.y), brushSize, brushType);
                         matrix.applyHeatByBrush(input);
                     }
                     break;
                 case PARTICLE:
                     if (touchedLastFrame) {
-                        matrix.spawnParticleBetweenTwoPoints(lastTouchPos, touchPos, currentlySelectedElement, brushSize);
+                        matrix.spawnParticleBetweenTwoPoints(lastTouchPos, touchPos, currentlySelectedElement, brushSize, brushType);
                     } else {
-                        matrix.spawnParticleByPixelWithBrush((int) touchPos.x, (int) touchPos.y, currentlySelectedElement, brushSize);
+                        matrix.spawnParticleByPixelWithBrush((int) touchPos.x, (int) touchPos.y, currentlySelectedElement, brushSize, brushType);
                     }
                     break;
                 case PARTICALIZE:
                     if (touchedLastFrame) {
-                        matrix.particalizeBetweenTwoPoints(lastTouchPos, touchPos, brushSize);
+                        matrix.particalizeBetweenTwoPoints(lastTouchPos, touchPos, brushSize, brushType);
                     } else {
-                        matrix.particalizeByPixelWithBrush((int) touchPos.x, (int) touchPos.y, brushSize);
+                        matrix.particalizeByPixelWithBrush((int) touchPos.x, (int) touchPos.y, brushSize, brushType);
                     }
                     break;
                 case PHYSICSOBJ:
@@ -465,10 +466,10 @@ public class InputManager {
         Vector3 touchPos = new Vector3();
         touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
         camera.unproject(touchPos);
-        this.cursor.update(this.mouseMode, this.brushSize, (int) touchPos.x, (int) touchPos.y, camera);
+        this.cursor.update(this.mouseMode, this.brushSize, (int) touchPos.x, (int) touchPos.y, brushType);
     }
 
-    public void drawCursor(ShapeRenderer sr) {
+    public void drawCursor() {
         if (drawCursor) {
             cursorStage.draw();
         }
@@ -484,5 +485,18 @@ public class InputManager {
 
     public void clearBox2dActors() {
         ShapeFactory.clearAllActors();
+    }
+
+    public void cycleBrushType() {
+        if (brushType == BRUSHTYPE.CIRCLE) {
+            brushType = BRUSHTYPE.SQUARE;
+        } else if (brushType == BRUSHTYPE.SQUARE) {
+            brushType = BRUSHTYPE.CIRCLE;
+        }
+    }
+
+    public enum BRUSHTYPE {
+        CIRCLE,
+        SQUARE;
     }
 }

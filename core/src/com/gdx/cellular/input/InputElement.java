@@ -32,8 +32,7 @@ public class InputElement {
         elementMap.put(Input.Keys.G, ElementType.FLAMMABLEGAS);
         elementMap.put(Input.Keys.F, ElementType.SPARK);
         elementMap.put(Input.Keys.N, ElementType.SNOW);
-        elementMap.put(Input.Keys.M, ElementType.SLIMEMOLD);
-        elementMap.put(Input.Keys.COMMA, ElementType.SLIMEMOLDMOVABLE);
+        elementMap.put(Input.Keys.COMMA, ElementType.SLIMEMOLD);
     }
 
     public static ElementType getElementForKeycode(int keycode) {

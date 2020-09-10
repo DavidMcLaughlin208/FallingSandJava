@@ -65,6 +65,8 @@ public abstract class Element {
 
 //    public abstract void draw(ShapeRenderer sr);
 
+    public void customElementFunctions(CellularMatrix matrix) { }
+
     public void setVelocity(Vector3 vel) {
         this.vel = vel;
     }

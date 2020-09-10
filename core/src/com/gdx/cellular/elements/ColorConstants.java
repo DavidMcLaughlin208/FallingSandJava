@@ -16,6 +16,7 @@ public class ColorConstants {
     private static final Map<String, MaterialMap> materialsMap = new HashMap<>();
 
     private static final Map<ElementType, List<Color>> elementColorMap = new HashMap<>();
+    private static final Map<String, List<Color>> namedColorMap = new HashMap<>();
     private static final Map<String, List<Color>> effectsColorMap = new HashMap<>();
     private static final Random random = new Random();
 
@@ -90,6 +91,11 @@ public class ColorConstants {
     private static final Color PARTICLE = new Color(0/255f, 0/255f, 0/255f, 0);
     private static final Color EMPTY_CELL = new Color(0/255f, 0/255f, 0/255f, 0);
 
+    private static final String GRASS = "Grass";
+    private static final Color GRASS_1 = new Color(0, 216/155f, 93/255f, 0);
+    private static final Color GRASS_2 = new Color(0, 173/155f, 75/255f, 0);
+    private static final Color GRASS_3 = new Color(0, 239/155f, 103/255f, 0);
+
     static {
         Arrays.stream(ElementType.values()).forEach(type -> elementColorMap.put(type, new ArrayList<>()));
         elementColorMap.get(ElementType.SAND).add(SAND_1);
@@ -159,6 +165,11 @@ public class ColorConstants {
         effectsColorMap.get(FIRE_NAME).add(FIRE_2);
         effectsColorMap.get(FIRE_NAME).add(FIRE_3);
 
+        namedColorMap.put(GRASS, new ArrayList<>());
+        namedColorMap.get(GRASS).add(GRASS_1);
+        namedColorMap.get(GRASS).add(GRASS_2);
+        namedColorMap.get(GRASS).add(GRASS_3);
+
 
 
         List<ElementType> missingElements = Arrays.stream(ElementType.values()).filter(type -> elementColorMap.get(type).size() == 0).collect(Collectors.toList());
@@ -174,6 +185,10 @@ public class ColorConstants {
                 materialsMap.put(file.getName().toUpperCase(), new MaterialMap(file));
             }
         }
+    }
+
+    public static Color getColorByName(String name) {
+        return namedColorMap.get(name).get(random.nextInt(namedColorMap.get(name).size()));
     }
 
     public static Color getColorForElementType(ElementType elementType) {
