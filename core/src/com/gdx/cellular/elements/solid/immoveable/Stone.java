@@ -11,6 +11,7 @@ public class Stone extends ImmovableSolid {
         frictionFactor = 0.5f;
         inertialResistance = 1.1f;
         mass = 500;
+        explosionResistance = 4;
     }
 
     @Override

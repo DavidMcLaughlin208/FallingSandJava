@@ -158,6 +158,8 @@ public class CellularAutomaton extends ApplicationAdapter {
 
 		}
 
+		matrix.executeExplosions();
+
 		b2dWorld.step(1/120f, 10, 6);
 		b2dWorld.step(1/120f, 10, 6);
 		matrix.stepPhysicsElementActors();

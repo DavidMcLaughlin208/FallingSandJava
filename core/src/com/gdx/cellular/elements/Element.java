@@ -45,6 +45,7 @@ public abstract class Element {
     public ElementType elementType;
     public PhysicsElementActor owningBody = null;
     public Vector2 owningBodyCoords = null;
+    public int explosionResistance = 1;
 
     public Color color;
 
@@ -293,6 +294,15 @@ public abstract class Element {
 //        elementList.add(EmptyCell.class);
 //        return isSurrounded(matrix, elementList);
 //    }
+
+    public boolean explode(CellularMatrix matrix, int strength) {
+        if (explosionResistance < strength) {
+            dieAndReplace(matrix, ElementType.SPARK);
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     private boolean isSurrounded(CellularMatrix matrix) {
         if (matrix.get(this.matrixX, this.matrixY + 1) instanceof EmptyCell) {

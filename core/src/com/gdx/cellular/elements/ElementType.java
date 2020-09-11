@@ -247,18 +247,6 @@ public enum ElementType {
         }
 
     },
-    SLIMEMOLDMOVABLE(SlimeMoldMovable.class) {
-        @Override
-        public Element createElementByMatrix(int x, int y) {
-            return new SlimeMoldMovable(x, y, false);
-        }
-
-        @Override
-        public Element createElementByPixel(int x, int y) {
-            return new SlimeMoldMovable(x, y, true);
-        }
-
-    },
     STEAM(Steam.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {

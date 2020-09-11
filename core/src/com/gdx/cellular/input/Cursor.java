@@ -27,6 +27,10 @@ public class Cursor {
     public void draw(ShapeRenderer sr) {
         switch(mode) {
             case SPAWN:
+            case EXPLOSION:
+            case HEAT:
+            case PARTICALIZE:
+            case PARTICLE:
                 if (brushtype == InputManager.BRUSHTYPE.CIRCLE) {
                     sr.begin();
                     sr.set(ShapeRenderer.ShapeType.Line);

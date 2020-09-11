@@ -16,6 +16,7 @@ public class Water extends Liquid {
         density = 5;
         dispersionRate = 5;
         coolingFactor = 5;
+        explosionResistance = 0;
     }
 
     @Override
@@ -41,6 +42,16 @@ public class Water extends Liquid {
             return false;
         }
         return false;
+    }
+
+    @Override
+    public boolean explode(CellularMatrix matrix, int strength) {
+        if (explosionResistance < strength) {
+            dieAndReplace(matrix, ElementType.STEAM);
+            return true;
+        } else {
+            return false;
+        }
     }
 
 

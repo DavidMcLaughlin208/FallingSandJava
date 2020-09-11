@@ -35,7 +35,7 @@ import java.util.List;
 
 public class InputManager {
 
-    private final int maxBrushSize = 85;
+    private final int maxBrushSize = 105;
     private final int minBrushSize = 3;
     private MouseMode mouseMode = MouseMode.SPAWN;
 
@@ -179,6 +179,12 @@ public class InputManager {
                         matrix.spawnElementByPixelWithBrush((int) touchPos.x, (int) touchPos.y, currentlySelectedElement, brushSize, brushType);
                     }
                     break;
+                case EXPLOSION:
+                    if (touchedLastFrame) {
+                        return;
+                    } else {
+                        matrix.addExplosion(brushSize, 3, (int) touchPos.x, (int) touchPos.y);
+                    }
                 case HEAT:
                     if (touchedLastFrame) {
                         matrix.applyHeatBetweenTwoPoints(lastTouchPos, touchPos, brushSize, brushType);

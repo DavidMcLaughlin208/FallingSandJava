@@ -16,6 +16,7 @@ import com.gdx.cellular.elements.EmptyCell;
 import com.gdx.cellular.elements.liquid.Liquid;
 import com.gdx.cellular.elements.solid.movable.MovableSolid;
 import com.gdx.cellular.input.InputManager;
+import com.gdx.cellular.particles.Explosion;
 import com.gdx.cellular.spouts.ElementSpout;
 import com.gdx.cellular.spouts.ParticleSpout;
 import com.gdx.cellular.spouts.Spout;
@@ -42,6 +43,7 @@ public class CellularMatrix {
     public Array<Spout> spoutArray;
     public Array<PhysicsElementActor> physicsElementActors = new Array<>();
     public World world;
+    public Array<Explosion> explosionArray = new Array<>();
 
     public CellularMatrix(int width, int height, int pixelSizeModifier, World world) {
         this.pixelSizeModifier = pixelSizeModifier;
@@ -283,6 +285,17 @@ public class CellularMatrix {
             FunctionInput functionInput = spout.setFunctionInputs(new FunctionInput());
             spout.getFunction().accept(functionInput);
         }
+    }
+
+    public void addExplosion(int radius, int strength, int matrixX, int matrixY ) {
+        explosionArray.add(new Explosion(this, radius, strength, toMatrix(matrixX), toMatrix(matrixY)));
+    }
+
+    public void executeExplosions() {
+        for (Explosion explosion : explosionArray) {
+            explosion.enact();
+        }
+        explosionArray.clear();
     }
 
 
