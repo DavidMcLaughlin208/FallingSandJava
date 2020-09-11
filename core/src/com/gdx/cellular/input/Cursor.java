@@ -26,8 +26,14 @@ public class Cursor {
 
     public void draw(ShapeRenderer sr) {
         switch(mode) {
-            case SPAWN:
             case EXPLOSION:
+                sr.begin();
+                sr.set(ShapeRenderer.ShapeType.Line);
+                sr.setColor(Color.RED);
+                sr.circle(this.pixelX, this.pixelY, this.brushSize - 2);
+                sr.end();
+                break;
+            case SPAWN:
             case HEAT:
             case PARTICALIZE:
             case PARTICLE:

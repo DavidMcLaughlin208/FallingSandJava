@@ -271,11 +271,11 @@ public class CellularMatrix {
         }
     }
 
-    public void addSpout(ElementType elementType, Vector3 touchPos, int brushSize, boolean isParticle) {
+    public void addSpout(ElementType elementType, Vector3 touchPos, int brushSize, InputManager.BRUSHTYPE brushtype, boolean isParticle) {
         if (isParticle) {
-            spoutArray.add(new ParticleSpout(elementType, toMatrix(touchPos.x), toMatrix(touchPos.y), brushSize, this::spawnParticleByMatrixWithBrush));
+            spoutArray.add(new ParticleSpout(elementType, toMatrix(touchPos.x), toMatrix(touchPos.y), brushSize, brushtype, this::spawnParticleByMatrixWithBrush));
         } else {
-            spoutArray.add(new ElementSpout(elementType, toMatrix(touchPos.x), toMatrix(touchPos.y), brushSize, this::spawnElementByMatrixWithBrush));
+            spoutArray.add(new ElementSpout(elementType, toMatrix(touchPos.x), toMatrix(touchPos.y), brushSize, brushtype,  this::spawnElementByMatrixWithBrush));
         }
 
     }

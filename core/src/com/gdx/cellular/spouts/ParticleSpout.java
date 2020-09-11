@@ -3,6 +3,7 @@ package com.gdx.cellular.spouts;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularMatrix.FunctionInput;
 import com.gdx.cellular.elements.ElementType;
+import com.gdx.cellular.input.InputManager;
 
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -14,13 +15,15 @@ public class ParticleSpout implements Spout {
     int matrixY;
     ElementType sourceElement;
     int brushSize;
+    InputManager.BRUSHTYPE brushtype;
     Consumer<FunctionInput> function;
     
-    public ParticleSpout(ElementType sourceElement, int matrixX, int matrixY, int brushSize, Consumer<FunctionInput> function) {
+    public ParticleSpout(ElementType sourceElement, int matrixX, int matrixY, int brushSize, InputManager.BRUSHTYPE brushtype, Consumer<FunctionInput> function) {
         this.matrixX = matrixX;
         this.matrixY = matrixY;
         this.sourceElement = sourceElement;
         this.brushSize = brushSize;
+        this.brushtype = brushtype;
         this.function = function;
     }
 
@@ -29,6 +32,7 @@ public class ParticleSpout implements Spout {
         functionInput.setInput(FunctionInput.X, matrixX);
         functionInput.setInput(FunctionInput.Y, matrixY);
         functionInput.setInput(FunctionInput.BRUSH_SIZE, brushSize);
+        functionInput.setInput(FunctionInput.BRUSH_TYPE, brushtype);
         functionInput.setInput(FunctionInput.ELEMENT_TYPE, sourceElement);
         functionInput.setInput(FunctionInput.VELOCITY, generateRandomVelocity());
         return functionInput;

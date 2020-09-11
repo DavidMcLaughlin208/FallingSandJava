@@ -35,7 +35,7 @@ import java.util.List;
 
 public class InputManager {
 
-    private final int maxBrushSize = 105;
+    private final int maxBrushSize = 205;
     private final int minBrushSize = 3;
     private MouseMode mouseMode = MouseMode.SPAWN;
 
@@ -157,9 +157,9 @@ public class InputManager {
         touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
         camera.unproject(touchPos);
         if (mouseMode == MouseMode.SPAWN) {
-            matrix.addSpout(currentlySelectedElement, touchPos, brushSize, false);
+            matrix.addSpout(currentlySelectedElement, touchPos, brushSize, brushType, false);
         } else if (mouseMode == MouseMode.PARTICLE) {
-            matrix.addSpout(currentlySelectedElement, touchPos, brushSize, true);
+            matrix.addSpout(currentlySelectedElement, touchPos, brushSize, brushType, true);
         }
     }
 

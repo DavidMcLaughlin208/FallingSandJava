@@ -1,8 +1,10 @@
 package com.gdx.cellular.particles;
 
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.elements.Element;
+import com.gdx.cellular.elements.ElementType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,8 +28,8 @@ public class Explosion {
 
     public List<Explosion> enact() {
         Map<String, String> coordinatesCache = new HashMap<>();
-        for (int x = radius; x > radius * -1; x--) {
-            for (int y = radius; y > radius * -1; y--) {
+        for (int x = radius; x >= radius * -1; x--) {
+            for (int y = radius; y >= radius * -1; y--) {
                 if (Math.abs(x) == radius || Math.abs(y) == radius) {
                     iterateBetweenTwoPoints(matrixX, matrixY, matrixX + x, matrixY + y, strength, coordinatesCache, matrix);
                 }
@@ -61,10 +63,16 @@ public class Explosion {
         int upperBound = Math.max(Math.abs(xDiff), Math.abs(yDiff));
         int min = Math.min(Math.abs(xDiff), Math.abs(yDiff));
         int freq = (min == 0 || upperBound == 0) ? 0 : (upperBound / min);
+        float floatFreq = (min == 0 || upperBound == 0) ? 0 : ((float) min / upperBound);
+        int freqThreshold = 0;
+        float freqCounter = 0;
 
         int smallerCount = 0;
         for (int i = 0; i <= upperBound; i++) {
-            if (freq != 0 && i % freq == 0 && min >= smallerCount) {
+            freqCounter += floatFreq;
+            boolean thresholdPassed = Math.floor(freqCounter) > freqThreshold;
+            if (freq != 0 && thresholdPassed && min >= smallerCount) {
+                freqThreshold = (int) Math.floor(freqCounter);
                 smallerCount += 1;
             }
             int yIncrease, xIncrease;
@@ -94,7 +102,10 @@ public class Explosion {
                     break;
                 }
             } else if (distance < radius +  Math.max(radius/10, 1)) {
-                matrix.particalizeByMatrix(currentX, currentY, new Vector3(0, 100, 0));
+                Vector2 center = new Vector2(matrixX, matrixY);
+                Vector2 newPoint = new Vector2(currentX, currentY);
+                newPoint.sub(center).nor();
+                matrix.particalizeByMatrix(currentX, currentY, new Vector3(newPoint.x * 200, newPoint.y * 200, 0));
             }
         }
     }
