@@ -46,5 +46,10 @@ public class Spark extends Gas {
         return false;
     }
 
+    @Override
+    public boolean receiveHeat(CellularMatrix matrix, int heat) {
+        return false;
+    }
+
 
 }

@@ -1,6 +1,7 @@
 package com.gdx.cellular.particles;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularAutomaton;
 import com.gdx.cellular.CellularMatrix;
@@ -16,7 +17,7 @@ public class Particle extends Element {
 
     public ElementType containedElementType;
 
-    public Particle(int x, int y, boolean isPixel, Vector3 vel, ElementType elementType) {
+    public Particle(int x, int y, boolean isPixel, Vector3 vel, ElementType elementType, Color color) {
         super(x, y, isPixel);
         if (ElementType.PARTICLE.equals(elementType)) {
             throw new IllegalStateException("Containing element cannot be particle");
@@ -26,7 +27,12 @@ public class Particle extends Element {
         Vector3 localVel = vel == null ? new Vector3(0, -124, 0) : vel;
         this.vel.x = localVel.x;
         this.vel.y = localVel.y;
-        this.color = ColorConstants.getColorForElementType(elementType, this.matrixX, this.matrixY);
+        this.color = color;
+    }
+
+    @Override
+    public boolean receiveHeat(CellularMatrix matrix, int heat) {
+        return false;
     }
 
     @Override
@@ -38,7 +44,9 @@ public class Particle extends Element {
         Element currentLocation = matrix.get(this.matrixX, this.matrixY);
         if (currentLocation == this || currentLocation instanceof EmptyCell) {
             die(matrix);
-            matrix.setElementAtIndex(matrixX, matrixY, containedElementType.createElementByMatrix(matrixX, matrixY));
+            Element newElement = containedElementType.createElementByMatrix(matrixX, matrixY);
+            newElement.color = this.color;
+            matrix.setElementAtIndex(matrixX, matrixY, newElement);
             matrix.reportToChunkActive(matrixX, matrixY);
         } else {
             int yIndex = 0;

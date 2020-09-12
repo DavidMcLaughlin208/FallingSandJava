@@ -470,11 +470,16 @@ public class CellularMatrix {
 
         int upperBound = Math.max(Math.abs(xDiff), Math.abs(yDiff));
         int min = Math.min(Math.abs(xDiff), Math.abs(yDiff));
-        int freq = (min == 0 || upperBound == 0) ? 0 : (upperBound / min);
+        float floatFreq = (min == 0 || upperBound == 0) ? 0 : ((float) min / upperBound);
+        int freqThreshold = 0;
+        float freqCounter = 0;
 
         int smallerCount = 0;
         for (int i = 1; i <= upperBound; i++) {
-            if (freq != 0 && i % freq == 0 && min >= smallerCount) {
+            freqCounter += floatFreq;
+            boolean thresholdPassed = Math.floor(freqCounter) > freqThreshold;
+            if (floatFreq != 0 && thresholdPassed && min >= smallerCount) {
+                freqThreshold = (int) Math.floor(freqCounter);
                 smallerCount += 1;
             }
             int yIncrease, xIncrease;
@@ -586,7 +591,7 @@ public class CellularMatrix {
 
     private void spawnParticleByMatrix(int x, int y, ElementType elementType, Vector3 velocity) {
         if (get(x, y) instanceof EmptyCell) {
-            Element newElement = ElementType.createParticleByMatrix(this, x, y, velocity, elementType);
+            Element newElement = ElementType.createParticleByMatrix(this, x, y, velocity, elementType, ColorConstants.getColorForElementType(elementType));
             if (newElement != null) {
                 reportToChunkActive(newElement);
             }

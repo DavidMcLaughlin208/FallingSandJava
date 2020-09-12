@@ -2,7 +2,6 @@ package com.gdx.cellular.elements;
 
 import com.badlogic.gdx.graphics.Color;
 import com.gdx.cellular.util.MaterialMap;
-import com.sun.tools.javac.util.StringUtils;
 
 import java.io.File;
 import java.util.*;

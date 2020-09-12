@@ -1,5 +1,6 @@
 package com.gdx.cellular.elements;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.elements.gas.FlammableGas;
@@ -294,9 +295,9 @@ public enum ElementType {
 
     public abstract Element createElementByPixel(int x, int y);
 
-    public static Element createParticleByMatrix(CellularMatrix matrix, int x, int y, Vector3 vector3, ElementType elementType) {
+    public static Element createParticleByMatrix(CellularMatrix matrix, int x, int y, Vector3 vector3, ElementType elementType, Color color) {
         if (matrix.isWithinBounds(x, y)) {
-            Element newElement = new Particle(x, y, false, vector3, elementType);
+            Element newElement = new Particle(x, y, false, vector3, elementType, color);
             matrix.setElementAtIndex(x, y, newElement);
             return newElement;
         }

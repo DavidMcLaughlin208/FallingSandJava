@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
+import com.gdx.cellular.elements.EmptyCell;
 
 import java.util.HashMap;
 import java.util.List;
@@ -60,9 +61,10 @@ public class Explosion {
         int xModifier = xDiff < 0 ? 1 : -1;
         int yModifier = yDiff < 0 ? 1 : -1;
 
+        boolean onlyDarken = false;
+
         int upperBound = Math.max(Math.abs(xDiff), Math.abs(yDiff));
         int min = Math.min(Math.abs(xDiff), Math.abs(yDiff));
-        int freq = (min == 0 || upperBound == 0) ? 0 : (upperBound / min);
         float floatFreq = (min == 0 || upperBound == 0) ? 0 : ((float) min / upperBound);
         int freqThreshold = 0;
         float freqCounter = 0;
@@ -71,7 +73,7 @@ public class Explosion {
         for (int i = 0; i <= upperBound; i++) {
             freqCounter += floatFreq;
             boolean thresholdPassed = Math.floor(freqCounter) > freqThreshold;
-            if (freq != 0 && thresholdPassed && min >= smallerCount) {
+            if (floatFreq != 0 && thresholdPassed && min >= smallerCount) {
                 freqThreshold = (int) Math.floor(freqCounter);
                 smallerCount += 1;
             }
@@ -87,25 +89,62 @@ public class Explosion {
             int currentX = matrixX1 + (xIncrease * xModifier);
             // If these coordinates have been visited previously we can 'continue if the result was
             // true (explosion not stopped) and break if false (explosion stopped at these coordinates previously)
-            String cachedResult = cache.get(String.valueOf(newX) + newY);
+            String cachedResult = cache.get(String.valueOf(currentX) + currentY);
             if (cachedResult != null && cachedResult.equals(String.valueOf(true))) {
                 continue;
             } else if (cachedResult != null && cachedResult.equals(String.valueOf(false))) {
+                onlyDarken = true;
+                continue;
+            }
+            if (!matrix.isWithinBounds(currentX, currentY)) {
+                cache.put(String.valueOf(currentX) + currentY, String.valueOf(false));
                 break;
             }
             int distance = matrix.distanceBetweenTwoPoints(matrixX1, currentX, matrixY1, currentY);
-            if (distance < radius/2 && matrix.isWithinBounds(currentX, currentY)) {
-                Element element = matrix.get(currentX, currentY);
-                boolean unstopped = element.explode(matrix, strength);
-                cache.put(String.valueOf(currentX) + currentY, String.valueOf(unstopped));
-                if (!unstopped) {
-                    break;
+            if (distance < radius/2) {
+                if (onlyDarken) {
+                    Element element = matrix.get(currentX, currentY);
+                    element.darkenColor(((float) distance)/radius);
+                    cache.put(String.valueOf(currentX) + currentY, String.valueOf(false));
+                    if (Math.random() > .8) {
+                        break;
+                    }
+                    continue;
                 }
-            } else if (distance < radius +  Math.max(radius/10, 1)) {
+                Element element = matrix.get(currentX, currentY);
+                if (element instanceof EmptyCell) {
+                    matrix.setElementAtIndex(currentX, currentY, ElementType.SPARK.createElementByMatrix(currentX, currentY));
+                    cache.put(String.valueOf(currentX) + currentY, String.valueOf(true));
+                } else {
+                    boolean unstopped = element.explode(matrix, strength);
+                    cache.put(String.valueOf(currentX) + currentY, String.valueOf(unstopped));
+                    if (!unstopped) {
+                        onlyDarken = true;
+                        continue;
+                    }
+                }
+            } else if (distance < (radius/2 + Math.max(radius/4, 1))) {
+                if (onlyDarken) {
+                    Element element = matrix.get(currentX, currentY);
+                    element.darkenColor(((float) distance)/radius);
+                    cache.put(String.valueOf(currentX) + currentY, String.valueOf(false));
+                    if (Math.random() > .8) {
+                        break;
+                    }
+                    continue;
+                }
+                Element element = matrix.get(currentX, currentY);
+                if (element instanceof EmptyCell) {
+                    matrix.setElementAtIndex(currentX, currentY, ElementType.SPARK.createElementByMatrix(currentX, currentY));
+                    cache.put(String.valueOf(currentX) + currentY, String.valueOf(true));
+                    continue;
+                }
+                element.receiveHeat(matrix, 50);
                 Vector2 center = new Vector2(matrixX, matrixY);
                 Vector2 newPoint = new Vector2(currentX, currentY);
                 newPoint.sub(center).nor();
                 matrix.particalizeByMatrix(currentX, currentY, new Vector3(newPoint.x * 200, newPoint.y * 200, 0));
+
             }
         }
     }

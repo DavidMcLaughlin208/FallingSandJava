@@ -259,7 +259,7 @@ public abstract class Element {
     }
 
     public void dieAndReplaceWithParticle(CellularMatrix matrix, Vector3 velocity) {
-        matrix.setElementAtIndex(matrixX, matrixY, ElementType.createParticleByMatrix(matrix, matrixX, matrixY, velocity, elementType));
+        matrix.setElementAtIndex(matrixX, matrixY, ElementType.createParticleByMatrix(matrix, matrixX, matrixY, velocity, elementType, this.color));
         matrix.reportToChunkActive(matrixX, matrixY);
     }
 
@@ -300,8 +300,17 @@ public abstract class Element {
             dieAndReplace(matrix, ElementType.SPARK);
             return true;
         } else {
+            darkenColor();
             return false;
         }
+    }
+
+    public void darkenColor() {
+        this.color = new Color(this.color.r * .85f, this.color.g * .85f, this.color.b * .85f, this.color.a);
+    }
+
+    public void darkenColor(float factor) {
+        this.color = new Color(this.color.r * factor, this.color.g * factor, this.color.b * factor, this.color.a);
     }
 
     private boolean isSurrounded(CellularMatrix matrix) {

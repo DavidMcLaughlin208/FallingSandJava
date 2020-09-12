@@ -11,6 +11,7 @@ public class Titanium extends ImmovableSolid {
         frictionFactor = 0.5f;
         inertialResistance = 1.1f;
         mass = 1000;
+        explosionResistance = 5;
     }
 
     @Override
