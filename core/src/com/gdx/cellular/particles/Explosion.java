@@ -6,6 +6,10 @@ import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.elements.EmptyCell;
+import com.gdx.cellular.elements.gas.Gas;
+import com.gdx.cellular.elements.liquid.Liquid;
+import com.gdx.cellular.elements.solid.immoveable.ImmovableSolid;
+import com.gdx.cellular.elements.solid.movable.MovableSolid;
 
 import java.util.HashMap;
 import java.util.List;
@@ -51,6 +55,8 @@ public class Explosion {
         int matrixY1 = matrixY;
         int matrixX2 = newX;
         int matrixY2 = newY;
+
+        int localRadius = radius + getRandomVariation(radius);
 
         // If the two points are the same no need to iterate. Just run the provided function
 
@@ -101,10 +107,10 @@ public class Explosion {
                 break;
             }
             int distance = matrix.distanceBetweenTwoPoints(matrixX1, currentX, matrixY1, currentY);
-            if (distance < radius/2) {
+            if (distance < localRadius/2) {
                 if (onlyDarken) {
                     Element element = matrix.get(currentX, currentY);
-                    element.darkenColor(((float) distance)/radius);
+                    darkenElement(element, ((float) distance)/localRadius);
                     cache.put(String.valueOf(currentX) + currentY, String.valueOf(false));
                     if (Math.random() > .8) {
                         break;
@@ -119,16 +125,18 @@ public class Explosion {
                     boolean unstopped = element.explode(matrix, strength);
                     cache.put(String.valueOf(currentX) + currentY, String.valueOf(unstopped));
                     if (!unstopped) {
+                        element.receiveHeat(matrix, 300);
+                        darkenElement(element, ((float) distance)/localRadius);
                         onlyDarken = true;
                         continue;
                     }
                 }
-            } else if (distance < (radius/2 + Math.max(radius/4, 1))) {
+            } else if (distance < (localRadius/2 + Math.max(localRadius/4, 1))) {
                 if (onlyDarken) {
                     Element element = matrix.get(currentX, currentY);
-                    element.darkenColor(((float) distance)/radius);
+                    element.darkenColor(((float) distance)/localRadius);
                     cache.put(String.valueOf(currentX) + currentY, String.valueOf(false));
-                    if (Math.random() > .8) {
+                    if (Math.random() > .6) {
                         break;
                     }
                     continue;
@@ -139,16 +147,46 @@ public class Explosion {
                     cache.put(String.valueOf(currentX) + currentY, String.valueOf(true));
                     continue;
                 }
-                element.receiveHeat(matrix, 50);
+                darkenElement(element, ((float) distance)/(localRadius)*1.5f);
+                element.receiveHeat(matrix, 300);
                 Vector2 center = new Vector2(matrixX, matrixY);
                 Vector2 newPoint = new Vector2(currentX, currentY);
                 newPoint.sub(center).nor();
                 matrix.particalizeByMatrix(currentX, currentY, new Vector3(newPoint.x * 200, newPoint.y * 200, 0));
-
+                if (Math.random() > .8) {
+                    break;
+                }
             }
         }
     }
-    //Still need to find distance between new points and center to check if need to skip, particalize or explode
+
+    private int getRandomVariation(int radius) {
+        if (Math.random() > 0.5f) {
+            return 1;
+        } else {
+            return -1;
+        }
+//        if (Math.random() > 0.5f) {
+//            return (int) (Math.random() * (Math.max(radius/5, 1)));
+//        } else {
+//            return (int) (Math.random() * -(Math.max(radius/5, 1)));
+//        }
+    }
+
+    // Intellij says the casts to subclasses are redundant. But the overriden method definition
+    // in the subclass is not called unless the cast is performed.
+    private void darkenElement(Element element, float factor) {
+        if (element instanceof MovableSolid) {
+            ((MovableSolid) element).darkenColor(factor);
+        } else if (element instanceof Liquid) {
+            ((Liquid) element).darkenColor(factor);
+        } else if (element instanceof ImmovableSolid) {
+            ((ImmovableSolid) element).darkenColor(factor);
+        } else if (element instanceof Gas) {
+            ((Gas) element).darkenColor(factor);
+        }
+    }
+
 }
 
 

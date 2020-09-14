@@ -295,9 +295,9 @@ public enum ElementType {
 
     public abstract Element createElementByPixel(int x, int y);
 
-    public static Element createParticleByMatrix(CellularMatrix matrix, int x, int y, Vector3 vector3, ElementType elementType, Color color) {
+    public static Element createParticleByMatrix(CellularMatrix matrix, int x, int y, Vector3 vector3, ElementType elementType, Color color, boolean isIgnited) {
         if (matrix.isWithinBounds(x, y)) {
-            Element newElement = new Particle(x, y, false, vector3, elementType, color);
+            Element newElement = new Particle(x, y, false, vector3, elementType, color, isIgnited);
             matrix.setElementAtIndex(x, y, newElement);
             return newElement;
         }

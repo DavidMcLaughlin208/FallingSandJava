@@ -328,4 +328,14 @@ public abstract class Liquid extends Element {
         return false;
     }
 
+    @Override
+    public void darkenColor() {
+        return;
+    }
+
+    @Override
+    public void darkenColor(float factor) {
+        return;
+    }
+
 }

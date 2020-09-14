@@ -132,7 +132,7 @@ public class CellularMatrix {
                 int toIndex = x;
                 for (int following = x; following < row.size; following++) {
                     Element followingElement = row.get(following);
-                    if (followingElement.color != currentColor) {
+                    if (!followingElement.color.equals(currentColor)) {
                         break;
                     }
                     toIndex = following;
@@ -591,7 +591,7 @@ public class CellularMatrix {
 
     private void spawnParticleByMatrix(int x, int y, ElementType elementType, Vector3 velocity) {
         if (get(x, y) instanceof EmptyCell) {
-            Element newElement = ElementType.createParticleByMatrix(this, x, y, velocity, elementType, ColorConstants.getColorForElementType(elementType));
+            Element newElement = ElementType.createParticleByMatrix(this, x, y, velocity, elementType, ColorConstants.getColorForElementType(elementType), false);
             if (newElement != null) {
                 reportToChunkActive(newElement);
             }

@@ -259,7 +259,7 @@ public abstract class Element {
     }
 
     public void dieAndReplaceWithParticle(CellularMatrix matrix, Vector3 velocity) {
-        matrix.setElementAtIndex(matrixX, matrixY, ElementType.createParticleByMatrix(matrix, matrixX, matrixY, velocity, elementType, this.color));
+        matrix.setElementAtIndex(matrixX, matrixY, ElementType.createParticleByMatrix(matrix, matrixX, matrixY, velocity, elementType, this.color, this.isIgnited));
         matrix.reportToChunkActive(matrixX, matrixY);
     }
 

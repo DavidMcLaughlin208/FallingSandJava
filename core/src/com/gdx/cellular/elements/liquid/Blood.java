@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.elements.Element;
 
-public class Blood extends Liquid{
+public class Blood extends Liquid {
 
     public Blood(int x, int y, boolean isPixel) {
         super(x, y, isPixel);

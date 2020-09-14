@@ -1,6 +1,7 @@
 package com.gdx.cellular.elements.gas;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularAutomaton;
 import com.gdx.cellular.CellularMatrix;
@@ -27,6 +28,12 @@ public abstract class Gas extends Element {
     public boolean corrode(CellularMatrix matrix) {
         return false;
     }
+
+    @Override
+    public void darkenColor() { }
+
+    @Override
+    public void darkenColor(float factor) { }
 
     @Override
     public void step(CellularMatrix matrix) {

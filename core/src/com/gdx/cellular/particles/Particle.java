@@ -17,7 +17,7 @@ public class Particle extends Element {
 
     public ElementType containedElementType;
 
-    public Particle(int x, int y, boolean isPixel, Vector3 vel, ElementType elementType, Color color) {
+    public Particle(int x, int y, boolean isPixel, Vector3 vel, ElementType elementType, Color color, boolean isIgnited) {
         super(x, y, isPixel);
         if (ElementType.PARTICLE.equals(elementType)) {
             throw new IllegalStateException("Containing element cannot be particle");
@@ -28,6 +28,10 @@ public class Particle extends Element {
         this.vel.x = localVel.x;
         this.vel.y = localVel.y;
         this.color = color;
+        this.isIgnited = isIgnited;
+        if (isIgnited) {
+            this.flammabilityResistance = 0;
+        }
     }
 
     @Override
@@ -46,6 +50,10 @@ public class Particle extends Element {
             die(matrix);
             Element newElement = containedElementType.createElementByMatrix(matrixX, matrixY);
             newElement.color = this.color;
+            newElement.isIgnited = this.isIgnited;
+            if (newElement.isIgnited) {
+                newElement.flammabilityResistance = 0;
+            }
             matrix.setElementAtIndex(matrixX, matrixY, newElement);
             matrix.reportToChunkActive(matrixX, matrixY);
         } else {
@@ -118,6 +126,7 @@ public class Particle extends Element {
                 return;
             }
         }
+        modifyColor();
     }
 
     @Override

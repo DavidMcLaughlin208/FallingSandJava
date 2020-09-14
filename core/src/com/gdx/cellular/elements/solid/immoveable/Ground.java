@@ -25,12 +25,12 @@ public class Ground extends ImmovableSolid{
 
     @Override
     public void customElementFunctions(CellularMatrix matrix) {
-        Element above = matrix.get(matrixX, matrixY + 1);
-        if (above == null || above instanceof EmptyCell) {
-            this.color = ColorConstants.getColorByName("Grass");
-        } else {
-            this.color = ColorConstants.getColorForElementType(this.elementType);
-        }
+//        Element above = matrix.get(matrixX, matrixY + 1);
+//        if (above == null || above instanceof EmptyCell) {
+//            this.color = ColorConstants.getColorByName("Grass");
+//        } else {
+//            this.color = ColorConstants.getColorForElementType(this.elementType);
+//        }
     }
 
 }

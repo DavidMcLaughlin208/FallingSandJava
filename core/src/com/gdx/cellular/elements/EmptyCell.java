@@ -67,4 +67,11 @@ public class EmptyCell extends Element {
         return false;
     }
 
+    @Override
+    public void darkenColor() { }
+
+    @Override
+    public void darkenColor(float factor) { }
+
+
 }
