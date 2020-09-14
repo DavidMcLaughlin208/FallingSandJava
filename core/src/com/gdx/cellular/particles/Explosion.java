@@ -119,7 +119,10 @@ public class Explosion {
                 }
                 Element element = matrix.get(currentX, currentY);
                 if (element instanceof EmptyCell) {
-                    matrix.setElementAtIndex(currentX, currentY, ElementType.SPARK.createElementByMatrix(currentX, currentY));
+                    ElementType newElementType;
+                    if (Math.random() > 0.5) {
+                        matrix.setElementAtIndex(currentX, currentY, ElementType.EXPLOSIONSPARK.createElementByMatrix(currentX, currentY));
+                    }
                     cache.put(String.valueOf(currentX) + currentY, String.valueOf(true));
                 } else {
                     boolean unstopped = element.explode(matrix, strength);
@@ -143,7 +146,9 @@ public class Explosion {
                 }
                 Element element = matrix.get(currentX, currentY);
                 if (element instanceof EmptyCell) {
-                    matrix.setElementAtIndex(currentX, currentY, ElementType.SPARK.createElementByMatrix(currentX, currentY));
+                    if (Math.random() > 0.5) {
+                        matrix.setElementAtIndex(currentX, currentY, ElementType.EXPLOSIONSPARK.createElementByMatrix(currentX, currentY));
+                    }
                     cache.put(String.valueOf(currentX) + currentY, String.valueOf(true));
                     continue;
                 }

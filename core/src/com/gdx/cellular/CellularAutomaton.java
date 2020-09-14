@@ -60,6 +60,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 
 	@Override
 	public void create () {
+		Gdx.gl.glEnable(GL20.GL_BLEND);
 		fpsLogger = new FPSLogger();
 //		batch = new SpriteBatch();
 

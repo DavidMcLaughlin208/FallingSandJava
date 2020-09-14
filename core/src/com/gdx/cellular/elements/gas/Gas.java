@@ -41,7 +41,7 @@ public abstract class Gas extends Element {
         stepped.flip(0);
         vel.sub(CellularAutomaton.gravity);
         vel.y = Math.min(vel.y, 124);
-        if (vel.y == 124 && Math.random() > .5) {
+        if (vel.y == 124 && Math.random() > .7) {
             vel.y = 64;
         }
         vel.x *= .9;
@@ -94,7 +94,7 @@ public abstract class Gas extends Element {
                 lastValidLocation.y = modifiedMatrixY;
 
             } else {
-                matrix.setElementAtIndex(matrixX, matrixY, ElementType.EMPTYCELL.createElementByPixel(pixelX, pixelY));
+                matrix.setElementAtIndex(matrixX, matrixY, ElementType.EMPTYCELL.createElementByMatrix(matrixX, matrixY));
                 return;
             }
         }

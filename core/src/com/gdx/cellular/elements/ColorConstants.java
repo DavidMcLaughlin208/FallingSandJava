@@ -151,6 +151,10 @@ public class ColorConstants {
 
         elementColorMap.get(ElementType.SPARK).add(SPARK);
 
+        elementColorMap.get(ElementType.EXPLOSIONSPARK).add(Color.ORANGE);
+//        elementColorMap.get(ElementType.EXPLOSIONSPARK).add(FIRE_2);
+//        elementColorMap.get(ElementType.EXPLOSIONSPARK).add(FIRE_3);
+
         elementColorMap.get(ElementType.PARTICLE).add(PARTICLE);
 
         elementColorMap.get(ElementType.EMPTYCELL).add(EMPTY_CELL);

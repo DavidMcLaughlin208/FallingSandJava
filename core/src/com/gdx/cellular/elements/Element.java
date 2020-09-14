@@ -297,7 +297,11 @@ public abstract class Element {
 
     public boolean explode(CellularMatrix matrix, int strength) {
         if (explosionResistance < strength) {
-            dieAndReplace(matrix, ElementType.SPARK);
+            if (Math.random() > 0.5) {
+                dieAndReplace(matrix, ElementType.EXPLOSIONSPARK);
+            } else {
+                die(matrix);
+            }
             return true;
         } else {
             darkenColor();
