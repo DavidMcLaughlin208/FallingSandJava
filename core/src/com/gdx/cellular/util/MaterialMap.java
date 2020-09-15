@@ -1,29 +1,22 @@
 package com.gdx.cellular.util;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import com.badlogic.gdx.graphics.Pixmap;
 
 public class MaterialMap {
 
-    BufferedImage img;
+    Pixmap img;
     public int w;
     public int h;
 
-    public MaterialMap(File file) {
-        try {
-            img = ImageIO.read(file);
-            w = img.getWidth();
-            h = img.getHeight();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public MaterialMap(Pixmap img) {
+        this.img = img;
+        this.w = img.getWidth();
+        this.h = img.getHeight();
     }
 
     public int getRGB(int x, int y) {
         int relativeX = x == 0 ? 0 : Math.abs(x) % w;
         int relativeY = y == 0 ? 0 : Math.abs(y) % h;
-        return img.getRGB(relativeX, relativeY);
+        return img.getPixel(relativeX, relativeY);
     }
 }

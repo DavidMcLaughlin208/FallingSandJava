@@ -1,6 +1,10 @@
 package com.gdx.cellular.elements;
 
+import com.badlogic.gdx.assets.AssetDescriptor;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
 import com.gdx.cellular.util.MaterialMap;
 
 import java.io.File;
@@ -152,8 +156,6 @@ public class ColorConstants {
         elementColorMap.get(ElementType.SPARK).add(SPARK);
 
         elementColorMap.get(ElementType.EXPLOSIONSPARK).add(Color.ORANGE);
-//        elementColorMap.get(ElementType.EXPLOSIONSPARK).add(FIRE_2);
-//        elementColorMap.get(ElementType.EXPLOSIONSPARK).add(FIRE_3);
 
         elementColorMap.get(ElementType.PARTICLE).add(PARTICLE);
 
@@ -175,15 +177,17 @@ public class ColorConstants {
         if (missingElements.size() > 0) {
             throw new IllegalStateException("Elements " + missingElements.toString() + "have no assigned colors");
         }
-
+        AssetManager manager = new AssetManager();
         // Load custom textures
-        File folder = new File("elementtextures");
-        File[] listOfFiles = folder.listFiles();
-        if (listOfFiles != null) {
-            for (File file : listOfFiles) {
-                materialsMap.put(file.getName().toUpperCase(), new MaterialMap(file));
-            }
-        }
+        manager.load("elementtextures/Stone.png", Pixmap.class);
+        manager.load("elementtextures/Wood.png", Pixmap.class);
+        manager.finishLoading();
+
+        // Place custom textures in materialsMap
+        Pixmap stonePixmap = manager.get("elementtextures/Stone.png");
+        Pixmap woodPixmap = manager.get("elementtextures/Wood.png");
+        materialsMap.put("STONE", new MaterialMap(stonePixmap));
+        materialsMap.put("WOOD", new MaterialMap(woodPixmap));
     }
 
     public static Color getColorByName(String name) {
@@ -196,11 +200,11 @@ public class ColorConstants {
     }
 
     public static Color getColorForElementType(ElementType elementType, int x, int y) {
-        if (materialsMap.get(elementType.name() + ".PNG") != null) {
-            int rgb = materialsMap.get(elementType.name() + ".PNG").getRGB(x, y);
+        if (materialsMap.get(elementType.name()) != null) {
+            int rgb = materialsMap.get(elementType.name()).getRGB(x, y);
             return colorCache.computeIfAbsent(String.valueOf(rgb), k-> {
                 Color color = new Color();
-                Color.argb8888ToColor(color, rgb);
+                Color.rgba8888ToColor(color, rgb);
                 return color;
             });
         } else {

@@ -27,22 +27,22 @@ public class Player {
     }
 
     private Array<Array<Element>> createBody(int worldX, int worldY, int playerIndex, CellularMatrix matrix) {
-        File textureFile = new File("elementtextures/Player" + playerIndex + ".png");
-        this.playerTexture = new MaterialMap(textureFile);
+//        File textureFile = new File("elementtextures/Player" + playerIndex + ".png");
+//        this.playerTexture = new MaterialMap(textureFile);
         Array<Array<Element>> elements = new Array<>();
-        for (int x = 0; x < playerTexture.w; x++) {
-            Array<Element> innerArray = new Array<>();
-            elements.add(innerArray);
-            for (int y = 0; y < playerTexture.h; y++) {
-                Element meat = ElementType.PLAYERMEAT.createElementByMatrix(worldX + x, worldY + y);
-                matrix.setElementAtIndex(worldX + x, worldY + y, meat);
-                int rgb = this.playerTexture.getRGB(x, y);
-                Color color = new Color();
-                Color.argb8888ToColor(color, rgb);
-                meat.color = color;
-                innerArray.add(meat);
-            }
-        }
+//        for (int x = 0; x < playerTexture.w; x++) {
+//            Array<Element> innerArray = new Array<>();
+//            elements.add(innerArray);
+//            for (int y = 0; y < playerTexture.h; y++) {
+//                Element meat = ElementType.PLAYERMEAT.createElementByMatrix(worldX + x, worldY + y);
+//                matrix.setElementAtIndex(worldX + x, worldY + y, meat);
+//                int rgb = this.playerTexture.getRGB(x, y);
+//                Color color = new Color();
+//                Color.argb8888ToColor(color, rgb);
+//                meat.color = color;
+//                innerArray.add(meat);
+//            }
+//        }
         return elements;
     }
 

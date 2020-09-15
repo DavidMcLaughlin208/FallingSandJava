@@ -1,11 +1,14 @@
 package com.gdx.cellular;
 
+import box2dLight.PointLight;
+import box2dLight.RayHandler;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.FPSLogger;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -18,12 +21,10 @@ import com.gdx.cellular.box2d.ShapeFactory;
 import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.input.InputManager;
 import com.gdx.cellular.input.InputProcessors;
-import com.gdx.cellular.player.Player;
 import com.gdx.cellular.ui.MatrixActor;
 import com.gdx.cellular.util.ElementColumnStepper;
 import com.gdx.cellular.util.GameManager;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -37,7 +38,6 @@ public class CellularAutomaton extends ApplicationAdapter {
     public static Vector3 gravity = new Vector3(0f, -5f, 0f);
     public static BitSet stepped = new BitSet(1);
 
-//    private SpriteBatch batch;
     private ShapeRenderer shapeRenderer;
 //    private Pixmap pixmap;
     public CellularMatrix matrix;
@@ -71,8 +71,6 @@ public class CellularAutomaton extends ApplicationAdapter {
 		shapeRenderer = new ShapeRenderer();
 		shapeRenderer.setProjectionMatrix(camera.combined);
 		shapeRenderer.setAutoShapeType(true);
-
-//		pixmap = new Pixmap(0,0, Pixmap.Format.fromGdx2DPixmapFormat(1));
 
         stepped.set(0, true);
 

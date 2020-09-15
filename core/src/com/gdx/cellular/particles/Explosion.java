@@ -40,13 +40,6 @@ public class Explosion {
                 }
             }
         }
-        for (int x = radius * -1; x < radius; x++) {
-            for (int y = radius * -1; y < radius; y++) {
-                if (Math.abs(x) == radius || Math.abs(y) == radius) {
-                    iterateBetweenTwoPoints(matrixX, matrixY, matrixX + x, matrixY + y, strength, coordinatesCache, matrix);
-                }
-            }
-        }
         return null;
     }
 
@@ -157,7 +150,7 @@ public class Explosion {
                 Vector2 center = new Vector2(matrixX, matrixY);
                 Vector2 newPoint = new Vector2(currentX, currentY);
                 newPoint.sub(center).nor();
-                matrix.particalizeByMatrix(currentX, currentY, new Vector3(newPoint.x * 200, newPoint.y * 200, 0));
+                matrix.particalizeByMatrix(currentX, currentY, new Vector3(newPoint.x * radius * 5, newPoint.y  * radius * 5, 0));
                 if (Math.random() > .8) {
                     break;
                 }

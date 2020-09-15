@@ -3,6 +3,8 @@ package com.gdx.cellular.input;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -53,7 +55,7 @@ public class InputManager {
     private boolean paused = false;
     private final TextInputHandler saveLevelNameListener = new TextInputHandler(this, this::setFileNameForSave);
     private final TextInputHandler loadLevelNameListener = new TextInputHandler(this, this::setFileNameForLoad);
-    private final Path path = Paths.get("save/");
+    private final Path savePath = Paths.get("save/");
     private String fileNameForLevel;
     private boolean readyToSave = false;
     private boolean readyToLoad = false;
@@ -355,7 +357,7 @@ public class InputManager {
             Gdx.input.getTextInput(saveLevelNameListener, "Save Level", "File Name", "");
         }
         if (readyToSave) {
-            Path newPath = path.resolve(fileNameForLevel + ".ser");
+            Path newPath = savePath.resolve(fileNameForLevel + ".ser");
             if (!Files.exists(newPath)) {
                 try {
                     Files.createDirectories(newPath.getParent());
@@ -414,7 +416,7 @@ public class InputManager {
             try {
                 readyToLoad = false;
                 setIsPaused(false);
-                Path newPath = path.resolve(fileNameForLevel + ".ser");
+                Path newPath = savePath.resolve(fileNameForLevel + ".ser");
                 String level = Files.readAllLines(newPath, StandardCharsets.UTF_8).get(0);
                 String[] splitLevel = level.split(",");
                 Array<Element> row = matrix.getRow(0);
