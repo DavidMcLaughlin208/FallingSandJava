@@ -19,11 +19,6 @@ public abstract class MovableSolid extends Solid {
         stoppedMovingThreshold = 5;
     }
 
-//    public void draw(ShapeRenderer sr) {
-//        sr.setColor(color);
-//        sr.rect(pixelX, pixelY, CellularAutomaton.pixelSizeModifier, CellularAutomaton.pixelSizeModifier);
-//    }
-
     public void step(CellularMatrix matrix) {
         if (stepped.get(0) == CellularAutomaton.stepped.get(0)) return;
         stepped.flip(0);
@@ -99,6 +94,7 @@ public abstract class MovableSolid extends Solid {
         if (matrix.useChunks) {
             if (isFreeFalling || isIgnited || !hasNotMovedBeyondThreshold()) {
                 matrix.reportToChunkActive(this);
+                matrix.reportToChunkActive((int) formerLocation.x, (int) formerLocation.y);
             }
         }
     }

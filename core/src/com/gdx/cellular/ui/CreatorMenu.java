@@ -16,6 +16,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import com.gdx.cellular.CellularAutomaton;
+import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.input.InputManager;
 import com.gdx.cellular.input.MouseMode;
 import com.gdx.cellular.elements.ElementType;
@@ -55,7 +57,19 @@ public class CreatorMenu {
         dropDownTopLevelTable = new Table() {
             @Override
             public void setPosition (float x, float y) {
-                super.setPosition(x, y);
+                int dropDownListY = (int) y;
+                if (CellularAutomaton.screenHeight - y < dropDownTopLevelTable.getRows() / 2f * CELL_HEIGHT) {
+                    dropDownListY = (int) (CellularAutomaton.screenHeight - (dropDownTopLevelTable.getRows() / 2f * CELL_HEIGHT));
+                } else if (y < dropDownTopLevelTable.getRows() / 2f * CELL_HEIGHT) {
+                    dropDownListY = (int) (dropDownTopLevelTable.getRows() / 2f * CELL_HEIGHT);
+                }
+                int dropDownListX = (int) x;
+                if (CellularAutomaton.screenWidth - x < CELL_WIDTH / 2f) {
+                    dropDownListX = (int) (CellularAutomaton.screenWidth - CELL_WIDTH / 2f);
+                } else if (x < CELL_WIDTH / 2f) {
+                    dropDownListX = (int) (CELL_WIDTH / 2f);
+                }
+                super.setPosition(dropDownListX, dropDownListY);
                 dropDownElementList.setPosition(this.getX() + CELL_WIDTH, this.getY());
                 dropDownMouseMode.setPosition(this.getX() + CELL_WIDTH, this.getY() - CELL_HEIGHT);
                 dropDownBodyType.setPosition(this.getX() + CELL_WIDTH, this.getY() - CELL_HEIGHT * 2);
@@ -151,7 +165,17 @@ public class CreatorMenu {
     private void unhideSelectedSublist(SelectedSubList selectedSubList) {
         Table list = getList(selectedSubList);
         if (list != null) {
-            list.setPosition(dropDownTopLevelTable.getX() + CELL_WIDTH, dropDownTopLevelTable.getY());
+            int dropDownListY = (int) dropDownTopLevelTable.getY();
+            if (CellularAutomaton.screenHeight - dropDownTopLevelTable.getY() < list.getRows() / 2f * CELL_HEIGHT) {
+                dropDownListY = (int) (CellularAutomaton.screenHeight - (list.getRows() / 2f * CELL_HEIGHT));
+            } else if (dropDownTopLevelTable.getY() < list.getRows() / 2f * CELL_HEIGHT) {
+                dropDownListY = (int) (list.getRows() / 2f * CELL_HEIGHT);
+            }
+            int dropDownListX = (int) dropDownTopLevelTable.getX() + CELL_WIDTH;
+            if (CellularAutomaton.screenWidth - dropDownTopLevelTable.getX() < CELL_WIDTH * 1.5f) {
+                dropDownListX = (int) (dropDownTopLevelTable.getX() - CELL_WIDTH);
+            }
+            list.setPosition(dropDownListX, dropDownListY);
         }
     }
 

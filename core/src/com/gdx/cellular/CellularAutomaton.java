@@ -1,14 +1,9 @@
 package com.gdx.cellular;
 
-import box2dLight.PointLight;
-import box2dLight.RayHandler;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.*;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.FrameBuffer;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -39,7 +34,6 @@ public class CellularAutomaton extends ApplicationAdapter {
     public static BitSet stepped = new BitSet(1);
 
     private ShapeRenderer shapeRenderer;
-//    private Pixmap pixmap;
     public CellularMatrix matrix;
     private OrthographicCamera camera;
 	AssetManager manager = new AssetManager();
@@ -62,7 +56,6 @@ public class CellularAutomaton extends ApplicationAdapter {
 	public void create () {
 		Gdx.gl.glEnable(GL20.GL_BLEND);
 		fpsLogger = new FPSLogger();
-//		batch = new SpriteBatch();
 
 		camera = new OrthographicCamera();
 		camera.setToOrtho(false, screenWidth, screenHeight);
@@ -231,7 +224,6 @@ public class CellularAutomaton extends ApplicationAdapter {
 
     @Override
 	public void dispose () {
-//		batch.dispose();
 		shapeRenderer.dispose();
 	}
 
