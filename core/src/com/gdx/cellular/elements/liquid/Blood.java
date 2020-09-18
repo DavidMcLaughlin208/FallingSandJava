@@ -1,5 +1,6 @@
 package com.gdx.cellular.elements.liquid;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.elements.Element;
@@ -24,6 +25,7 @@ public class Blood extends Liquid {
 
     @Override
     public boolean actOnOther(Element other, CellularMatrix matrix) {
+        other.stain(new Color(0.5f, 0, 0, 1));
         if (other.shouldApplyHeat()) {
             other.receiveCooling(matrix, coolingFactor);
             coolingFactor--;

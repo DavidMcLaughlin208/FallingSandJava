@@ -112,7 +112,6 @@ public class Explosion {
                 }
                 Element element = matrix.get(currentX, currentY);
                 if (element instanceof EmptyCell) {
-                    ElementType newElementType;
                     if (Math.random() > 0.5) {
                         matrix.setElementAtIndex(currentX, currentY, ElementType.EXPLOSIONSPARK.createElementByMatrix(currentX, currentY));
                     }

@@ -1,5 +1,6 @@
 package com.gdx.cellular.elements;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularMatrix;
@@ -72,6 +73,16 @@ public class EmptyCell extends Element {
 
     @Override
     public void darkenColor(float factor) { }
+
+    @Override
+    public boolean stain(float r, float g, float b, float a) {
+        return false;
+    }
+
+    @Override
+    public boolean stain(Color color) {
+        return  false;
+    }
 
 
 }

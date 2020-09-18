@@ -41,7 +41,6 @@ public abstract class Element {
     public int temperature = 0;
     public int coolingFactor = 5;
     public Integer lifeSpan = null;
-    public Color defaultColor;
     public ElementType elementType;
     public PhysicsElementActor owningBody = null;
     public Vector2 owningBodyCoords = null;
@@ -295,9 +294,61 @@ public abstract class Element {
 //        return isSurrounded(matrix, elementList);
 //    }
 
+    public boolean stain(Color color) {
+        if (Math.random() > 0.2 || isIgnited) {
+            return false;
+        }
+        this.color = color.cpy();
+        return true;
+    }
+
+    public boolean stain(float r, float g, float b, float a) {
+        if (Math.random() > 0.2 || isIgnited) {
+            return false;
+        }
+        this.color = this.color.cpy();
+        this.color.r += r;
+        this.color.g += g;
+        this.color.b += b;
+        this.color.a += a;
+        if (this.color.r > 1f) {
+            this.color.r = 1f;
+        }
+        if (this.color.g > 1f) {
+            this.color.g = 1f;
+        }
+        if (this.color.b > 1f) {
+            this.color.b = 1f;
+        }
+        if (this.color.a > 1f) {
+            this.color.a = 1f;
+        }
+        if (this.color.r < 0f) {
+            this.color.r = 0f;
+        }
+        if (this.color.g < 0f) {
+            this.color.g = 0f;
+        }
+        if (this.color.b < 0f) {
+            this.color.b = 0f;
+        }
+        if (this.color.a < 0f) {
+            this.color.a = 0f;
+        }
+        return true;
+    }
+
+    public boolean cleanColor() {
+        if (Math.random() > 0.2f) {
+            return false;
+        }
+        this.color = ColorConstants.getColorForElementType(this.elementType, this.matrixX, this.matrixY);
+        return true;
+    }
+
     public boolean explode(CellularMatrix matrix, int strength) {
         if (explosionResistance < strength) {
-            if (Math.random() > 0.5) {
+            if (Math.random() > 0.3) {
                 dieAndReplace(matrix, ElementType.EXPLOSIONSPARK);
             } else {
                 die(matrix);

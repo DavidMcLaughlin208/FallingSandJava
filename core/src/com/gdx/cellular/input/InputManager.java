@@ -3,8 +3,6 @@ package com.gdx.cellular.input;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -24,6 +22,7 @@ import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.ui.CreatorMenu;
 import com.gdx.cellular.ui.CursorActor;
+import com.gdx.cellular.ui.ModeActor;
 import com.gdx.cellular.util.TextInputHandler;
 
 import java.io.File;
@@ -68,6 +67,7 @@ public class InputManager {
     private final CreatorMenu creatorMenu;
     public Stage cursorStage;
     public Cursor cursor;
+    public ModeActor modeActor;
 
     private Vector3 rectStartPos = new Vector3();
 
@@ -76,6 +76,9 @@ public class InputManager {
         this.cursorStage = new Stage(viewport);
         this.cursor = new Cursor(this.mouseMode, this.brushSize, 0, 0);
         this.cursorStage.addActor(new CursorActor(shapeRenderer, this.cursor));
+        this.modeActor = new ModeActor();
+//        this.modeStage = new Stage();
+//        this.modeStage.addActor(this.modeActor);
     }
 
     public void setCurrentlySelectedElement(ElementType elementType) {

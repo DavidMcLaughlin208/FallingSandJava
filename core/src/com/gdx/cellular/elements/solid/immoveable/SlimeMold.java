@@ -44,7 +44,6 @@ public class SlimeMold extends ImmovableSolid {
     @Override
     public void takeFireDamage(CellularMatrix matrix) {
         health -= fireDamage;
-        checkIfIgnited();
     }
 
     public boolean infect(CellularMatrix matrix) {

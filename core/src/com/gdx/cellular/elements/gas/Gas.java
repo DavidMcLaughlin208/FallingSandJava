@@ -338,4 +338,14 @@ public abstract class Gas extends Element {
     public boolean infect(CellularMatrix matrix) {
         return false;
     }
+
+    @Override
+    public boolean stain(float r, float g, float b, float a) {
+        return false;
+    }
+
+    @Override
+    public boolean stain(Color color) {
+        return  false;
+    }
 }

@@ -32,6 +32,7 @@ public class Water extends Liquid {
 
     @Override
     public boolean actOnOther(Element other, CellularMatrix matrix) {
+        other.cleanColor();
         if (other.shouldApplyHeat()) {
             other.receiveCooling(matrix, coolingFactor);
             coolingFactor--;

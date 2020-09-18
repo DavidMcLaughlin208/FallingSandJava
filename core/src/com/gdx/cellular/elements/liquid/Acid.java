@@ -20,6 +20,7 @@ public class Acid extends Liquid {
 
     @Override
     public boolean actOnOther(Element other, CellularMatrix matrix) {
+        other.stain(-1, 1, -1, 0);
         if (!isReactionFrame() || other == null) return false;
         boolean corroded = other.corrode(matrix);
         if (corroded) corrosionCount -= 1;

@@ -1,6 +1,7 @@
 package com.gdx.cellular.elements.liquid;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularAutomaton;
 import com.gdx.cellular.CellularMatrix;
@@ -15,6 +16,8 @@ public abstract class Liquid extends Element {
 
     public int density;
     public int dispersionRate;
+    public int yDidNotChangeCount = 0;
+    public int yDidNotChangeThreshold = 200;
 
     public Liquid(int x, int y, boolean isPixel) {
         super(x, y, isPixel);
@@ -97,6 +100,21 @@ public abstract class Liquid extends Element {
                 matrix.reportToChunkActive((int) formerLocation.x, (int) formerLocation.y);
             }
         }
+//        yDidNotChangeCount = yDidNotChange(formerLocation) ? yDidNotChangeCount + 1 : 0;
+//        if (yDidNotChangeCount > yDidNotChangeThreshold) {
+//            yDidNotChangeCount = yDidNotChangeThreshold;
+//        }
+//        if (yHasNotMovedBeyondThreshold()) {
+//            this.vel.x = 0;
+//        }
+    }
+
+    private boolean yHasNotMovedBeyondThreshold() {
+        return yDidNotChangeCount >= yDidNotChangeThreshold;
+    }
+
+    private boolean yDidNotChange(Vector3 formerLocation) {
+        return formerLocation.y == this.matrixY;
     }
 
     @Override
@@ -127,6 +145,9 @@ public abstract class Liquid extends Element {
             if (isFreeFalling) {
                 float absY = Math.max(Math.abs(vel.y) / 31, 105);
                 vel.x = vel.x < 0 ? -absY : absY;
+            }
+            if (yHasNotMovedBeyondThreshold()) {
+                vel.x = Math.random() > 0.5 ? 64 : -64;
             }
             Vector3 normalizedVel = vel.cpy().nor();
             int additionalX = getAdditional(normalizedVel.x);
@@ -325,13 +346,18 @@ public abstract class Liquid extends Element {
     }
 
     @Override
-    public void darkenColor() {
-        return;
+    public void darkenColor() { }
+
+    @Override
+    public void darkenColor(float factor) { }
+
+    @Override
+    public boolean stain(float r, float g, float b, float a) {
+        return false;
     }
 
     @Override
-    public void darkenColor(float factor) {
-        return;
+    public boolean stain(Color color) {
+        return  false;
     }
-
 }
