@@ -3,6 +3,7 @@ package com.gdx.cellular.input;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -42,11 +43,11 @@ public class InputManager {
 
     private final int maxThreads = 50;
 
-    private int brushSize = 5;
-    private BRUSHTYPE brushType = BRUSHTYPE.CIRCLE;
+    public int brushSize = 5;
+    public BRUSHTYPE brushType = BRUSHTYPE.CIRCLE;
 
     private Vector3 lastTouchPos = new Vector3();
-    private boolean touchedLastFrame = false;
+    public boolean touchedLastFrame = false;
 
     public ElementType currentlySelectedElement = ElementType.SAND;
     public BodyDef.BodyType bodyType = BodyDef.BodyType.DynamicBody;
@@ -68,13 +69,15 @@ public class InputManager {
     public Stage cursorStage;
     public Cursor cursor;
     public ModeActor modeActor;
+    public Camera camera;
 
-    private Vector3 rectStartPos = new Vector3();
+    public Vector3 rectStartPos = new Vector3();
 
-    public InputManager(Viewport viewport, ShapeRenderer shapeRenderer) {
+    public InputManager(OrthographicCamera camera, Viewport viewport, ShapeRenderer shapeRenderer) {
+        this.camera = camera;
         this.creatorMenu = new CreatorMenu(this, viewport);
         this.cursorStage = new Stage(viewport);
-        this.cursor = new Cursor(this.mouseMode, this.brushSize, 0, 0);
+        this.cursor = new Cursor(this);
         this.cursorStage.addActor(new CursorActor(shapeRenderer, this.cursor));
         this.modeActor = new ModeActor();
 //        this.modeStage = new Stage();
@@ -157,7 +160,7 @@ public class InputManager {
         matrix.clearAll();
     }
 
-    public void placeSpout(CellularMatrix matrix, OrthographicCamera camera) {
+    public void placeSpout(CellularMatrix matrix) {
         Vector3 touchPos = new Vector3();
         touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
         camera.unproject(touchPos);
@@ -172,16 +175,26 @@ public class InputManager {
         this.touchedLastFrame = touchedLastFrame;
     }
 
-    public void spawnElementByInput(CellularMatrix matrix, OrthographicCamera camera) {
+    public void spawnElementByInput(CellularMatrix matrix) {
             Vector3 touchPos = new Vector3();
             touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
             camera.unproject(touchPos);
             switch (mouseMode) {
                 case SPAWN:
-                    if (touchedLastFrame) {
-                        matrix.spawnElementBetweenTwoPoints(lastTouchPos, touchPos, currentlySelectedElement, brushSize, brushType);
-                    } else {
-                        matrix.spawnElementByPixelWithBrush((int) touchPos.x, (int) touchPos.y, currentlySelectedElement, brushSize, brushType);
+                    switch (brushType) {
+                        case SQUARE:
+                        case CIRCLE:
+                            if (touchedLastFrame) {
+                                matrix.spawnElementBetweenTwoPoints(lastTouchPos, touchPos, currentlySelectedElement, brushSize, brushType);
+                            } else {
+                                matrix.spawnElementByPixelWithBrush((int) touchPos.x, (int) touchPos.y, currentlySelectedElement, brushSize, brushType);
+                            }
+                            break;
+                        case RECTANGLE:
+                            if (!touchedLastFrame) {
+                                rectStartPos = new Vector3((float) Math.floor(touchPos.x), (float) Math.floor(touchPos.y), 0);
+                            }
+                            break;
                     }
                     break;
                 case EXPLOSION:
@@ -216,7 +229,7 @@ public class InputManager {
                     if (!touchedLastFrame) {
                         switch (currentlySelectedElement) {
                             case SAND:
-                                spawnBox((int) touchPos.x, (int) touchPos.y, brushSize, matrix);
+                                spawnPhysicsBox((int) touchPos.x, (int) touchPos.y, brushSize, matrix);
                                 break;
                             case STONE:
                                 ShapeFactory.createDefaultDynamicCircle((int) touchPos.x, (int) touchPos.y, brushSize / 2);
@@ -243,6 +256,41 @@ public class InputManager {
 //            touchedLastFrame = false;
     }
 
+    public void touchUpLMB(CellularMatrix matrix) {
+        Vector3 touchPos = new Vector3();
+        touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+        camera.unproject(touchPos);
+        switch (mouseMode) {
+            case RECTANGLE:
+                spawnPhysicsRect(matrix, touchPos);
+                break;
+            case SPAWN:
+                switch (brushType) {
+                    case RECTANGLE:
+                        spawnRectangle(matrix, touchPos);
+                        break;
+                }
+                break;
+        }
+    }
+
+    private void spawnRectangle(CellularMatrix matrix, Vector3 touchPos) {
+        int matrixX1 = matrix.toMatrix(touchPos.x);
+        int matrixY1 = matrix.toMatrix(touchPos.y);
+        int matrixX2 = matrix.toMatrix(rectStartPos.x);
+        int matrixY2 = matrix.toMatrix(rectStartPos.y);
+        int xStart = Math.min(matrixX1, matrixX2);
+        int xEnd =  Math.max(matrixX1, matrixX2);
+        int yStart = Math.min(matrixY1, matrixY2);
+        int yEnd =  Math.max(matrixY1, matrixY2);
+
+        for (int x = xStart; x <= xEnd; x++) {
+            for (int y = yStart; y < yEnd; y++) {
+                matrix.spawnElementByMatrix(x, y, this.currentlySelectedElement);
+            }
+        }
+    }
+
     private void spawnRandomPolygon(int x, int y, Array<Array<Element>> randomPolygonArray, CellularMatrix matrix) {
         Body body = ShapeFactory.createDynamicPolygonFromElementArray(matrix.toMatrix(x), matrix.toMatrix(y), randomPolygonArray);
         int mod = CellularAutomaton.box2dSizeModifier;
@@ -263,7 +311,7 @@ public class InputManager {
         matrix.physicsElementActors.add(physicsElementActor);
     }
 
-    public void spawnBox(int x, int y, int brushSize, CellularMatrix matrix) {
+    public void spawnPhysicsBox(int x, int y, int brushSize, CellularMatrix matrix) {
         int matrixX = matrix.toMatrix(x);
         int matrixY = matrix.toMatrix(y);
         Body body =  ShapeFactory.createDefaultDynamicBox(x, y, brushSize / 2);
@@ -289,15 +337,12 @@ public class InputManager {
 
     }
 
-    public void spawnRect(CellularMatrix matrix, OrthographicCamera camera) {
-        Vector3 touchPos = new Vector3();
-        touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
-        camera.unproject(touchPos);
+    public void spawnPhysicsRect(CellularMatrix matrix, Vector3 touchPos) {
         touchPos.set((float) Math.floor(touchPos.x), (float) Math.floor(touchPos.y), 0);
-        spawnRect(matrix, rectStartPos, lastTouchPos, currentlySelectedElement, bodyType);
+        spawnPhysicsRect(matrix, rectStartPos, lastTouchPos, currentlySelectedElement, bodyType);
     }
 
-    public void spawnRect(CellularMatrix matrix, Vector3 topLeft, Vector3 bottomRight, ElementType type, BodyDef.BodyType bodyType) {
+    public void spawnPhysicsRect(CellularMatrix matrix, Vector3 topLeft, Vector3 bottomRight, ElementType type, BodyDef.BodyType bodyType) {
         if (topLeft.x != bottomRight.x && topLeft.y != bottomRight.y) {
             matrix.spawnRect(topLeft, bottomRight, type, bodyType);
         }
@@ -473,11 +518,11 @@ public class InputManager {
         Gdx.input.setInputProcessor(this.creatorMenu.dropDownStage);
     }
 
-    public void updateCursor(OrthographicCamera camera) {
+    public Vector3 getTouchPos() {
         Vector3 touchPos = new Vector3();
         touchPos.set(Gdx.input.getX(), Gdx.input.getY(), 0);
-        camera.unproject(touchPos);
-        this.cursor.update(this.mouseMode, this.brushSize, (int) touchPos.x, (int) touchPos.y, brushType);
+        this.camera.unproject(touchPos);
+        return touchPos;
     }
 
     public void drawCursor() {
@@ -499,15 +544,18 @@ public class InputManager {
     }
 
     public void cycleBrushType() {
-        if (brushType == BRUSHTYPE.CIRCLE) {
+        if (brushType == BRUSHTYPE.RECTANGLE) {
             brushType = BRUSHTYPE.SQUARE;
         } else if (brushType == BRUSHTYPE.SQUARE) {
             brushType = BRUSHTYPE.CIRCLE;
+        } else if (brushType == BRUSHTYPE.CIRCLE) {
+            brushType = BRUSHTYPE.RECTANGLE;
         }
     }
 
     public enum BRUSHTYPE {
         CIRCLE,
-        SQUARE;
+        SQUARE,
+        RECTANGLE;
     }
 }

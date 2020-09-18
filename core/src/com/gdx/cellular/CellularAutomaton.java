@@ -68,7 +68,7 @@ public class CellularAutomaton extends ApplicationAdapter {
         stepped.set(0, true);
 
 		Viewport viewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), camera);
-		inputManager = new InputManager(viewport, shapeRenderer);
+		inputManager = new InputManager(camera, viewport, shapeRenderer);
 
 		b2dWorld = new World(new Vector2(0, -100), true);
 
@@ -165,7 +165,6 @@ public class CellularAutomaton extends ApplicationAdapter {
 		debugRenderer.render(b2dWorld, camera.combined);
 
 		inputManager.drawMenu();
-		inputManager.updateCursor(camera);
 		inputManager.drawCursor();
 	}
 
@@ -182,7 +181,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 	private void setUpBasicBodies() {
 		BodyDef groundBodyDef = new BodyDef();
 
-		inputManager.spawnRect(matrix, new Vector3((camera.viewportWidth/2/box2dSizeModifier/8) * 10, 150, 0),
+		inputManager.spawnPhysicsRect(matrix, new Vector3((camera.viewportWidth/2/box2dSizeModifier/8) * 10, 150, 0),
 				new Vector3((camera.viewportWidth/2/box2dSizeModifier - camera.viewportWidth/2/box2dSizeModifier/8) * 20, 50, 0),
 				ElementType.STONE,
 				BodyDef.BodyType.StaticBody);

@@ -45,6 +45,7 @@ public abstract class Element {
     public PhysicsElementActor owningBody = null;
     public Vector2 owningBodyCoords = null;
     public int explosionResistance = 1;
+    public boolean discolored = false;
 
     public Color color;
 
@@ -299,6 +300,7 @@ public abstract class Element {
             return false;
         }
         this.color = color.cpy();
+        this.discolored = true;
         return true;
     }
 
@@ -335,14 +337,16 @@ public abstract class Element {
         if (this.color.a < 0f) {
             this.color.a = 0f;
         }
+        this.discolored = true;
         return true;
     }
 
     public boolean cleanColor() {
-        if (Math.random() > 0.2f) {
+        if (!discolored || Math.random() > 0.2f) {
             return false;
         }
         this.color = ColorConstants.getColorForElementType(this.elementType, this.matrixX, this.matrixY);
+        this.discolored = false;
         return true;
     }
 
@@ -362,10 +366,12 @@ public abstract class Element {
 
     public void darkenColor() {
         this.color = new Color(this.color.r * .85f, this.color.g * .85f, this.color.b * .85f, this.color.a);
+        this.discolored = true;
     }
 
     public void darkenColor(float factor) {
         this.color = new Color(this.color.r * factor, this.color.g * factor, this.color.b * factor, this.color.a);
+        this.discolored = true;
     }
 
     private boolean isSurrounded(CellularMatrix matrix) {

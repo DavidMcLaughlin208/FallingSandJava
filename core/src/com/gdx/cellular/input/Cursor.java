@@ -11,26 +11,25 @@ import static com.gdx.cellular.input.MouseMode.*;
 
 public class Cursor {
 
-    public MouseMode mode = SPAWN;
-    public int brushSize;
-    public InputManager.BRUSHTYPE brushtype;
-    public int pixelX;
-    public int pixelY;
+    public InputManager inputManager;
 
-    public Cursor(MouseMode mode, int brushSize, int pixelX, int pixelY) {
-        this.mode = mode;
-        this.brushSize = brushSize;
-        this.pixelX = pixelX;
-        this.pixelY = pixelY;
+    public Cursor(InputManager inputManager) {
+        this.inputManager = inputManager;
     }
 
     public void draw(ShapeRenderer sr) {
+        MouseMode mode = inputManager.getMouseMode();
+        Vector3 touchPos = inputManager.getTouchPos();
+        int pixelX = (int) touchPos.x;
+        int pixelY = (int) touchPos.y;
+        int brushSize = inputManager.brushSize;
+        InputManager.BRUSHTYPE brushtype = inputManager.brushType;
         switch(mode) {
             case EXPLOSION:
                 sr.begin();
                 sr.set(ShapeRenderer.ShapeType.Line);
                 sr.setColor(Color.RED);
-                sr.circle(this.pixelX, this.pixelY, this.brushSize - 2);
+                sr.circle(pixelX, pixelY, brushSize - 2);
                 sr.end();
                 break;
             case SPAWN:
@@ -41,7 +40,7 @@ public class Cursor {
                     sr.begin();
                     sr.set(ShapeRenderer.ShapeType.Line);
                     sr.setColor(Color.RED);
-                    sr.circle(this.pixelX, this.pixelY, this.brushSize - 2);
+                    sr.circle(pixelX, pixelY, brushSize - 2);
                     sr.end();
                 } else if (brushtype == InputManager.BRUSHTYPE.SQUARE) {
                     sr.begin();
@@ -49,19 +48,36 @@ public class Cursor {
                     sr.setColor(Color.RED);
                     sr.rect(pixelX - brushSize, pixelY - brushSize, brushSize*2, brushSize*2);
                     sr.end();
+                } else if (brushtype == InputManager.BRUSHTYPE.RECTANGLE) {
+                    if (inputManager.touchedLastFrame) {
+                        int width = (int) Math.abs(inputManager.rectStartPos.x - touchPos.x);
+                        int height = (int) Math.abs(inputManager.rectStartPos.y - touchPos.y);
+                        int xOrigin = (int) Math.min(inputManager.rectStartPos.x, touchPos.x);
+                        int yOrigin = (int) Math.min(inputManager.rectStartPos.y, touchPos.y);
+                        sr.begin();
+                        sr.set(ShapeRenderer.ShapeType.Line);
+                        sr.setColor(Color.RED);
+                        sr.rect(xOrigin, yOrigin,  width, height);
+                        sr.end();
+                    }
                 }
                 break;
-
+            case RECTANGLE:
+                if (inputManager.touchedLastFrame) {
+                    int width = (int) Math.abs(inputManager.rectStartPos.x - touchPos.x);
+                    int height = (int) Math.abs(inputManager.rectStartPos.y - touchPos.y);
+                    int xOrigin = (int) Math.min(inputManager.rectStartPos.x, touchPos.x);
+                    int yOrigin = (int) Math.min(inputManager.rectStartPos.y, touchPos.y);
+                    sr.begin();
+                    sr.set(ShapeRenderer.ShapeType.Line);
+                    sr.setColor(Color.RED);
+                    sr.rect(xOrigin, yOrigin, width, height);
+                    sr.end();
+                }
+                break;
             default:
         }
 
     }
 
-    public void update(MouseMode mode, int brushSize, int pixelX, int pixelY, InputManager.BRUSHTYPE brushtype) {
-        this.mode = mode;
-        this.brushSize = brushSize;
-        this.brushtype = brushtype;
-        this.pixelX = pixelX/CellularAutomaton.pixelSizeModifier * CellularAutomaton.pixelSizeModifier + 1;
-        this.pixelY = pixelY/CellularAutomaton.pixelSizeModifier * CellularAutomaton.pixelSizeModifier + 1;
-    }
 }

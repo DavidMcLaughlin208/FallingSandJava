@@ -4,7 +4,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.input.InputElement;
@@ -41,7 +40,7 @@ public class CreatorInputProcessor implements InputProcessor {
             inputManager.setCurrentlySelectedElement(elementType);
         }
         if (keycode == Input.Keys.SPACE) {
-            inputManager.placeSpout(matrix, camera);
+            inputManager.placeSpout(matrix);
         }
         if (keycode == Input.Keys.C) {
             inputManager.clearMatrix(matrix);
@@ -75,7 +74,7 @@ public class CreatorInputProcessor implements InputProcessor {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         if (button == Input.Buttons.LEFT) {
-            inputManager.spawnElementByInput(matrix, camera);
+            inputManager.spawnElementByInput(matrix);
         } else if (button == Input.Buttons.RIGHT) {
             Vector3 pos = camera.unproject(new Vector3(screenX, screenY, 0));
             inputManager.setDrawMenuAndLocation(pos.x, pos.y);
@@ -87,16 +86,14 @@ public class CreatorInputProcessor implements InputProcessor {
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
         if (button == Input.Buttons.LEFT) {
             inputManager.setTouchedLastFrame(false);
-            if (inputManager.getMouseMode() == RECTANGLE) {
-                inputManager.spawnRect(matrix, camera);
-            }
+            inputManager.touchUpLMB(matrix);
         }
         return false;
     }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        inputManager.spawnElementByInput(matrix, camera);
+        inputManager.spawnElementByInput(matrix);
         return false;
     }
 
