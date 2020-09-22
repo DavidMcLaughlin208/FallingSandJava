@@ -11,6 +11,7 @@ import com.gdx.cellular.elements.liquid.Liquid;
 import com.gdx.cellular.elements.solid.immoveable.ImmovableSolid;
 import com.gdx.cellular.elements.solid.movable.MovableSolid;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,18 +21,21 @@ public class Explosion {
     private final CellularMatrix matrix;
     public int radius;
     public int strength;
-    public int matrixX;
-    public int matrixY;
+    public Element sourceElement;
 
-    public Explosion(CellularMatrix matrix, int radius, int strength, int matrixX, int matrixY) {
+    public Explosion(CellularMatrix matrix, int radius, int strength, Element sourceElement) {
         this.matrix = matrix;
         this.radius = radius;
         this.strength = strength;
-        this.matrixX = matrixX;
-        this.matrixY = matrixY;
+        this.sourceElement = sourceElement;
     }
 
     public List<Explosion> enact() {
+        if (matrix.get(sourceElement.matrixX, sourceElement.matrixY) != sourceElement) {
+            return new ArrayList<>();
+        }
+        int matrixX = sourceElement.matrixX;
+        int matrixY = sourceElement.matrixY;
         Map<String, String> coordinatesCache = new HashMap<>();
         for (int x = radius; x >= radius * -1; x--) {
             for (int y = radius; y >= radius * -1; y--) {

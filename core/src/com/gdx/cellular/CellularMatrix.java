@@ -288,7 +288,7 @@ public class CellularMatrix {
     }
 
     public void addExplosion(int radius, int strength, int matrixX, int matrixY ) {
-        explosionArray.add(new Explosion(this, radius, strength, toMatrix(matrixX), toMatrix(matrixY)));
+        explosionArray.add(new Explosion(this, radius, strength, get(matrixX, matrixY)));
     }
 
     public void executeExplosions() {

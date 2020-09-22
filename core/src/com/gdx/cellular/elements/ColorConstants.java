@@ -1,13 +1,10 @@
 package com.gdx.cellular.elements;
 
-import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.gdx.cellular.util.MaterialMap;
 
-import java.io.File;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -37,6 +34,10 @@ public class ColorConstants {
     private static final Color COAL_3 = new Color(65/255f, 65/255f, 65/255f, 1);
 
     private static final Color EMBER = new Color(102/255f, 59/255f, 0/255f, 1);
+
+    private static final Color GUNPOWDER_1 = new Color(255/255f, 142/255f, 142/255f, 1);
+    private static final Color GUNPOWDER_2 = new Color(255/255f, 91/255f, 91/255f, 1);
+    private static final Color GUNPOWDER_3 = new Color(219/255f, 160/255f, 160/255f, 1);
 
     private static final Color SNOW = new Color(1, 1, 1, 1);
 
@@ -112,6 +113,10 @@ public class ColorConstants {
         elementColorMap.get(ElementType.COAL).add(COAL_1);
         elementColorMap.get(ElementType.COAL).add(COAL_2);
         elementColorMap.get(ElementType.COAL).add(COAL_3);
+
+        elementColorMap.get(ElementType.GUNPOWDER).add(GUNPOWDER_1);
+        elementColorMap.get(ElementType.GUNPOWDER).add(GUNPOWDER_2);
+        elementColorMap.get(ElementType.GUNPOWDER).add(GUNPOWDER_3);
 
         elementColorMap.get(ElementType.PLAYERMEAT).add(PLAYERMEAT);
 

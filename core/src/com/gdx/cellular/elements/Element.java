@@ -46,6 +46,7 @@ public abstract class Element {
     public Vector2 owningBodyCoords = null;
     public int explosionResistance = 1;
     public boolean discolored = false;
+    public int explosionRadius = 0;
 
     public Color color;
 

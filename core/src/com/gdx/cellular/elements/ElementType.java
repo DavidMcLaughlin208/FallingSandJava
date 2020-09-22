@@ -47,6 +47,12 @@ public enum ElementType {
             return new Dirt(x, y, false);
         }
     },
+    GUNPOWDER(Gunpowder.class) {
+        @Override
+        public Element createElementByMatrix(int x, int y) {
+            return new Gunpowder(x, y, false);
+        }
+    },
     WATER(Water.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {

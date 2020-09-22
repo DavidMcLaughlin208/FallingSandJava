@@ -29,6 +29,7 @@ public class ShapeFactory {
     private static ShapeFactory shapeFactory;
     private static final EarClippingTriangulator earClippingTriangulator = new EarClippingTriangulator();
     private static final DelaunayTriangulator delaunayTriangulator = new DelaunayTriangulator();
+    private static final SweepLine sweepLine = new SweepLine();
 
     private ShapeFactory(World world) {
         this.world = world;
@@ -166,9 +167,20 @@ public class ShapeFactory {
         final Geometry simplifiedPolygon = DouglasPeuckerSimplifier.simplify(polygon, .3);
 
         List<org.dyn4j.geometry.Vector2> dyn4jVerts = Arrays.stream(simplifiedPolygon.getCoordinates()).map(vec -> new org.dyn4j.geometry.Vector2(vec.x, vec.y)).collect(Collectors.toList());
+        if (dyn4jVerts.size() < 2) {
+            return null;
+        }
         dyn4jVerts.remove(dyn4jVerts.size() - 1);
-        SweepLine sweepLine = new SweepLine();
-        List<Convex> convexes = sweepLine.decompose(dyn4jVerts.toArray(new org.dyn4j.geometry.Vector2[0]));
+        List<Convex> convexes;
+        if (dyn4jVerts.size() == 3) {
+            Convex convex = new org.dyn4j.geometry.Polygon((org.dyn4j.geometry.Vector2) dyn4jVerts);
+            convexes = new ArrayList<>();
+            convexes.add(convex);
+        } else if (dyn4jVerts.size() > 3) {
+            convexes = sweepLine.decompose(dyn4jVerts.toArray(new org.dyn4j.geometry.Vector2[0]));
+        } else {
+            return null;
+        }
 
         for (Convex convex : convexes) {
             org.dyn4j.geometry.Polygon dynConvexPolygon = (org.dyn4j.geometry.Polygon) convex;

@@ -201,7 +201,7 @@ public class InputManager {
                     if (touchedLastFrame) {
                         return;
                     } else {
-                        matrix.addExplosion(brushSize, 3, (int) touchPos.x, (int) touchPos.y);
+                        matrix.addExplosion(brushSize, 3, matrix.toMatrix(touchPos.x), matrix.toMatrix(touchPos.y));
                     }
                 case HEAT:
                     if (touchedLastFrame) {
