@@ -45,8 +45,10 @@ public abstract class Element {
     public PhysicsElementActor owningBody = null;
     public Vector2 owningBodyCoords = null;
     public int explosionResistance = 1;
-    public boolean discolored = false;
     public int explosionRadius = 0;
+    public boolean discolored = false;
+
+    public boolean isDead = false;
 
     public Color color;
 
@@ -246,6 +248,7 @@ public abstract class Element {
     }
 
     protected void die(CellularMatrix matrix, ElementType type) {
+        this.isDead = true;
         Element newElement = type.createElementByMatrix(matrixX, matrixY);
         matrix.setElementAtIndex(matrixX, matrixY, newElement);
         matrix.reportToChunkActive(matrixX, matrixY);
@@ -434,5 +437,9 @@ public abstract class Element {
             return true;
         }
         return false;
+    }
+
+    public boolean isDead() {
+        return isDead;
     }
 }

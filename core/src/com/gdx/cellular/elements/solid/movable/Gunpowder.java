@@ -5,21 +5,29 @@ import com.gdx.cellular.CellularMatrix;
 
 public class Gunpowder extends MovableSolid {
 
+    private int ignitedCount = 0;
+    private int ignitedThreshold = 5;
+
     public Gunpowder(int x, int y, boolean isPixel) {
         super(x, y, isPixel);
         vel = new Vector3(0f, -124f,0f);
         frictionFactor = .4f;
         inertialResistance = .8f;
         mass = 200;
-        flammabilityResistance = 100;
+        flammabilityResistance = 10;
         resetFlammabilityResistance = 35;
-        explosionRadius = 20;
+        explosionRadius = 15;
+        fireDamage = 3;
     }
 
-    @Override
-    public boolean receiveHeat(CellularMatrix matrix, int heat) {
-        matrix.addExplosion(explosionRadius, 10, this.matrixX, this.matrixY);
-        return true;
+    public void step(CellularMatrix matrix) {
+        super.step(matrix);
+        if (isIgnited) {
+            ignitedCount++;
+        }
+        if (ignitedCount >= ignitedThreshold) {
+            matrix.addExplosion(15, 10, this);
+        }
     }
 
 }

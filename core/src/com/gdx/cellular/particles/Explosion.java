@@ -22,20 +22,39 @@ public class Explosion {
     public int radius;
     public int strength;
     public Element sourceElement;
+    int matrixX;
+    int matrixY;
 
     public Explosion(CellularMatrix matrix, int radius, int strength, Element sourceElement) {
         this.matrix = matrix;
         this.radius = radius;
         this.strength = strength;
         this.sourceElement = sourceElement;
+        this.matrixX = sourceElement.matrixX;
+        this.matrixY = sourceElement.matrixY;
+    }
+
+    public Explosion(CellularMatrix matrix, int radius, int strength, int matrixX, int matrixY) {
+        this.matrix = matrix;
+        this.radius = radius;
+        this.strength = strength;
+        this.matrixX = matrixX;
+        this.matrixY = matrixY;
     }
 
     public List<Explosion> enact() {
-        if (matrix.get(sourceElement.matrixX, sourceElement.matrixY) != sourceElement) {
+        int matrixX;
+        int matrixY;
+        if (sourceElement != null) {
+            matrixX = sourceElement.matrixX;
+            matrixY = sourceElement.matrixY;
+        } else {
+            matrixX = this.matrixX;
+            matrixY = this.matrixY;
+        }
+        if (sourceElement != null && sourceElement.isDead()) {
             return new ArrayList<>();
         }
-        int matrixX = sourceElement.matrixX;
-        int matrixY = sourceElement.matrixY;
         Map<String, String> coordinatesCache = new HashMap<>();
         for (int x = radius; x >= radius * -1; x--) {
             for (int y = radius; y >= radius * -1; y--) {
