@@ -15,7 +15,7 @@ public class Visvalingam {
         List<Vector2> simplifiedOnce = simplify(verts, DEFAULT_THRESHOLD);
 //        return simplifiedOnce;
 //        List<Vector2> simplifiedTwice = simplify(simplifiedOnce, DEFAULT_THRESHOLD);
-        return simplify(simplifiedOnce, DEFAULT_THRESHOLD);
+        return simplify(simplifiedOnce, 1.8f);
 //        return simplify(simplifiedTwice, DEFAULT_THRESHOLD);
     }
 
@@ -32,18 +32,19 @@ public class Visvalingam {
             Vector2 point2 = verts.get(i + 1);
             Vector2 point3 = verts.get(i + 2);
             boolean added = calculateTriangleAreaAndAddPointToVerts(point1, point2, point3, simplifiedVerts, threshold);
-            if (added) {
-                if (skippedCount > 20) {
-                    int index = simplifiedVerts.size() - 1;
-                    if (!(index < 0)) {
-                        simplifiedVerts.add(index, verts.get(i - (skippedCount / 3)));
-                        simplifiedVerts.add(index, verts.get(i - (2*(skippedCount / 3))));
-                    }
-                }
-                skippedCount = 0;
-            } else {
-                skippedCount++;
-            }
+//            if (added) {
+//                skippedCount = 0;
+//            } else {
+//                if (skippedCount > 11) {
+//                    int index = simplifiedVerts.size();
+//                        simplifiedVerts.add(index, verts.get(i - (2*(skippedCount / 3))));
+//                        simplifiedVerts.add(index + 1, verts.get(i - (skippedCount / 3)));
+//                        skippedCount = 0;
+//
+//                } else {
+//                    skippedCount++;
+//                }
+//            }
 
         }
         calculateTriangleAreaAndAddPointToVerts(verts.get(vertsSize - 2), verts.get(vertsSize - 1), verts.get(0), simplifiedVerts, threshold);

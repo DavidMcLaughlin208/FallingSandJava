@@ -49,6 +49,7 @@ project(":desktop") {
         compile "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         compile "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
+        compile "org.locationtech.jts:jts-core:1.17.0"
         compile "org.dyn4j:dyn4j:3.4.0"
         
     }
@@ -80,6 +81,7 @@ project(":core") {
         compile "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         compile "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
         compile "org.dyn4j:dyn4j:3.4.0"
+        compile "org.locationtech.jts:jts-core:1.17.0"
         
     }
 }
