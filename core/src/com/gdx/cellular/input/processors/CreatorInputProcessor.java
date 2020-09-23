@@ -10,8 +10,6 @@ import com.gdx.cellular.input.InputElement;
 import com.gdx.cellular.input.InputManager;
 import com.gdx.cellular.input.InputProcessors;
 
-import static com.gdx.cellular.input.MouseMode.RECTANGLE;
-
 
 public class CreatorInputProcessor implements InputProcessor {
 
@@ -76,6 +74,7 @@ public class CreatorInputProcessor implements InputProcessor {
         if (button == Input.Buttons.LEFT) {
             inputManager.spawnElementByInput(matrix);
         } else if (button == Input.Buttons.RIGHT) {
+            inputManager.setTouchedLastFrame(false);
             Vector3 pos = camera.unproject(new Vector3(screenX, screenY, 0));
             inputManager.setDrawMenuAndLocation(pos.x, pos.y);
         }

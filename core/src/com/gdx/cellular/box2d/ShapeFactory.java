@@ -177,7 +177,11 @@ public class ShapeFactory {
             convexes = new ArrayList<>();
             convexes.add(convex);
         } else if (dyn4jVerts.size() > 3) {
-            convexes = sweepLine.decompose(dyn4jVerts.toArray(new org.dyn4j.geometry.Vector2[0]));
+            try {
+                convexes = sweepLine.decompose(dyn4jVerts.toArray(new org.dyn4j.geometry.Vector2[0]));
+            } catch (Exception e) {
+                return null;
+            }
         } else {
             return null;
         }

@@ -81,6 +81,11 @@ public class Particle extends Element {
         if (vel.y > -64 && vel.y < 32) {
             vel.y = -64;
         }
+        if (vel.y < -500) {
+            vel.y = -500;
+        } else if (vel.y > 500) {
+            vel.y = 500;
+        }
 
         int yModifier = vel.y < 0 ? -1 : 1;
         int xModifier = vel.x < 0 ? -1 : 1;

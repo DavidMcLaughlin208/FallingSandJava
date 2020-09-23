@@ -24,6 +24,7 @@ import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.ui.CreatorMenu;
 import com.gdx.cellular.ui.CursorActor;
 import com.gdx.cellular.ui.ModeActor;
+import com.gdx.cellular.ui.ModeUI;
 import com.gdx.cellular.util.TextInputHandler;
 
 import java.io.File;
@@ -68,7 +69,7 @@ public class InputManager {
     private final CreatorMenu creatorMenu;
     public Stage cursorStage;
     public Cursor cursor;
-    public ModeActor modeActor;
+    public Stage modeStage;
     public Camera camera;
 
     public Vector3 rectStartPos = new Vector3();
@@ -79,7 +80,8 @@ public class InputManager {
         this.cursorStage = new Stage(viewport);
         this.cursor = new Cursor(this);
         this.cursorStage.addActor(new CursorActor(shapeRenderer, this.cursor));
-        this.modeActor = new ModeActor();
+        this.modeStage = new Stage();
+        this.modeStage.addActor(new ModeActor(this, new ModeUI(0, CellularAutomaton.screenHeight - 23, this)));
 //        this.modeStage = new Stage();
 //        this.modeStage.addActor(this.modeActor);
     }
@@ -506,6 +508,7 @@ public class InputManager {
     }
 
     public void drawMenu() {
+        this.modeStage.draw();
         if (drawMenu) {
             this.creatorMenu.dropDownStage.act();
             this.creatorMenu.dropDownStage.draw();

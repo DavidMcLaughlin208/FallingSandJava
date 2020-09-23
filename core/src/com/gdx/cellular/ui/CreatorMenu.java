@@ -50,9 +50,7 @@ public class CreatorMenu {
 
     private void createDropdownStage(Viewport viewport) {
         Stage stage = new Stage(viewport);
-        Skin skin = createSkin("uiskin");
-
-
+        Skin skin = Skins.getSkin("uiskin");
 
         dropDownTopLevelTable = new Table() {
             @Override
@@ -251,14 +249,6 @@ public class CreatorMenu {
             }
         });
         return button;
-    }
-
-    private Skin createSkin(String name) {
-        manager.load(name + ".atlas", TextureAtlas.class);
-        SkinLoader.SkinParameter parameter = new SkinLoader.SkinParameter(name + ".atlas");
-        manager.load(name + ".json", Skin.class, parameter);
-        manager.finishLoading();
-        return manager.get(name + ".json", Skin.class);
     }
 
     private enum SelectedSubList {
