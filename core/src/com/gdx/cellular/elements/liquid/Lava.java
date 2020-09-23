@@ -9,8 +9,8 @@ public class Lava extends Liquid {
 
     int magmatizeDamage;
 
-    public Lava(int x, int y, boolean isPixel) {
-        super(x, y, isPixel);
+    public Lava(int x, int y) {
+        super(x, y);
         vel = new Vector3(0,-124f,0);
         inertialResistance = 0;
         mass = 100;

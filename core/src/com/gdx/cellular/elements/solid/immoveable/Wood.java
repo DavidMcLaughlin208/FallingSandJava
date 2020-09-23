@@ -7,8 +7,8 @@ import com.gdx.cellular.elements.ElementType;
 
 public class Wood extends ImmovableSolid {
 
-    public Wood(int x, int y, boolean isPixel) {
-        super(x, y, isPixel);
+    public Wood(int x, int y) {
+        super(x, y);
         vel = new Vector3(0f, 0f,0f);
         frictionFactor = 0.5f;
         inertialResistance = 1.1f;

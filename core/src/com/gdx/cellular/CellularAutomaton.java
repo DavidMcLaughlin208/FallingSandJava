@@ -178,6 +178,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 	public void resize (int width, int height) {
 		matrixStage.getViewport().update(width, height, true);
 		inputManager.cursorStage.getViewport().update(width, height, true);
+		inputManager.modeStage.getViewport().update(width, height, true);
 	}
 
 	private void incrementFrameCount() {

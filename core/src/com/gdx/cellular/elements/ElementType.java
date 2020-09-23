@@ -20,139 +20,139 @@ public enum ElementType {
     GROUND(Ground.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {
-            return new Ground(x, y, false);
+            return new Ground(x, y);
         }
     },
     STONE(Stone.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {
-            return new Stone(x, y, false);
+            return new Stone(x, y);
         }
     },
     SAND(Sand.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {
-            return new Sand(x, y, false);
+            return new Sand(x, y);
         }
     },
     SNOW(Snow.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {
-            return new Snow(x, y, false);
+            return new Snow(x, y);
         }
     },
     DIRT(Dirt.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {
-            return new Dirt(x, y, false);
+            return new Dirt(x, y);
         }
     },
     GUNPOWDER(Gunpowder.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {
-            return new Gunpowder(x, y, false);
+            return new Gunpowder(x, y);
         }
     },
     WATER(Water.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {
-            return new Water(x, y, false);
+            return new Water(x, y);
         }
     },
     CEMENT(Cement.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {
-            return new Cement(x, y, false);
+            return new Cement(x, y);
         }
     },
     OIL(Oil.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {
-            return new Oil(x, y, false);
+            return new Oil(x, y);
         }
     },
     ACID(Acid.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {
-            return new Acid(x, y, false);
+            return new Acid(x, y);
         }
     },
     WOOD(Wood.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {
-            return new Wood(x, y, false);
+            return new Wood(x, y);
         }
     },
     TITANIUM(Titanium.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {
-            return new Titanium(x, y, false);
+            return new Titanium(x, y);
         }
     },
     SPARK(Spark.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {
-            return new Spark(x, y, false);
+            return new Spark(x, y);
         }
     },
     EXPLOSIONSPARK(ExplosionSpark.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {
-            return new ExplosionSpark(x, y, false);
+            return new ExplosionSpark(x, y);
         }
     },
     EMBER(Ember.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {
-            return new Ember(x, y, false);
+            return new Ember(x, y);
         }
     },
     LAVA(Lava.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {
-            return new Lava(x, y, false);
+            return new Lava(x, y);
         }
     },
     COAL(Coal.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {
-            return new Coal(x, y, false);
+            return new Coal(x, y);
         }
     },
     SMOKE(Smoke.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {
-            return new Smoke(x, y, false);
+            return new Smoke(x, y);
         }
     },
     FLAMMABLEGAS(FlammableGas.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {
-            return new FlammableGas(x, y, false);
+            return new FlammableGas(x, y);
         }
     },
     BLOOD(Blood.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {
-            return new Blood(x, y, false);
+            return new Blood(x, y);
         }
     },
     SLIMEMOLD(SlimeMold.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {
-            return new SlimeMold(x, y, false);
+            return new SlimeMold(x, y);
         }
     },
     STEAM(Steam.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {
-            return new Steam(x, y, false);
+            return new Steam(x, y);
         }
     },
     PLAYERMEAT(PlayerMeat.class) {
         @Override
         public Element createElementByMatrix(int x, int y) {
-            return new PlayerMeat(x, y, false);
+            return new PlayerMeat(x, y);
         }
     },
     PARTICLE(Particle.class) {
@@ -172,7 +172,7 @@ public enum ElementType {
 
     public static Element createParticleByMatrix(CellularMatrix matrix, int x, int y, Vector3 vector3, ElementType elementType, Color color, boolean isIgnited) {
         if (matrix.isWithinBounds(x, y)) {
-            Element newElement = new Particle(x, y, false, vector3, elementType, color, isIgnited);
+            Element newElement = new Particle(x, y, vector3, elementType, color, isIgnited);
             matrix.setElementAtIndex(x, y, newElement);
             return newElement;
         }
@@ -181,7 +181,7 @@ public enum ElementType {
 
     public static Element createParticleByMatrix(CellularMatrix matrix, int x, int y, Vector3 vector3, Element sourceElement) {
         if (matrix.isWithinBounds(x, y)) {
-            Element newElement = new Particle(x, y, false, vector3, sourceElement);
+            Element newElement = new Particle(x, y, vector3, sourceElement);
             matrix.setElementAtIndex(x, y, newElement);
             return newElement;
         }

@@ -17,8 +17,8 @@ public class Particle extends Element {
 
     public ElementType containedElementType;
 
-    public Particle(int x, int y, boolean isPixel, Vector3 vel, ElementType elementType, Color color, boolean isIgnited) {
-        super(x, y, isPixel);
+    public Particle(int x, int y, Vector3 vel, ElementType elementType, Color color, boolean isIgnited) {
+        super(x, y);
         if (ElementType.PARTICLE.equals(elementType)) {
             throw new IllegalStateException("Containing element cannot be particle");
         }
@@ -34,8 +34,8 @@ public class Particle extends Element {
         }
     }
 
-    public Particle(int x, int y, boolean isPixel, Vector3 vel, Element sourceElement) {
-        super(x, y, isPixel);
+    public Particle(int x, int y, Vector3 vel, Element sourceElement) {
+        super(x, y);
         if (ElementType.PARTICLE.equals(sourceElement.elementType)) {
             throw new IllegalStateException("Containing element cannot be particle");
         }

@@ -7,8 +7,8 @@ import com.gdx.cellular.elements.Element;
 
 public class Blood extends Liquid {
 
-    public Blood(int x, int y, boolean isPixel) {
-        super(x, y, isPixel);
+    public Blood(int x, int y) {
+        super(x, y);
         vel = new Vector3(0,-124f,0);
         inertialResistance = 0;
         mass = 100;

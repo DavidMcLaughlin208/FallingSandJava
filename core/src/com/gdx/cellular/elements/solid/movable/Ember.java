@@ -5,8 +5,8 @@ import com.gdx.cellular.CellularMatrix;
 
 public class Ember extends MovableSolid {
 
-    public Ember(int x, int y, boolean isPixel) {
-        super(x, y, isPixel);
+    public Ember(int x, int y) {
+        super(x, y);
         vel = new Vector3(0f, -124f,0f);
         frictionFactor = .9f;
         inertialResistance = .99f;

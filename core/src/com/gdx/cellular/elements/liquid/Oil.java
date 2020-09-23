@@ -5,8 +5,8 @@ import com.badlogic.gdx.math.Vector3;
 
 public class Oil extends Liquid {
 
-    public Oil(int x, int y, boolean isPixel) {
-        super(x, y, isPixel);
+    public Oil(int x, int y) {
+        super(x, y);
         vel = new Vector3(0,-124f,0);
         inertialResistance = 0;
         mass = 75;

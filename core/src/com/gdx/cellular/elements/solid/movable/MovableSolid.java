@@ -14,8 +14,8 @@ import com.gdx.cellular.particles.Particle;
 
 public abstract class MovableSolid extends Solid {
 
-    public MovableSolid(int x, int y, boolean isPixel) {
-        super(x, y, isPixel);
+    public MovableSolid(int x, int y) {
+        super(x, y);
         stoppedMovingThreshold = 5;
     }
 
@@ -34,8 +34,30 @@ public abstract class MovableSolid extends Solid {
 
         int yModifier = vel.y < 0 ? -1 : 1;
         int xModifier = vel.x < 0 ? -1 : 1;
-        int velYDeltaTime = (int) (Math.abs(vel.y) * Gdx.graphics.getDeltaTime());
-        int velXDeltaTime = (int) (Math.abs(vel.x) * Gdx.graphics.getDeltaTime());
+        float velYDeltaTimeFloat = (Math.abs(vel.y) * 1/60);
+        float velXDeltaTimeFloat = (Math.abs(vel.x) * 1/60);
+        int velXDeltaTime;
+        int velYDeltaTime;
+        if (velXDeltaTimeFloat < 1) {
+            xThreshold += velXDeltaTimeFloat;
+            velXDeltaTime = (int) xThreshold;
+            if (Math.abs(velXDeltaTime) > 0) {
+                xThreshold = 0;
+            }
+        } else {
+            xThreshold = 0;
+            velXDeltaTime = (int) velXDeltaTimeFloat;
+        }
+        if (velYDeltaTimeFloat < 1) {
+            yThreshold += velYDeltaTimeFloat;
+            velYDeltaTime = (int) yThreshold;
+            if (Math.abs(velYDeltaTime) > 0) {
+                yThreshold = 0;
+            }
+        } else {
+            yThreshold = 0;
+            velYDeltaTime = (int) velYDeltaTimeFloat;
+        }
 
         boolean xDiffIsLarger = Math.abs(velXDeltaTime) > Math.abs(velYDeltaTime);
 

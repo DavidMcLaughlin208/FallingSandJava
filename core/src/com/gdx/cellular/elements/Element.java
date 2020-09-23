@@ -48,22 +48,19 @@ public abstract class Element {
     public int explosionRadius = 0;
     public boolean discolored = false;
 
+    public float xThreshold = 0;
+    public float yThreshold = 0;
+
     public boolean isDead = false;
 
     public Color color;
 
     public BitSet stepped = new BitSet(1);
 
-    public Element(int x, int y, boolean isPixel) {
+    public Element(int x, int y) {
         this.elementType = getEnumType();
-        if (isPixel) {
-            setCoordinatesByPixel(x, y);
-            this.color = ColorConstants.getColorForElementType(this.elementType,
-                    x/CellularAutomaton.pixelSizeModifier, y/CellularAutomaton.pixelSizeModifier);
-        } else {
-            setCoordinatesByMatrix(x, y);
-            this.color = ColorConstants.getColorForElementType(this.elementType, x, y);
-        }
+        setCoordinatesByMatrix(x, y);
+        this.color = ColorConstants.getColorForElementType(this.elementType, x, y);
         stepped.set(0, CellularAutomaton.stepped.get(0));
     }
 
@@ -141,21 +138,6 @@ public abstract class Element {
 
     public void resetSecondaryCoordinates() {
         this.secondaryMatrixCoords = new ArrayList<>();
-    }
-
-    public void setCoordinatesByPixel(int providedX, int providedY) {
-        setXByPixel(providedX);
-        setYByPixel(providedY);
-    }
-
-    public void setXByPixel(int providedVal) {
-        this.pixelX = providedVal;
-        this.matrixX = toMatrix(providedVal);
-    }
-
-    public void setYByPixel(int providedVal) {
-        this.pixelY = providedVal;
-        this.matrixY = toMatrix(providedVal);
     }
 
     public void setXByMatrix(int providedVal) {

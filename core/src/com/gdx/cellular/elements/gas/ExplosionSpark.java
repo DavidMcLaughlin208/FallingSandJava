@@ -10,8 +10,8 @@ import com.gdx.cellular.elements.solid.Solid;
 
 public class ExplosionSpark extends Gas {
 
-    public ExplosionSpark(int x, int y, boolean isPixel) {
-        super(x, y, isPixel);
+    public ExplosionSpark(int x, int y) {
+        super(x, y);
         vel = new Vector3(0,64f,0);
         inertialResistance = 0;
         mass = 10;

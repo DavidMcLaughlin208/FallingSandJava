@@ -5,8 +5,8 @@ import com.gdx.cellular.CellularMatrix;
 
 public class Stone extends ImmovableSolid {
 
-    public Stone(int x, int y, boolean isPixel) {
-        super(x, y, isPixel);
+    public Stone(int x, int y) {
+        super(x, y);
         vel = new Vector3(0f, 0f,0f);
         frictionFactor = 0.5f;
         inertialResistance = 1.1f;

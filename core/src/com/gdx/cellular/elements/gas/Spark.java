@@ -9,8 +9,8 @@ import com.gdx.cellular.elements.liquid.Liquid;
 
 public class Spark extends Gas {
 
-    public Spark(int x, int y, boolean isPixel) {
-        super(x, y, isPixel);
+    public Spark(int x, int y) {
+        super(x, y);
         vel = new Vector3(0,124f,0);
         inertialResistance = 0;
         mass = 10;

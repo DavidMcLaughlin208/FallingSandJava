@@ -5,8 +5,8 @@ import com.badlogic.gdx.math.Vector3;
 
 public class FlammableGas extends Gas {
 
-    public FlammableGas(int x, int y, boolean isPixel) {
-        super(x, y, isPixel);
+    public FlammableGas(int x, int y) {
+        super(x, y);
         health = 100;
         vel = new Vector3(0,124f,0);
         inertialResistance = 0;

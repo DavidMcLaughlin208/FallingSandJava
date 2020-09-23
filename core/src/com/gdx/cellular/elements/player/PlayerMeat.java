@@ -7,8 +7,8 @@ import com.gdx.cellular.elements.solid.immoveable.ImmovableSolid;
 
 public class PlayerMeat extends ImmovableSolid {
 
-    public PlayerMeat(int x, int y, boolean isPixel) {
-        super(x, y, isPixel);
+    public PlayerMeat(int x, int y) {
+        super(x, y);
         mass = 200;
         flammabilityResistance = 100;
         resetFlammabilityResistance = 100;

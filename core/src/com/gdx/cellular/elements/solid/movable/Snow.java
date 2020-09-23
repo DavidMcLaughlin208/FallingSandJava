@@ -6,8 +6,8 @@ import com.gdx.cellular.elements.ElementType;
 
 public class Snow extends MovableSolid {
 
-    public Snow(int x, int y, boolean isPixel) {
-        super(x, y, isPixel);
+    public Snow(int x, int y) {
+        super(x, y);
         vel = new Vector3(0f, -62f,0f);
         frictionFactor = .4f;
         inertialResistance = .8f;

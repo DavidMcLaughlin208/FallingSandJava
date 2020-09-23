@@ -5,8 +5,8 @@ import com.gdx.cellular.CellularMatrix;
 
 public class Titanium extends ImmovableSolid {
 
-    public Titanium(int x, int y, boolean isPixel) {
-        super(x, y, isPixel);
+    public Titanium(int x, int y) {
+        super(x, y);
         vel = new Vector3(0f, 0f,0f);
         frictionFactor = 0.5f;
         inertialResistance = 1.1f;

@@ -24,7 +24,6 @@ import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.ui.CreatorMenu;
 import com.gdx.cellular.ui.CursorActor;
 import com.gdx.cellular.ui.ModeActor;
-import com.gdx.cellular.ui.ModeUI;
 import com.gdx.cellular.util.TextInputHandler;
 
 import java.io.File;
@@ -81,9 +80,7 @@ public class InputManager {
         this.cursor = new Cursor(this);
         this.cursorStage.addActor(new CursorActor(shapeRenderer, this.cursor));
         this.modeStage = new Stage();
-        this.modeStage.addActor(new ModeActor(this, new ModeUI(0, CellularAutomaton.screenHeight - 23, this)));
-//        this.modeStage = new Stage();
-//        this.modeStage.addActor(this.modeActor);
+        this.modeStage.addActor(new ModeActor(this,0, CellularAutomaton.screenHeight - 23));
     }
 
     public void setCurrentlySelectedElement(ElementType elementType) {

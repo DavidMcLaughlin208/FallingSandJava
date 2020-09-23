@@ -8,8 +8,8 @@ public class Gunpowder extends MovableSolid {
     private int ignitedCount = 0;
     private int ignitedThreshold = 5;
 
-    public Gunpowder(int x, int y, boolean isPixel) {
-        super(x, y, isPixel);
+    public Gunpowder(int x, int y) {
+        super(x, y);
         vel = new Vector3(0f, -124f,0f);
         frictionFactor = .4f;
         inertialResistance = .8f;
