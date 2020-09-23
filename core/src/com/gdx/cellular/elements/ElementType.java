@@ -178,4 +178,13 @@ public enum ElementType {
         }
         return null;
     }
+
+    public static Element createParticleByMatrix(CellularMatrix matrix, int x, int y, Vector3 vector3, Element sourceElement) {
+        if (matrix.isWithinBounds(x, y)) {
+            Element newElement = new Particle(x, y, false, vector3, sourceElement);
+            matrix.setElementAtIndex(x, y, newElement);
+            return newElement;
+        }
+        return null;
+    }
 }

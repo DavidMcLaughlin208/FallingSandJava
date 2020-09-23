@@ -71,7 +71,7 @@ public class CreatorInputProcessor implements InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        if (button == Input.Buttons.LEFT) {
+        if (button == Input.Buttons.LEFT && !inputManager.drawMenu) {
             inputManager.spawnElementByInput(matrix);
         } else if (button == Input.Buttons.RIGHT) {
             inputManager.setTouchedLastFrame(false);

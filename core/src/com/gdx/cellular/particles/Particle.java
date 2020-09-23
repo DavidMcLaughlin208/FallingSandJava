@@ -34,6 +34,23 @@ public class Particle extends Element {
         }
     }
 
+    public Particle(int x, int y, boolean isPixel, Vector3 vel, Element sourceElement) {
+        super(x, y, isPixel);
+        if (ElementType.PARTICLE.equals(sourceElement.elementType)) {
+            throw new IllegalStateException("Containing element cannot be particle");
+        }
+        this.containedElementType = sourceElement.elementType;
+        this.vel = new Vector3();
+        Vector3 localVel = vel == null ? new Vector3(0, -124, 0) : vel;
+        this.vel.x = localVel.x;
+        this.vel.y = localVel.y;
+        this.color = sourceElement.color;
+        this.isIgnited = sourceElement.isIgnited;
+        if (isIgnited) {
+            this.flammabilityResistance = 0;
+        }
+    }
+
     @Override
     public boolean receiveHeat(CellularMatrix matrix, int heat) {
         return false;

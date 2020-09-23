@@ -172,7 +172,7 @@ public class Explosion {
                 Vector2 center = new Vector2(matrixX, matrixY);
                 Vector2 newPoint = new Vector2(currentX, currentY);
                 newPoint.sub(center).nor();
-                matrix.particalizeByMatrix(currentX, currentY, new Vector3(newPoint.x * radius * 5, newPoint.y  * radius * 5, 0));
+//                matrix.particalizeByMatrix(currentX, currentY, new Vector3(newPoint.x * radius * 5, newPoint.y  * radius * 5, 0));
                 if (Math.random() > .8) {
                     break;
                 }

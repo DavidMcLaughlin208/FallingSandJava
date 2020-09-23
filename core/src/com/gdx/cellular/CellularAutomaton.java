@@ -19,6 +19,7 @@ import com.gdx.cellular.input.InputProcessors;
 import com.gdx.cellular.ui.MatrixActor;
 import com.gdx.cellular.util.ElementColumnStepper;
 import com.gdx.cellular.util.GameManager;
+import com.gdx.cellular.util.WeatherSystem;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -51,6 +52,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 	public InputProcessors inputProcessors;
 	public Stage matrixStage;
 	public GameManager gameManager;
+	public WeatherSystem weatherSystem;
 
 	@Override
 	public void create () {
@@ -86,6 +88,8 @@ public class CellularAutomaton extends ApplicationAdapter {
 
 		this.gameManager = new GameManager(this);
 		this.gameManager.createPlayer(matrix.innerArraySize/2, matrix.outerArraySize/2);
+
+		this.weatherSystem = new WeatherSystem(ElementType.WATER, 2, matrix);
 	}
 
 	@Override
@@ -166,6 +170,8 @@ public class CellularAutomaton extends ApplicationAdapter {
 
 		inputManager.drawMenu();
 		inputManager.drawCursor();
+
+		this.weatherSystem.enact();
 	}
 
 	@Override
