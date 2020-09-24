@@ -28,8 +28,8 @@ public class SlimeMold extends ImmovableSolid {
 
     private boolean infectNeighbors(CellularMatrix matrix) {
         if (!isEffectsFrame() || isIgnited) return false;
-        for (int x = matrixX - 1; x <= matrixX + 1; x++) {
-            for (int y = matrixY - 1; y <= matrixY + 1; y++) {
+        for (int x = getMatrixX() - 1; x <= getMatrixX() + 1; x++) {
+            for (int y = getMatrixY() - 1; y <= getMatrixY() + 1; y++) {
                 if (!(x == 0 && y == 0)) {
                     Element neighbor = matrix.get(x, y);
                     if (neighbor != null) {
@@ -55,7 +55,7 @@ public class SlimeMold extends ImmovableSolid {
         if (isIgnited) {
             color = EffectColors.getRandomFireColor();
         } else {
-            color = ColorConstants.getColorForElementType(ElementType.SLIMEMOLD, this.matrixX, this.matrixY);
+            color = ColorConstants.getColorForElementType(ElementType.SLIMEMOLD, this.getMatrixX(), this.getMatrixY());
         }
     }
 

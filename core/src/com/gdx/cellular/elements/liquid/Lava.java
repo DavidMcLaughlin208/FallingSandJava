@@ -34,7 +34,7 @@ public class Lava extends Liquid {
             for (int x = -1; x <= 1; x++) {
                 for (int y = -1; y <= 1; y++) {
                     if (x == 0 && y == 0) continue;
-                    Element element = matrix.get(this.matrixX + x, this.matrixY + y);
+                    Element element = matrix.get(this.getMatrixX() + x, this.getMatrixY() + y);
                     if (element instanceof Liquid) {
                         element.dieAndReplace(matrix, ElementType.STONE);
                     }

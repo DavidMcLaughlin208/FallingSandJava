@@ -9,16 +9,14 @@ public class WeatherSystem {
 
     public ElementType elementType;
     public int weight;
-    public CellularMatrix matrix;
     boolean disabled = true;
 
-    public WeatherSystem(ElementType elementType, int weight, CellularMatrix matrix) {
+    public WeatherSystem(ElementType elementType, int weight) {
         this.elementType = elementType;
         this.weight = weight;
-        this.matrix = matrix;
     }
 
-    public void enact() {
+    public void enact(CellularMatrix matrix) {
         if (disabled) {
             return;
         }
@@ -32,5 +30,31 @@ public class WeatherSystem {
         }
     }
 
+    public void setElementType(ElementType elementType) {
+        this.elementType = elementType;
+    }
 
+    public void setWeight(int weight) {
+        if (weight < 0) {
+            this.weight = 0;
+            return;
+        } else if (weight > 20) {
+            this.weight = 20;
+            return;
+        }
+        this.weight = weight;
+    }
+
+    public void enable() {
+        this.disabled = false;
+    }
+
+    public void disable() {
+        this.disabled = true;
+    }
+
+
+    public void toggle() {
+        this.disabled = !this.disabled;
+    }
 }

@@ -1,6 +1,5 @@
 package com.gdx.cellular.player;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.gdx.cellular.CellularAutomaton;
@@ -8,8 +7,6 @@ import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.util.MaterialMap;
-
-import java.io.File;
 
 public class Player {
 
@@ -48,6 +45,6 @@ public class Player {
 
 
     public void delete(CellularMatrix matrix) {
-        bodyMeat.forEach(arr -> arr.forEach(meat -> matrix.setElementAtIndex(meat.matrixX, meat.matrixY, ElementType.EMPTYCELL.createElementByMatrix(meat.matrixX, meat.matrixY))));
+        bodyMeat.forEach(arr -> arr.forEach(meat -> matrix.setElementAtIndex(meat.getMatrixX(), meat.getMatrixY(), ElementType.EMPTYCELL.createElementByMatrix(meat.getMatrixX(), meat.getMatrixY()))));
     }
 }

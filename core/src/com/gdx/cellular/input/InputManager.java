@@ -25,6 +25,7 @@ import com.gdx.cellular.ui.CreatorMenu;
 import com.gdx.cellular.ui.CursorActor;
 import com.gdx.cellular.ui.ModeActor;
 import com.gdx.cellular.util.TextInputHandler;
+import com.gdx.cellular.util.WeatherSystem;
 
 import java.io.File;
 import java.io.IOException;
@@ -70,6 +71,8 @@ public class InputManager {
     public Cursor cursor;
     public Stage modeStage;
     public Camera camera;
+    public WeatherSystem weatherSystem;
+
 
     public Vector3 rectStartPos = new Vector3();
 
@@ -81,6 +84,7 @@ public class InputManager {
         this.cursorStage.addActor(new CursorActor(shapeRenderer, this.cursor));
         this.modeStage = new Stage();
         this.modeStage.addActor(new ModeActor(this,0, CellularAutomaton.screenHeight - 23));
+        this.weatherSystem = new WeatherSystem(ElementType.GUNPOWDER, 2);
     }
 
     public void setCurrentlySelectedElement(ElementType elementType) {
@@ -529,6 +533,10 @@ public class InputManager {
         if (drawCursor) {
             cursorStage.draw();
         }
+    }
+
+    public void setCurrentElementOnWeather() {
+        this.weatherSystem.setElementType(this.currentlySelectedElement);
     }
 
     public void setMouseMode(MouseMode mode) {

@@ -534,11 +534,13 @@ public class CellularMatrix {
                     int distance = distanceBetweenTwoPoints(matrixX, x, matrixY, y);
                     if (distance < halfBrush) {
                         Element element = get(x, y);
-                        if (element != null) element.receiveHeat(this, 5);
+                        if (element != null) element.receiveHeat(this, 500);
+                        reportToChunkActive(x, y);
                     }
                 } else {
                     Element element = get(x, y);
-                    if (element != null) element.receiveHeat(this, 5);
+                    if (element != null) element.receiveHeat(this, 500);
+                    reportToChunkActive(x, y);
                 }
             }
         }
@@ -626,7 +628,7 @@ public class CellularMatrix {
     }
 
     public void reportToChunkActive(Element element) {
-        reportToChunkActive(element.matrixX, element.matrixY);
+        reportToChunkActive(element.getMatrixX(), element.getMatrixY());
     }
 
     public void reportToChunkActive(int x, int y) {
@@ -656,7 +658,7 @@ public class CellularMatrix {
     }
 
     public Chunk getChunkForElement(Element element) {
-        return getChunkForCoordinates(element.matrixX, element.matrixY);
+        return getChunkForCoordinates(element.getMatrixX(), element.getMatrixY());
     }
 
     public Chunk getChunkForCoordinates(int x, int y) {

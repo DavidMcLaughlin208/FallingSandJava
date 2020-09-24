@@ -78,14 +78,14 @@ public class PhysicsElementActor {
                             continue;
                         }
                         if (elementAtNewPos == null) {
-                            matrix.setElementAtIndex(element.matrixX, element.matrixY, ElementType.EMPTYCELL.createElementByMatrix(element.matrixX, element.matrixY));
+                            matrix.setElementAtIndex(element.getMatrixX(), element.getMatrixY(), ElementType.EMPTYCELL.createElementByMatrix(element.getMatrixX(), element.getMatrixY()));
                             continue;
                         }
                         if (elementAtNewPos.owningBody != null) {
                             elementAtNewPos.owningBody.shouldCalculateCount = 2;
                         }
                         if (elementAtNewPos instanceof EmptyCell || elementAtNewPos.owningBody == this) {
-                            matrix.setElementAtIndex(element.matrixX, element.matrixY, ElementType.EMPTYCELL.createElementByMatrix(element.matrixX, element.matrixY));
+                            matrix.setElementAtIndex(element.getMatrixX(), element.getMatrixY(), ElementType.EMPTYCELL.createElementByMatrix(element.getMatrixX(), element.getMatrixY()));
                             if (matrix.isWithinBounds(matrixCoords)) {
                                 matrix.setElementAtIndex((int) matrixCoords.x, (int) matrixCoords.y, element);
                             }
@@ -97,7 +97,7 @@ public class PhysicsElementActor {
                                 matrix.setElementAtIndex((int) matrixCoords.x, (int) matrixCoords.y, element);
                             }
                         } else {
-                            matrix.setElementAtIndex(element.matrixX, element.matrixY, ElementType.EMPTYCELL.createElementByMatrix(element.matrixX, element.matrixY));
+                            matrix.setElementAtIndex(element.getMatrixX(), element.getMatrixY(), ElementType.EMPTYCELL.createElementByMatrix(element.getMatrixX(), element.getMatrixY()));
                         }
                     }
                 }
@@ -139,7 +139,7 @@ public class PhysicsElementActor {
                 Element element = row.get(x);
                 if (element != null) {
                     sr.setColor(element.color);
-                    sr.rect(element.toPixel(element.matrixX), element.toPixel(element.matrixY), CellularAutomaton.pixelSizeModifier, CellularAutomaton.pixelSizeModifier);
+                    sr.rect(element.toPixel(element.getMatrixX()), element.toPixel(element.getMatrixY()), CellularAutomaton.pixelSizeModifier, CellularAutomaton.pixelSizeModifier);
                     element.secondaryMatrixCoords.forEach(vector2 -> sr.rect(element.toPixel((int) vector2.x), element.toPixel((int) vector2.y), CellularAutomaton.pixelSizeModifier, CellularAutomaton.pixelSizeModifier));
                 }
             }

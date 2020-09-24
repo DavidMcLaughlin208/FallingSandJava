@@ -19,8 +19,8 @@ public abstract class Element {
     public int pixelX;
     public int pixelY;
 
-    public int matrixX;
-    public int matrixY;
+    private int matrixX;
+    private int matrixY;
     public Vector3 vel;
 
     public List<Vector2> secondaryMatrixCoords = new ArrayList<>();
@@ -58,8 +58,8 @@ public abstract class Element {
     public BitSet stepped = new BitSet(1);
 
     public Element(int x, int y) {
-        this.elementType = getEnumType();
         setCoordinatesByMatrix(x, y);
+        this.elementType = getEnumType();
         this.color = ColorConstants.getColorForElementType(this.elementType, x, y);
         stepped.set(0, CellularAutomaton.stepped.get(0));
     }
@@ -81,16 +81,16 @@ public abstract class Element {
     protected abstract boolean actOnNeighboringElement(Element neighbor, int modifiedMatrixX, int modifiedMatrixY, CellularMatrix matrix, boolean isFinal, boolean isFirst, Vector3 lastValidLocation, int depth);
 
     public void swapPositions(CellularMatrix matrix, Element toSwap) {
-        swapPositions(matrix, toSwap, toSwap.matrixX, toSwap.matrixY);
+        swapPositions(matrix, toSwap, toSwap.getMatrixX(), toSwap.getMatrixY());
     }
 
     public void swapPositions(CellularMatrix matrix, Element toSwap, int toSwapX, int toSwapY) {
-        matrix.setElementAtIndex(this.matrixX, this.matrixY, toSwap);
+        matrix.setElementAtIndex(this.getMatrixX(), this.getMatrixY(), toSwap);
         matrix.setElementAtIndex(toSwapX, toSwapY, this);
     }
 
     public void moveToLastValid(CellularMatrix matrix, Vector3 moveToLocation) {
-        if ((int) (moveToLocation.x) == matrixX && (int) (moveToLocation.y) == matrixY) return;
+        if ((int) (moveToLocation.x) == getMatrixX() && (int) (moveToLocation.y) == getMatrixY()) return;
         Element toSwap = matrix.get(moveToLocation.x, moveToLocation.y);
         swapPositions(matrix, toSwap, (int) moveToLocation.x, (int) moveToLocation.y);
     }
@@ -109,7 +109,7 @@ public abstract class Element {
         int moveToLocationMatrixY = (int) moveToLocation.y;
         Element thirdNeighbor = matrix.get(moveToLocationMatrixX, moveToLocationMatrixY);
 
-        matrix.setElementAtIndex(this.matrixX, this.matrixY, thirdNeighbor);
+        matrix.setElementAtIndex(this.getMatrixX(), this.getMatrixY(), thirdNeighbor);
         matrix.setElementAtIndex(toSwapX, toSwapY, this);
         matrix.setElementAtIndex(moveToLocationMatrixX, moveToLocationMatrixY, toSwap);
     }
@@ -141,12 +141,12 @@ public abstract class Element {
     }
 
     public void setXByMatrix(int providedVal) {
-        this.matrixX = providedVal;
+        this.setMatrixX(providedVal);
         this.pixelX = toPixel(providedVal);
     }
 
     public void setYByMatrix(int providedVal) {
-        this.matrixY = providedVal;
+        this.setMatrixY(providedVal);
         this.pixelY = toPixel(providedVal);
     }
 
@@ -174,8 +174,8 @@ public abstract class Element {
 
     public boolean applyHeatToNeighborsIfIgnited(CellularMatrix matrix) {
         if (!isEffectsFrame() || !shouldApplyHeat()) return false;
-        for (int x = matrixX - 1; x <= matrixX + 1; x++) {
-            for (int y = matrixY - 1; y <= matrixY + 1; y++) {
+        for (int x = getMatrixX() - 1; x <= getMatrixX() + 1; x++) {
+            for (int y = getMatrixY() - 1; y <= getMatrixY() + 1; y++) {
                 if (!(x == 0 && y == 0)) {
                     Element neighbor = matrix.get(x, y);
                     if (neighbor != null) {
@@ -215,7 +215,7 @@ public abstract class Element {
             modifyColor();
         } else {
             this.isIgnited = false;
-            this.color = ColorConstants.getColorForElementType(elementType, this.matrixX, this.matrixY);
+            this.color = ColorConstants.getColorForElementType(elementType, this.getMatrixX(), this.getMatrixY());
         }
     }
 
@@ -231,9 +231,9 @@ public abstract class Element {
 
     protected void die(CellularMatrix matrix, ElementType type) {
         this.isDead = true;
-        Element newElement = type.createElementByMatrix(matrixX, matrixY);
-        matrix.setElementAtIndex(matrixX, matrixY, newElement);
-        matrix.reportToChunkActive(matrixX, matrixY);
+        Element newElement = type.createElementByMatrix(getMatrixX(), getMatrixY());
+        matrix.setElementAtIndex(getMatrixX(), getMatrixY(), newElement);
+        matrix.reportToChunkActive(getMatrixX(), getMatrixY());
         if (owningBody != null) {
             owningBody.elementDeath(this, newElement);
             secondaryMatrixCoords.forEach(vector2 -> matrix.setElementAtIndex((int) vector2.x, (int) vector2.y, ElementType.EMPTYCELL.createElementByMatrix(0, 0)));
@@ -245,12 +245,12 @@ public abstract class Element {
     }
 
     public void dieAndReplaceWithParticle(CellularMatrix matrix, Vector3 velocity) {
-        matrix.setElementAtIndex(matrixX, matrixY, ElementType.createParticleByMatrix(matrix, matrixX, matrixY, velocity, elementType, this.color, this.isIgnited));
-        matrix.reportToChunkActive(matrixX, matrixY);
+        matrix.setElementAtIndex(getMatrixX(), getMatrixY(), ElementType.createParticleByMatrix(matrix, getMatrixX(), getMatrixY(), velocity, elementType, this.color, this.isIgnited));
+        matrix.reportToChunkActive(getMatrixX(), getMatrixY());
     }
 
     public boolean didNotMove(Vector3 formerLocation) {
-        return formerLocation.x == matrixX && formerLocation.y == matrixY;
+        return formerLocation.x == getMatrixX() && formerLocation.y == getMatrixY();
     }
 
     public boolean hasNotMovedBeyondThreshold() {
@@ -331,7 +331,7 @@ public abstract class Element {
         if (!discolored || Math.random() > 0.2f) {
             return false;
         }
-        this.color = ColorConstants.getColorForElementType(this.elementType, this.matrixX, this.matrixY);
+        this.color = ColorConstants.getColorForElementType(this.elementType, this.getMatrixX(), this.getMatrixY());
         this.discolored = false;
         return true;
     }
@@ -361,13 +361,13 @@ public abstract class Element {
     }
 
     private boolean isSurrounded(CellularMatrix matrix) {
-        if (matrix.get(this.matrixX, this.matrixY + 1) instanceof EmptyCell) {
+        if (matrix.get(this.getMatrixX(), this.getMatrixY() + 1) instanceof EmptyCell) {
             return false;
-        } else if (matrix.get(this.matrixX + 1, this.matrixY) instanceof EmptyCell) {
+        } else if (matrix.get(this.getMatrixX() + 1, this.getMatrixY()) instanceof EmptyCell) {
             return false;
-        } else if (matrix.get(this.matrixX - 1, this.matrixY) instanceof EmptyCell) {
+        } else if (matrix.get(this.getMatrixX() - 1, this.getMatrixY()) instanceof EmptyCell) {
             return false;
-        } else if (matrix.get(this.matrixX, this.matrixY - 1) instanceof EmptyCell) {
+        } else if (matrix.get(this.getMatrixX(), this.getMatrixY() - 1) instanceof EmptyCell) {
             return false;
         }
         return true;
@@ -375,12 +375,12 @@ public abstract class Element {
 
     public void spawnSparkIfIgnited(CellularMatrix matrix) {
         if (!isEffectsFrame() || !isIgnited) return;
-        Element upNeighbor = matrix.get(matrixX, + matrixY + 1);
+        Element upNeighbor = matrix.get(getMatrixX(), +getMatrixY() + 1);
         if (upNeighbor != null) {
             if (upNeighbor instanceof EmptyCell) {
                 ElementType elementToSpawn = Math.random() > .1 ? ElementType.SPARK : ElementType.SMOKE;
 //                ElementType elementToSpawn = ElementType.SPARK;
-                matrix.spawnElementByMatrix(matrixX, matrixY + 1, elementToSpawn);
+                matrix.spawnElementByMatrix(getMatrixX(), getMatrixY() + 1, elementToSpawn);
             }
         }
     }
@@ -423,5 +423,21 @@ public abstract class Element {
 
     public boolean isDead() {
         return isDead;
+    }
+
+    public int getMatrixY() {
+        return matrixY;
+    }
+
+    public void setMatrixY(int matrixY) {
+        this.matrixY = matrixY;
+    }
+
+    public int getMatrixX() {
+        return matrixX;
+    }
+
+    public void setMatrixX(int matrixX) {
+        this.matrixX = matrixX;
     }
 }

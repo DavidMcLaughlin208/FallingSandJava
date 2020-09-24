@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularAutomaton;
 import com.gdx.cellular.CellularMatrix;
-import com.gdx.cellular.elements.ColorConstants;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.elements.EmptyCell;
@@ -62,27 +61,27 @@ public class Particle extends Element {
     }
 
     private void particleDeathAndSpawn(CellularMatrix matrix) {
-        Element currentLocation = matrix.get(this.matrixX, this.matrixY);
+        Element currentLocation = matrix.get(this.getMatrixX(), this.getMatrixY());
         if (currentLocation == this || currentLocation instanceof EmptyCell) {
             die(matrix);
-            Element newElement = containedElementType.createElementByMatrix(matrixX, matrixY);
+            Element newElement = containedElementType.createElementByMatrix(getMatrixX(), getMatrixY());
             newElement.color = this.color;
             newElement.isIgnited = this.isIgnited;
             if (newElement.isIgnited) {
                 newElement.flammabilityResistance = 0;
             }
-            matrix.setElementAtIndex(matrixX, matrixY, newElement);
-            matrix.reportToChunkActive(matrixX, matrixY);
+            matrix.setElementAtIndex(getMatrixX(), getMatrixY(), newElement);
+            matrix.reportToChunkActive(getMatrixX(), getMatrixY());
         } else {
             int yIndex = 0;
             while (true) {
-                Element elementAtNewPos = matrix.get(matrixX, matrixY + yIndex);
+                Element elementAtNewPos = matrix.get(getMatrixX(), getMatrixY() + yIndex);
                 if (elementAtNewPos == null) {
                     break;
                 } else if (elementAtNewPos instanceof EmptyCell) {
                     die(matrix);
-                    matrix.setElementAtIndex(matrixX, matrixY + yIndex, containedElementType.createElementByMatrix(matrixX, matrixY + yIndex));
-                    matrix.reportToChunkActive(matrixX, matrixY + yIndex);
+                    matrix.setElementAtIndex(getMatrixX(), getMatrixY() + yIndex, containedElementType.createElementByMatrix(getMatrixX(), getMatrixY() + yIndex));
+                    matrix.reportToChunkActive(getMatrixX(), getMatrixY() + yIndex);
                     break;
                 }
                 yIndex++;
@@ -116,7 +115,7 @@ public class Particle extends Element {
         int freq = (min == 0 || upperBound == 0) ? 0 : (upperBound / min);
 
         int smallerCount = 0;
-        Vector3 lastValidLocation = new Vector3(matrixX, matrixY, 0);
+        Vector3 lastValidLocation = new Vector3(getMatrixX(), getMatrixY(), 0);
         for (int i = 1; i <= upperBound; i++) {
             if (freq != 0 && i % freq == 0 && min >= smallerCount) {
                 smallerCount += 1;
@@ -131,8 +130,8 @@ public class Particle extends Element {
                 xIncrease = smallerCount;
             }
 
-            int modifiedMatrixY = matrixY + (yIncrease * yModifier);
-            int modifiedMatrixX = matrixX + (xIncrease * xModifier);
+            int modifiedMatrixY = getMatrixY() + (yIncrease * yModifier);
+            int modifiedMatrixX = getMatrixX() + (xIncrease * xModifier);
             if (matrix.isWithinBounds(modifiedMatrixX, modifiedMatrixY)) {
                 Element neighbor = matrix.get(modifiedMatrixX, modifiedMatrixY);
                 if (neighbor == this) continue;
@@ -144,7 +143,7 @@ public class Particle extends Element {
                 lastValidLocation.y = modifiedMatrixY;
 
             } else {
-                matrix.setElementAtIndex(matrixX, matrixY, ElementType.EMPTYCELL.createElementByMatrix(matrixX, matrixY));
+                matrix.setElementAtIndex(getMatrixX(), getMatrixY(), ElementType.EMPTYCELL.createElementByMatrix(getMatrixX(), getMatrixY()));
                 return;
             }
         }

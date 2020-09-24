@@ -1,7 +1,6 @@
 package com.gdx.cellular.particles;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
@@ -30,8 +29,8 @@ public class Explosion {
         this.radius = radius;
         this.strength = strength;
         this.sourceElement = sourceElement;
-        this.matrixX = sourceElement.matrixX;
-        this.matrixY = sourceElement.matrixY;
+        this.matrixX = sourceElement.getMatrixX();
+        this.matrixY = sourceElement.getMatrixY();
     }
 
     public Explosion(CellularMatrix matrix, int radius, int strength, int matrixX, int matrixY) {
@@ -46,8 +45,8 @@ public class Explosion {
         int matrixX;
         int matrixY;
         if (sourceElement != null) {
-            matrixX = sourceElement.matrixX;
-            matrixY = sourceElement.matrixY;
+            matrixX = sourceElement.getMatrixX();
+            matrixY = sourceElement.getMatrixY();
         } else {
             matrixX = this.matrixX;
             matrixY = this.matrixY;

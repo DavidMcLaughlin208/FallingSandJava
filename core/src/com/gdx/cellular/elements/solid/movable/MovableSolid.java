@@ -1,6 +1,5 @@
 package com.gdx.cellular.elements.solid.movable;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularAutomaton;
 import com.gdx.cellular.CellularMatrix;
@@ -68,8 +67,8 @@ public abstract class MovableSolid extends Solid {
         float freqCounter = 0;
 
         int smallerCount = 0;
-        Vector3 formerLocation = new Vector3(matrixX, matrixY, 0);
-        Vector3 lastValidLocation = new Vector3(matrixX, matrixY, 0);
+        Vector3 formerLocation = new Vector3(getMatrixX(), getMatrixY(), 0);
+        Vector3 lastValidLocation = new Vector3(getMatrixX(), getMatrixY(), 0);
         for (int i = 1; i <= upperBound; i++) {
             freqCounter += floatFreq;
             boolean thresholdPassed = Math.floor(freqCounter) > freqThreshold;
@@ -87,8 +86,8 @@ public abstract class MovableSolid extends Solid {
                 xIncrease = smallerCount;
             }
 
-            int modifiedMatrixY = matrixY + (yIncrease * yModifier);
-            int modifiedMatrixX = matrixX + (xIncrease * xModifier);
+            int modifiedMatrixY = getMatrixY() + (yIncrease * yModifier);
+            int modifiedMatrixX = getMatrixX() + (xIncrease * xModifier);
             if (matrix.isWithinBounds(modifiedMatrixX, modifiedMatrixY)) {
                 Element neighbor = matrix.get(modifiedMatrixX, modifiedMatrixY);
                 if (neighbor == this) continue;
@@ -100,7 +99,7 @@ public abstract class MovableSolid extends Solid {
                 lastValidLocation.y = modifiedMatrixY;
 
             } else {
-                matrix.setElementAtIndex(matrixX, matrixY, ElementType.EMPTYCELL.createElementByMatrix(matrixX, matrixY));
+                matrix.setElementAtIndex(getMatrixX(), getMatrixY(), ElementType.EMPTYCELL.createElementByMatrix(getMatrixX(), getMatrixY()));
                 return;
             }
         }
@@ -163,7 +162,7 @@ public abstract class MovableSolid extends Solid {
             int additionalX = getAdditional(normalizedVel.x);
             int additionalY = getAdditional(normalizedVel.y);
 
-            Element diagonalNeighbor = matrix.get(matrixX + additionalX, matrixY + additionalY);
+            Element diagonalNeighbor = matrix.get(getMatrixX() + additionalX, getMatrixY() + additionalY);
             if (isFirst) {
                 vel.y = getAverageVelOrGravity(vel.y, neighbor.vel.y);
             } else {
@@ -173,16 +172,16 @@ public abstract class MovableSolid extends Solid {
             neighbor.vel.y = vel.y;
             vel.x *= frictionFactor * neighbor.frictionFactor;
             if (diagonalNeighbor != null) {
-                boolean stoppedDiagonally = actOnNeighboringElement(diagonalNeighbor, matrixX + additionalX, matrixY + additionalY, matrix, true, false, lastValidLocation, depth + 1);
+                boolean stoppedDiagonally = actOnNeighboringElement(diagonalNeighbor, getMatrixX() + additionalX, getMatrixY() + additionalY, matrix, true, false, lastValidLocation, depth + 1);
                 if (!stoppedDiagonally) {
                     isFreeFalling = true;
                     return true;
                 }
             }
 
-            Element adjacentNeighbor = matrix.get(matrixX + additionalX, matrixY);
+            Element adjacentNeighbor = matrix.get(getMatrixX() + additionalX, getMatrixY());
             if (adjacentNeighbor != null  && adjacentNeighbor != diagonalNeighbor) {
-                boolean stoppedAdjacently = actOnNeighboringElement(adjacentNeighbor, matrixX + additionalX, matrixY, matrix, true, false, lastValidLocation, depth + 1);
+                boolean stoppedAdjacently = actOnNeighboringElement(adjacentNeighbor, getMatrixX() + additionalX, getMatrixY(), matrix, true, false, lastValidLocation, depth + 1);
                 if (stoppedAdjacently) vel.x *= -1;
                 if (!stoppedAdjacently) {
                     isFreeFalling = false;

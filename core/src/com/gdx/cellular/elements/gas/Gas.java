@@ -1,6 +1,5 @@
 package com.gdx.cellular.elements.gas;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularAutomaton;
@@ -85,7 +84,7 @@ public abstract class Gas extends Element {
         float freqCounter = 0;
 
         int smallerCount = 0;
-        Vector3 lastValidLocation = new Vector3(matrixX, matrixY, 0);
+        Vector3 lastValidLocation = new Vector3(getMatrixX(), getMatrixY(), 0);
         for (int i = 1; i <= upperBound; i++) {
             freqCounter += floatFreq;
             boolean thresholdPassed = Math.floor(freqCounter) > freqThreshold;
@@ -103,8 +102,8 @@ public abstract class Gas extends Element {
                 xIncrease = smallerCount;
             }
 
-            int modifiedMatrixY = matrixY + (yIncrease * yModifier);
-            int modifiedMatrixX = matrixX + (xIncrease * xModifier);
+            int modifiedMatrixY = getMatrixY() + (yIncrease * yModifier);
+            int modifiedMatrixX = getMatrixX() + (xIncrease * xModifier);
             if (matrix.isWithinBounds(modifiedMatrixX, modifiedMatrixY)) {
                 Element neighbor = matrix.get(modifiedMatrixX, modifiedMatrixY);
                 if (neighbor == this) continue;
@@ -116,7 +115,7 @@ public abstract class Gas extends Element {
                 lastValidLocation.y = modifiedMatrixY;
 
             } else {
-                matrix.setElementAtIndex(matrixX, matrixY, ElementType.EMPTYCELL.createElementByMatrix(matrixX, matrixY));
+                matrix.setElementAtIndex(getMatrixX(), getMatrixY(), ElementType.EMPTYCELL.createElementByMatrix(getMatrixX(), getMatrixY()));
                 return;
             }
         }
@@ -164,7 +163,7 @@ public abstract class Gas extends Element {
 
             int distance = additionalX * (Math.random() > 0.5 ? dispersionRate + 2 : dispersionRate - 1);
 
-            Element diagonalNeighbor = matrix.get(matrixX + additionalX, matrixY + additionalY);
+            Element diagonalNeighbor = matrix.get(getMatrixX() + additionalX, getMatrixY() + additionalY);
             if (isFirst) {
                 vel.y = getAverageVelOrGravity(vel.y, neighbor.vel.y);
             } else {
@@ -174,15 +173,15 @@ public abstract class Gas extends Element {
             neighbor.vel.y = vel.y;
             vel.x *= frictionFactor;
             if (diagonalNeighbor != null) {
-                boolean stoppedDiagonally = iterateToAdditional(matrix, matrixX + additionalX, matrixY, distance);
+                boolean stoppedDiagonally = iterateToAdditional(matrix, getMatrixX() + additionalX, getMatrixY(), distance);
                 if (!stoppedDiagonally) {
                     return true;
                 }
             }
 
-            Element adjacentNeighbor = matrix.get(matrixX + additionalX, matrixY);
+            Element adjacentNeighbor = matrix.get(getMatrixX() + additionalX, getMatrixY());
             if (adjacentNeighbor != null && adjacentNeighbor != diagonalNeighbor) {
-                boolean stoppedAdjacently = iterateToAdditional(matrix, matrixX + additionalX, matrixY, distance);
+                boolean stoppedAdjacently = iterateToAdditional(matrix, getMatrixX() + additionalX, getMatrixY(), distance);
                 if (stoppedAdjacently) vel.x *= -1;
                 if (!stoppedAdjacently) {
                     return true;
@@ -211,7 +210,7 @@ public abstract class Gas extends Element {
 
             int distance = additionalX * (Math.random() > 0.5 ? dispersionRate + 2 : dispersionRate - 1);
 
-            Element diagonalNeighbor = matrix.get(matrixX + additionalX, matrixY + additionalY);
+            Element diagonalNeighbor = matrix.get(getMatrixX() + additionalX, getMatrixY() + additionalY);
             if (isFirst) {
                 vel.y = getAverageVelOrGravity(vel.y, neighbor.vel.y);
             } else {
@@ -221,15 +220,15 @@ public abstract class Gas extends Element {
             neighbor.vel.y = vel.y;
             vel.x *= frictionFactor;
             if (diagonalNeighbor != null) {
-                boolean stoppedDiagonally = iterateToAdditional(matrix, matrixX + additionalX, matrixY, distance);
+                boolean stoppedDiagonally = iterateToAdditional(matrix, getMatrixX() + additionalX, getMatrixY(), distance);
                 if (!stoppedDiagonally) {
                     return true;
                 }
             }
 
-            Element adjacentNeighbor = matrix.get(matrixX + additionalX, matrixY);
+            Element adjacentNeighbor = matrix.get(getMatrixX() + additionalX, getMatrixY());
             if (adjacentNeighbor != null && adjacentNeighbor != diagonalNeighbor) {
-                boolean stoppedAdjacently = iterateToAdditional(matrix, matrixX + additionalX, matrixY, distance);
+                boolean stoppedAdjacently = iterateToAdditional(matrix, getMatrixX() + additionalX, getMatrixY(), distance);
                 if (stoppedAdjacently) vel.x *= -1;
                 if (!stoppedAdjacently) {
                     return true;
@@ -259,7 +258,7 @@ public abstract class Gas extends Element {
 
             int distance = additionalX * (Math.random() > 0.5 ? dispersionRate + 2 : dispersionRate - 1);
 
-            Element diagonalNeighbor = matrix.get(matrixX + additionalX, matrixY + additionalY);
+            Element diagonalNeighbor = matrix.get(getMatrixX() + additionalX, getMatrixY() + additionalY);
             if (isFirst) {
                 vel.y = getAverageVelOrGravity(vel.y, neighbor.vel.y);
             } else {
@@ -269,15 +268,15 @@ public abstract class Gas extends Element {
             neighbor.vel.y = vel.y;
             vel.x *= frictionFactor;
             if (diagonalNeighbor != null) {
-                boolean stoppedDiagonally = iterateToAdditional(matrix, matrixX + additionalX, matrixY + additionalY, distance);
+                boolean stoppedDiagonally = iterateToAdditional(matrix, getMatrixX() + additionalX, getMatrixY() + additionalY, distance);
                 if (!stoppedDiagonally) {
                     return true;
                 }
             }
 
-            Element adjacentNeighbor = matrix.get(matrixX + additionalX, matrixY);
+            Element adjacentNeighbor = matrix.get(getMatrixX() + additionalX, getMatrixY());
             if (adjacentNeighbor != null) {
-                boolean stoppedAdjacently = iterateToAdditional(matrix, matrixX + additionalX, matrixY, distance);
+                boolean stoppedAdjacently = iterateToAdditional(matrix, getMatrixX() + additionalX, getMatrixY(), distance);
                 if (stoppedAdjacently) vel.x *= -1;
                 if (!stoppedAdjacently) {
                     return true;
@@ -292,7 +291,7 @@ public abstract class Gas extends Element {
 
     private boolean iterateToAdditional(CellularMatrix matrix, int startingX, int startingY, int distance) {
         int distanceModifier = distance > 0 ? 1 : -1;
-        Vector3 lastValidLocation = new Vector3(matrixX, matrixY, 0);
+        Vector3 lastValidLocation = new Vector3(getMatrixX(), getMatrixY(), 0);
         for (int i = 0; i <= Math.abs(distance); i++) {
             Element neighbor = matrix.get(startingX + i * distanceModifier, startingY);
             boolean acted = actOnOther(neighbor, matrix);
@@ -331,7 +330,7 @@ public abstract class Gas extends Element {
     }
 
     private boolean compareGasDensities(Gas neighbor) {
-        return (density > neighbor.density && neighbor.matrixY <= matrixY); // ||  (density < neighbor.density && neighbor.matrixY >= matrixY);
+        return (density > neighbor.density && neighbor.getMatrixY() <= getMatrixY()); // ||  (density < neighbor.density && neighbor.matrixY >= matrixY);
     }
 
     private int getAdditional(float val) {

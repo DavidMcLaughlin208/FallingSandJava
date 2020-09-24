@@ -22,10 +22,7 @@ import com.gdx.cellular.input.InputManager;
 import com.gdx.cellular.input.MouseMode;
 import com.gdx.cellular.elements.ElementType;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class CreatorMenu {
@@ -37,6 +34,7 @@ public class CreatorMenu {
     public Table dropDownElementList;
     public Table dropDownMouseMode;
     public Table dropDownBodyType;
+    public Table dropDownWeather;
     public Stage dropDownStage;
     public SelectedSubList selectedSubList;
     AssetManager manager = new AssetManager();
@@ -68,9 +66,11 @@ public class CreatorMenu {
                     dropDownListX = (int) (CELL_WIDTH / 2f);
                 }
                 super.setPosition(dropDownListX, dropDownListY);
-                dropDownElementList.setPosition(this.getX() + CELL_WIDTH, this.getY());
-                dropDownMouseMode.setPosition(this.getX() + CELL_WIDTH, this.getY() - CELL_HEIGHT);
-                dropDownBodyType.setPosition(this.getX() + CELL_WIDTH, this.getY() - CELL_HEIGHT * 2);
+                dropDownElementList.setPosition(-200, -200);
+                dropDownMouseMode.setPosition(-200, -200);
+                dropDownBodyType.setPosition(-200, -200);
+                dropDownWeather.setPosition(-200, -200);
+                unhideSelectedSublist(SelectedSubList.ELEMENT);
             }
 
         };
@@ -79,6 +79,9 @@ public class CreatorMenu {
         dropDownTopLevelTable.row();
         Button accessMouseModeList = createAccessSublistButton(skin, "Mouse Modes", SelectedSubList.MOUSEMODE);
         dropDownTopLevelTable.add(accessMouseModeList).width(CELL_WIDTH).height(CELL_HEIGHT);
+        dropDownTopLevelTable.row();
+        Button weatherList = createAccessSublistButton(skin, "Weather", SelectedSubList.WEATHER);
+        dropDownTopLevelTable.add(weatherList).width(CELL_WIDTH).height(CELL_HEIGHT);
         dropDownTopLevelTable.row();
         Button bodyTypeList = createAccessSublistButton(skin, "Body Type", SelectedSubList.BODYTYPE);
         dropDownTopLevelTable.add(bodyTypeList).width(CELL_WIDTH).height(CELL_HEIGHT);
@@ -113,6 +116,8 @@ public class CreatorMenu {
             dropDownMouseMode.add(button).width(CELL_WIDTH).height(CELL_HEIGHT);
             dropDownMouseMode.row();
         });
+
+        // Body Type Sublist
         dropDownBodyType = new Table() {
             @Override
             public void draw (Batch batch, float parentAlpha) {
@@ -127,17 +132,32 @@ public class CreatorMenu {
             dropDownBodyType.row();
         });
 
-        // Body Type Sublist
+        // Weather Sublist
+        dropDownWeather = new Table() {
+            @Override
+            public void draw (Batch batch, float parentAlpha) {
+                if (SelectedSubList.WEATHER.equals(selectedSubList)) {
+                    super.draw(batch, parentAlpha);
+                }
+            }
+        };
+        List<Button> weatherButtons = createWeatherButtons(skin);
+        weatherButtons.forEach(button -> {
+            dropDownWeather.add(button).width(CELL_WIDTH).height(CELL_HEIGHT);
+            dropDownWeather.row();
+        });
 
 //        dropDownTopLevelTable.debug();
 
         stage.addActor(dropDownTopLevelTable);
         stage.addActor(dropDownElementList);
         stage.addActor(dropDownMouseMode);
+        stage.addActor(dropDownWeather);
         stage.addActor(dropDownBodyType);
 
         listTableMap.put(SelectedSubList.ELEMENT, dropDownElementList);
         listTableMap.put(SelectedSubList.MOUSEMODE, dropDownMouseMode);
+        listTableMap.put(SelectedSubList.WEATHER, dropDownWeather);
         listTableMap.put(SelectedSubList.BODYTYPE, dropDownBodyType);
 
         dropDownStage = stage;
@@ -180,7 +200,7 @@ public class CreatorMenu {
     private void hideSelectedList(SelectedSubList selectedSubList) {
         Table list = getList(selectedSubList);
         if (list != null) {
-            list.setPosition(0, 0);
+            list.setPosition(-200, -200);
         }
     }
 
@@ -251,10 +271,44 @@ public class CreatorMenu {
         return button;
     }
 
+    private List<Button> createWeatherButtons(Skin skin) {
+        List<Button> buttons = new ArrayList<>();
+        Button toggleWeatherButton = new TextButton("Toggle On/Off", skin);
+        toggleWeatherButton.addListener(new InputListener(){
+            @Override
+            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                inputManager.drawMenu = false;
+                inputManager.weatherSystem.toggle();
+                Gdx.input.setInputProcessor(inputManager.creatorInputProcessor);
+            }
+            @Override
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+        });
+        buttons.add(toggleWeatherButton);
+        Button setElementButton = new TextButton("Set Element", skin);
+        setElementButton.addListener(new InputListener(){
+            @Override
+            public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
+                inputManager.drawMenu = false;
+                inputManager.setCurrentElementOnWeather();
+                Gdx.input.setInputProcessor(inputManager.creatorInputProcessor);
+            }
+            @Override
+            public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
+                return true;
+            }
+        });
+        buttons.add(setElementButton);
+        return buttons;
+    }
+
     private enum SelectedSubList {
         ELEMENT,
         MOUSEMODE,
-        BODYTYPE
+        BODYTYPE,
+        WEATHER
     }
 
 }

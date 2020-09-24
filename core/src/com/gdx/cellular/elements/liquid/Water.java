@@ -20,11 +20,6 @@ public class Water extends Liquid {
     }
 
     @Override
-    public boolean corrode(CellularMatrix matrix) {
-        return false;
-    }
-
-    @Override
     public boolean receiveHeat(CellularMatrix matrix, int heat) {
         dieAndReplace(matrix, ElementType.STEAM);
         return true;

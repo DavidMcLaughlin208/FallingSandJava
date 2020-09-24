@@ -49,15 +49,6 @@ public class EmptyCell extends Element {
     public void setSecondaryCoordinatesByMatrix(int providedX, int providedY) { }
 
     @Override
-    public void setCoordinatesByPixel(int providedX, int providedY) { }
-
-    @Override
-    public void setXByPixel(int providedVal) { }
-
-    @Override
-    public void setYByPixel(int providedVal) { }
-
-    @Override
     public void setXByMatrix(int providedVal) { }
 
     @Override

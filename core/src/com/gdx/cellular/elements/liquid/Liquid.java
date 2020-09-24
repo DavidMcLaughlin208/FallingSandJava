@@ -1,6 +1,5 @@
 package com.gdx.cellular.elements.liquid;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularAutomaton;
@@ -28,9 +27,9 @@ public abstract class Liquid extends Element {
         if (stepped.get(0) == CellularAutomaton.stepped.get(0)) return;
         stepped.flip(0);
 
-        if (matrix.useChunks && !matrix.shouldElementInChunkStep(this)) {
-            return;
-        }
+//        if (matrix.useChunks && !matrix.shouldElementInChunkStep(this)) {
+//            return;
+//        }
 
         vel.add(CellularAutomaton.gravity);
         if (isFreeFalling) vel.x *= .8;
@@ -72,8 +71,8 @@ public abstract class Liquid extends Element {
         float freqCounter = 0;
 
         int smallerCount = 0;
-        Vector3 formerLocation = new Vector3(matrixX, matrixY, 0);
-        Vector3 lastValidLocation = new Vector3(matrixX, matrixY, 0);
+        Vector3 formerLocation = new Vector3(getMatrixX(), getMatrixY(), 0);
+        Vector3 lastValidLocation = new Vector3(getMatrixX(), getMatrixY(), 0);
         for (int i = 1; i <= upperBound; i++) {
             freqCounter += floatFreq;
             boolean thresholdPassed = Math.floor(freqCounter) > freqThreshold;
@@ -91,8 +90,8 @@ public abstract class Liquid extends Element {
                 xIncrease = smallerCount;
             }
 
-            int modifiedMatrixY = matrixY + (yIncrease * yModifier);
-            int modifiedMatrixX = matrixX + (xIncrease * xModifier);
+            int modifiedMatrixY = getMatrixY() + (yIncrease * yModifier);
+            int modifiedMatrixX = getMatrixX() + (xIncrease * xModifier);
             if (matrix.isWithinBounds(modifiedMatrixX, modifiedMatrixY)) {
                 Element neighbor = matrix.get(modifiedMatrixX, modifiedMatrixY);
                 if (neighbor == this) continue;
@@ -104,7 +103,7 @@ public abstract class Liquid extends Element {
                 lastValidLocation.y = modifiedMatrixY;
 
             } else {
-                matrix.setElementAtIndex(matrixX, matrixY, ElementType.EMPTYCELL.createElementByMatrix(matrixX, matrixY));
+                matrix.setElementAtIndex(getMatrixX(), getMatrixY(), ElementType.EMPTYCELL.createElementByMatrix(getMatrixX(), getMatrixY()));
                 return;
             }
         }
@@ -137,7 +136,7 @@ public abstract class Liquid extends Element {
     }
 
     private boolean yDidNotChange(Vector3 formerLocation) {
-        return formerLocation.y == this.matrixY;
+        return formerLocation.y == this.getMatrixY();
     }
 
     @Override
@@ -169,16 +168,16 @@ public abstract class Liquid extends Element {
                 float absY = Math.max(Math.abs(vel.y) / 31, 105);
                 vel.x = vel.x < 0 ? -absY : absY;
             }
-            if (yHasNotMovedBeyondThreshold()) {
-                vel.x = Math.random() > 0.5 ? 64 : -64;
-            }
+//            if (yHasNotMovedBeyondThreshold()) {
+//                vel.x = Math.random() > 0.5 ? 64 : -64;
+//            }
             Vector3 normalizedVel = vel.cpy().nor();
             int additionalX = getAdditional(normalizedVel.x);
             int additionalY = getAdditional(normalizedVel.y);
 
             int distance = additionalX * (Math.random() > 0.5 ? dispersionRate + 2 : dispersionRate - 1);
 
-            Element diagonalNeighbor = matrix.get(matrixX + additionalX, matrixY + additionalY);
+            Element diagonalNeighbor = matrix.get(getMatrixX() + additionalX, getMatrixY() + additionalY);
             if (isFirst) {
                 vel.y = getAverageVelOrGravity(vel.y, neighbor.vel.y);
             } else {
@@ -188,16 +187,16 @@ public abstract class Liquid extends Element {
             neighbor.vel.y = vel.y;
             vel.x *= frictionFactor;
             if (diagonalNeighbor != null) {
-                boolean stoppedDiagonally = iterateToAdditional(matrix, matrixX + additionalX, matrixY + additionalY, distance);
+                boolean stoppedDiagonally = iterateToAdditional(matrix, getMatrixX() + additionalX, getMatrixY() + additionalY, distance);
                 if (!stoppedDiagonally) {
                     isFreeFalling = true;
                     return true;
                 }
             }
 
-            Element adjacentNeighbor = matrix.get(matrixX + additionalX, matrixY);
+            Element adjacentNeighbor = matrix.get(getMatrixX() + additionalX, getMatrixY());
             if (adjacentNeighbor != null && adjacentNeighbor != diagonalNeighbor) {
-                boolean stoppedAdjacently = iterateToAdditional(matrix, matrixX + additionalX, matrixY, distance);
+                boolean stoppedAdjacently = iterateToAdditional(matrix, getMatrixX() + additionalX, getMatrixY(), distance);
                 if (stoppedAdjacently) vel.x *= -1;
                 if (!stoppedAdjacently) {
                     isFreeFalling = false;
@@ -227,7 +226,7 @@ public abstract class Liquid extends Element {
 
             int distance = additionalX * (Math.random() > 0.5 ? dispersionRate + 2 : dispersionRate - 1);
 
-            Element diagonalNeighbor = matrix.get(matrixX + additionalX, matrixY + additionalY);
+            Element diagonalNeighbor = matrix.get(getMatrixX() + additionalX, getMatrixY() + additionalY);
             if (isFirst) {
                 vel.y = getAverageVelOrGravity(vel.y, neighbor.vel.y);
             } else {
@@ -237,16 +236,16 @@ public abstract class Liquid extends Element {
             neighbor.vel.y = vel.y;
             vel.x *= frictionFactor;
             if (diagonalNeighbor != null) {
-                boolean stoppedDiagonally = iterateToAdditional(matrix, matrixX + additionalX, matrixY + additionalY, distance);
+                boolean stoppedDiagonally = iterateToAdditional(matrix, getMatrixX() + additionalX, getMatrixY() + additionalY, distance);
                 if (!stoppedDiagonally) {
                     isFreeFalling = true;
                     return true;
                 }
             }
 
-            Element adjacentNeighbor = matrix.get(matrixX + additionalX, matrixY);
+            Element adjacentNeighbor = matrix.get(getMatrixX() + additionalX, getMatrixY());
             if (adjacentNeighbor != null) {
-                boolean stoppedAdjacently = iterateToAdditional(matrix, matrixX + additionalX, matrixY, distance);
+                boolean stoppedAdjacently = iterateToAdditional(matrix, getMatrixX() + additionalX, getMatrixY(), distance);
                 if (stoppedAdjacently) vel.x *= -1;
                 if (!stoppedAdjacently) {
                     isFreeFalling = false;
@@ -270,7 +269,7 @@ public abstract class Liquid extends Element {
 
     private boolean iterateToAdditional(CellularMatrix matrix, int startingX, int startingY, int distance) {
         int distanceModifier = distance > 0 ? 1 : -1;
-        Vector3 lastValidLocation = new Vector3(matrixX, matrixY, 0);
+        Vector3 lastValidLocation = new Vector3(getMatrixX(), getMatrixY(), 0);
         for (int i = 0; i <= Math.abs(distance); i++) {
             int modifiedX = startingX + i * distanceModifier;
             Element neighbor = matrix.get(modifiedX, startingY);
@@ -314,7 +313,7 @@ public abstract class Liquid extends Element {
     }
 
     private boolean compareDensities(Liquid neighbor) {
-        return (density > neighbor.density && neighbor.matrixY <= matrixY); // ||  (density < neighbor.density && neighbor.matrixY >= matrixY);
+        return (density > neighbor.density && neighbor.getMatrixY() <= getMatrixY()); // ||  (density < neighbor.density && neighbor.matrixY >= matrixY);
     }
 
     private void setAdjacentNeighborsFreeFalling(CellularMatrix matrix, int depth, Vector3 lastValidLocation) {
