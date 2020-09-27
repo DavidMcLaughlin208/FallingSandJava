@@ -167,7 +167,7 @@ public class ShapeFactory {
         final Geometry simplifiedPolygon = DouglasPeuckerSimplifier.simplify(polygon, .3);
 
         List<org.dyn4j.geometry.Vector2> dyn4jVerts = Arrays.stream(simplifiedPolygon.getCoordinates()).map(vec -> new org.dyn4j.geometry.Vector2(vec.x, vec.y)).collect(Collectors.toList());
-        if (dyn4jVerts.size() < 2) {
+        if (dyn4jVerts.size() <= 2) {
             return null;
         }
         dyn4jVerts.remove(dyn4jVerts.size() - 1);

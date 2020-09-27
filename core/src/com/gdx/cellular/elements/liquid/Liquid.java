@@ -285,7 +285,7 @@ public abstract class Liquid extends Element {
                     swapPositions(matrix, neighbor, modifiedX, startingY);
                     return false;
                 }
-                lastValidLocation.x = startingX + i * distanceModifier;
+                lastValidLocation.x = modifiedX;
                 lastValidLocation.y = startingY;
             } else if (neighbor instanceof Liquid) {
                 Liquid liquidNeighbor = (Liquid) neighbor;
@@ -304,12 +304,12 @@ public abstract class Liquid extends Element {
         return true;
     }
 
-    private void swapLiquidForDensities(CellularMatrix matrix, Liquid neighbor, int neighorX, int neighborY, Vector3 lastValidLocation) {
+    private void swapLiquidForDensities(CellularMatrix matrix, Liquid neighbor, int neighborX, int neighborY, Vector3 lastValidLocation) {
         vel.y = -62;
         if (Math.random() > 0.8f) {
             vel.x *= -1;
         }
-        moveToLastValidAndSwap(matrix, neighbor, neighorX, neighborY, lastValidLocation);
+        moveToLastValidAndSwap(matrix, neighbor, neighborX, neighborY, lastValidLocation);
     }
 
     private boolean compareDensities(Liquid neighbor) {
