@@ -10,9 +10,7 @@ import com.gdx.cellular.elements.solid.immoveable.*;
 import com.gdx.cellular.elements.solid.movable.*;
 import com.gdx.cellular.particles.Particle;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public enum ElementType {
@@ -171,6 +169,7 @@ public enum ElementType {
     public final ClassType classType;
     public static List<ElementType> IMMOVABLE_SOLIDS;
     public static List<ElementType> MOVABLE_SOLIDS;
+    public static List<ElementType> SOLIDS;
     public static List<ElementType> LIQUIDS;
     public static List<ElementType> GASSES;
 
@@ -193,29 +192,43 @@ public enum ElementType {
     public static List<ElementType> getMovableSolids() {
         if (MOVABLE_SOLIDS == null) {
             MOVABLE_SOLIDS = initializeList(ClassType.MOVABLESOLID);
+            MOVABLE_SOLIDS.sort(Comparator.comparing(Enum::toString));
         }
-        return MOVABLE_SOLIDS;
+        return Collections.unmodifiableList(MOVABLE_SOLIDS);
     }
 
     public static List<ElementType> getImmovableSolids() {
         if (IMMOVABLE_SOLIDS == null) {
             IMMOVABLE_SOLIDS = initializeList(ClassType.IMMOVABLESOLID);
+            IMMOVABLE_SOLIDS.sort(Comparator.comparing(Enum::toString));
         }
-        return IMMOVABLE_SOLIDS;
+        return Collections.unmodifiableList(IMMOVABLE_SOLIDS);
+    }
+
+    public static List<ElementType> getSolids() {
+        if (SOLIDS == null) {
+            List<ElementType> immovables = new ArrayList<>(getImmovableSolids());
+            immovables.addAll(getMovableSolids());
+            SOLIDS = immovables;
+            immovables.sort(Comparator.comparing(Enum::toString));
+        }
+        return Collections.unmodifiableList(SOLIDS);
     }
 
     public static List<ElementType> getLiquids() {
         if (LIQUIDS == null) {
             LIQUIDS = initializeList(ClassType.LIQUID);
+            LIQUIDS.sort(Comparator.comparing(Enum::toString));
         }
-        return LIQUIDS;
+        return Collections.unmodifiableList(LIQUIDS);
     }
 
     public static List<ElementType> getGasses() {
         if (GASSES == null) {
             GASSES = initializeList(ClassType.GAS);
+            GASSES.sort(Comparator.comparing(Enum::toString));
         }
-        return GASSES;
+        return Collections.unmodifiableList(GASSES);
     }
 
     private static List<ElementType> initializeList(ClassType classType) {

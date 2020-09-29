@@ -3,6 +3,7 @@ package com.gdx.cellular.ui;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.SkinLoader;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -96,13 +97,8 @@ public class CreatorMenu {
         };
         dropDownElementList.add(new Label("Solids", skin)).width(CELL_WIDTH).height(CELL_HEIGHT);
         dropDownElementList.row();
-        List<Button> immovableSolidsButtons = createElementButtons(ElementType.getImmovableSolids(), skin);
+        List<Button> immovableSolidsButtons = createElementButtons(ElementType.getSolids(), skin);
         immovableSolidsButtons.forEach(button -> {
-            dropDownElementList.add(button).width(CELL_WIDTH).height(CELL_HEIGHT);
-            dropDownElementList.row();
-        });
-        List<Button> movableSolidsButtons = createElementButtons(ElementType.getMovableSolids(), skin);
-        movableSolidsButtons.forEach(button -> {
             dropDownElementList.add(button).width(CELL_WIDTH).height(CELL_HEIGHT);
             dropDownElementList.row();
         });
@@ -184,16 +180,18 @@ public class CreatorMenu {
 
     private Button createAccessSublistButton(Skin skin, String text, SelectedSubList subList) {
         Button button = new TextButton(text, skin);
+        button.setColor(Color.GRAY);
         button.addListener(new ClickListener(){
             @Override
             public void enter (InputEvent event, float x, float y, int pointer, Actor fromActor) {
                 hideSelectedList(selectedSubList);
                 selectedSubList = subList;
                 unhideSelectedSublist(selectedSubList);
+                button.setColor(Color.RED);
             }
             @Override
             public void exit (InputEvent event, float x, float y, int pointer, Actor toActor) {
-
+                button.setColor(Color.GRAY);
             }
         });
         return button;
@@ -233,6 +231,7 @@ public class CreatorMenu {
 
     private Button createElementButton(Skin skin, ElementType elementType) {
         Button button = new TextButton(elementType.toString(), skin);
+        button.setColor(Color.GRAY);
         button.addListener(new InputListener(){
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
@@ -244,6 +243,15 @@ public class CreatorMenu {
                 inputManager.currentlySelectedElement = elementType;
                 return true;
             }
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                button.setColor(Color.RED);
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                button.setColor(Color.GRAY);
+            }
         });
         return button;
     }
@@ -254,6 +262,7 @@ public class CreatorMenu {
 
     private Button createMouseModeButton(Skin skin, MouseMode mode) {
         Button button = new TextButton(mode.toString(), skin);
+        button.setColor(Color.GRAY);
         button.addListener(new InputListener(){
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
@@ -265,6 +274,15 @@ public class CreatorMenu {
                 inputManager.setMouseMode(mode);
                 return true;
             }
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                button.setColor(Color.RED);
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                button.setColor(Color.GRAY);
+            }
         });
         return button;
     }
@@ -275,6 +293,7 @@ public class CreatorMenu {
 
     private Button createBodyTypeButton(Skin skin, BodyDef.BodyType bodyType) {
         Button button = new TextButton(bodyType.toString(), skin);
+        button.setColor(Color.GRAY);
         button.addListener(new InputListener(){
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
@@ -286,6 +305,15 @@ public class CreatorMenu {
                 inputManager.setBodyType(bodyType);
                 return true;
             }
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                button.setColor(Color.RED);
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                button.setColor(Color.GRAY);
+            }
         });
         return button;
     }
@@ -293,6 +321,7 @@ public class CreatorMenu {
     private List<Button> createWeatherButtons(Skin skin) {
         List<Button> buttons = new ArrayList<>();
         Button toggleWeatherButton = new TextButton("Toggle On/Off", skin);
+        toggleWeatherButton.setColor(Color.GRAY);
         toggleWeatherButton.addListener(new InputListener(){
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
@@ -304,9 +333,19 @@ public class CreatorMenu {
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                 return true;
             }
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                toggleWeatherButton.setColor(Color.RED);
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                toggleWeatherButton.setColor(Color.GRAY);
+            }
         });
         buttons.add(toggleWeatherButton);
         Button setElementButton = new TextButton("Set Element", skin);
+        setElementButton.setColor(Color.GRAY);
         setElementButton.addListener(new InputListener(){
             @Override
             public void touchUp (InputEvent event, float x, float y, int pointer, int button) {
@@ -317,6 +356,15 @@ public class CreatorMenu {
             @Override
             public boolean touchDown (InputEvent event, float x, float y, int pointer, int button) {
                 return true;
+            }
+            @Override
+            public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+                setElementButton.setColor(Color.RED);
+            }
+
+            @Override
+            public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+                setElementButton.setColor(Color.GRAY);
             }
         });
         buttons.add(setElementButton);
