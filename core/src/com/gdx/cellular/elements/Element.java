@@ -85,6 +85,9 @@ public abstract class Element {
     }
 
     public void swapPositions(CellularMatrix matrix, Element toSwap, int toSwapX, int toSwapY) {
+        if (this.getMatrixX() == toSwapX && this.getMatrixY() == toSwapY) {
+            return;
+        }
         matrix.setElementAtIndex(this.getMatrixX(), this.getMatrixY(), toSwap);
         matrix.setElementAtIndex(toSwapX, toSwapY, this);
     }
@@ -108,6 +111,15 @@ public abstract class Element {
         int moveToLocationMatrixX = (int) moveToLocation.x;
         int moveToLocationMatrixY = (int) moveToLocation.y;
         Element thirdNeighbor = matrix.get(moveToLocationMatrixX, moveToLocationMatrixY);
+        if (this == thirdNeighbor || thirdNeighbor == toSwap) {
+            this.swapPositions(matrix, toSwap, toSwapX, toSwapY);
+            return;
+        }
+
+        if (this == toSwap) {
+            this.swapPositions(matrix, thirdNeighbor, moveToLocationMatrixX, moveToLocationMatrixY);
+            return;
+        }
 
         matrix.setElementAtIndex(this.getMatrixX(), this.getMatrixY(), thirdNeighbor);
         matrix.setElementAtIndex(toSwapX, toSwapY, this);

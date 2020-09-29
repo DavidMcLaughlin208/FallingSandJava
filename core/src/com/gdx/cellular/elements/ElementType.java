@@ -10,152 +10,157 @@ import com.gdx.cellular.elements.solid.immoveable.*;
 import com.gdx.cellular.elements.solid.movable.*;
 import com.gdx.cellular.particles.Particle;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public enum ElementType {
-    EMPTYCELL(EmptyCell.class) {
+    EMPTYCELL(EmptyCell.class, ClassType.EMPTYCELL) {
         @Override
         public Element createElementByMatrix(int x, int y) {
             return EmptyCell.getInstance();
         }
     },
-    GROUND(Ground.class) {
+    GROUND(Ground.class, ClassType.IMMOVABLESOLID) {
         @Override
         public Element createElementByMatrix(int x, int y) {
             return new Ground(x, y);
         }
     },
-    STONE(Stone.class) {
+    STONE(Stone.class, ClassType.IMMOVABLESOLID) {
         @Override
         public Element createElementByMatrix(int x, int y) {
             return new Stone(x, y);
         }
     },
-    SAND(Sand.class) {
+    SAND(Sand.class, ClassType.MOVABLESOLID) {
         @Override
         public Element createElementByMatrix(int x, int y) {
             return new Sand(x, y);
         }
     },
-    SNOW(Snow.class) {
+    SNOW(Snow.class, ClassType.MOVABLESOLID) {
         @Override
         public Element createElementByMatrix(int x, int y) {
             return new Snow(x, y);
         }
     },
-    DIRT(Dirt.class) {
+    DIRT(Dirt.class, ClassType.MOVABLESOLID) {
         @Override
         public Element createElementByMatrix(int x, int y) {
             return new Dirt(x, y);
         }
     },
-    GUNPOWDER(Gunpowder.class) {
+    GUNPOWDER(Gunpowder.class, ClassType.MOVABLESOLID) {
         @Override
         public Element createElementByMatrix(int x, int y) {
             return new Gunpowder(x, y);
         }
     },
-    WATER(Water.class) {
+    WATER(Water.class, ClassType.LIQUID) {
         @Override
         public Element createElementByMatrix(int x, int y) {
             return new Water(x, y);
         }
     },
-    CEMENT(Cement.class) {
+    CEMENT(Cement.class, ClassType.LIQUID) {
         @Override
         public Element createElementByMatrix(int x, int y) {
             return new Cement(x, y);
         }
     },
-    OIL(Oil.class) {
+    OIL(Oil.class, ClassType.LIQUID) {
         @Override
         public Element createElementByMatrix(int x, int y) {
             return new Oil(x, y);
         }
     },
-    ACID(Acid.class) {
+    ACID(Acid.class, ClassType.LIQUID) {
         @Override
         public Element createElementByMatrix(int x, int y) {
             return new Acid(x, y);
         }
     },
-    WOOD(Wood.class) {
+    WOOD(Wood.class, ClassType.IMMOVABLESOLID) {
         @Override
         public Element createElementByMatrix(int x, int y) {
             return new Wood(x, y);
         }
     },
-    TITANIUM(Titanium.class) {
+    TITANIUM(Titanium.class, ClassType.IMMOVABLESOLID) {
         @Override
         public Element createElementByMatrix(int x, int y) {
             return new Titanium(x, y);
         }
     },
-    SPARK(Spark.class) {
+    SPARK(Spark.class, ClassType.GAS) {
         @Override
         public Element createElementByMatrix(int x, int y) {
             return new Spark(x, y);
         }
     },
-    EXPLOSIONSPARK(ExplosionSpark.class) {
+    EXPLOSIONSPARK(ExplosionSpark.class, ClassType.GAS) {
         @Override
         public Element createElementByMatrix(int x, int y) {
             return new ExplosionSpark(x, y);
         }
     },
-    EMBER(Ember.class) {
+    EMBER(Ember.class, ClassType.MOVABLESOLID) {
         @Override
         public Element createElementByMatrix(int x, int y) {
             return new Ember(x, y);
         }
     },
-    LAVA(Lava.class) {
+    LAVA(Lava.class, ClassType.LIQUID) {
         @Override
         public Element createElementByMatrix(int x, int y) {
             return new Lava(x, y);
         }
     },
-    COAL(Coal.class) {
+    COAL(Coal.class, ClassType.MOVABLESOLID) {
         @Override
         public Element createElementByMatrix(int x, int y) {
             return new Coal(x, y);
         }
     },
-    SMOKE(Smoke.class) {
+    SMOKE(Smoke.class, ClassType.GAS) {
         @Override
         public Element createElementByMatrix(int x, int y) {
             return new Smoke(x, y);
         }
     },
-    FLAMMABLEGAS(FlammableGas.class) {
+    FLAMMABLEGAS(FlammableGas.class, ClassType.GAS) {
         @Override
         public Element createElementByMatrix(int x, int y) {
             return new FlammableGas(x, y);
         }
     },
-    BLOOD(Blood.class) {
+    BLOOD(Blood.class, ClassType.LIQUID) {
         @Override
         public Element createElementByMatrix(int x, int y) {
             return new Blood(x, y);
         }
     },
-    SLIMEMOLD(SlimeMold.class) {
+    SLIMEMOLD(SlimeMold.class, ClassType.IMMOVABLESOLID) {
         @Override
         public Element createElementByMatrix(int x, int y) {
             return new SlimeMold(x, y);
         }
     },
-    STEAM(Steam.class) {
+    STEAM(Steam.class, ClassType.GAS) {
         @Override
         public Element createElementByMatrix(int x, int y) {
             return new Steam(x, y);
         }
     },
-    PLAYERMEAT(PlayerMeat.class) {
+    PLAYERMEAT(PlayerMeat.class, ClassType.PLAYER) {
         @Override
         public Element createElementByMatrix(int x, int y) {
             return new PlayerMeat(x, y);
         }
     },
-    PARTICLE(Particle.class) {
+    PARTICLE(Particle.class, ClassType.PARTICLE) {
         @Override
         public Element createElementByMatrix(int x, int y) {
             throw new IllegalStateException();
@@ -163,9 +168,15 @@ public enum ElementType {
     };
 
     public final Class<? extends Element> clazz;
+    public final ClassType classType;
+    public static List<ElementType> IMMOVABLE_SOLIDS;
+    public static List<ElementType> MOVABLE_SOLIDS;
+    public static List<ElementType> LIQUIDS;
+    public static List<ElementType> GASSES;
 
-    ElementType(Class<? extends Element> clazz) {
+    ElementType(Class<? extends Element> clazz, ClassType classType) {
         this.clazz = clazz;
+        this.classType = classType;
     }
 
     public abstract Element createElementByMatrix(int x, int y);
@@ -179,6 +190,39 @@ public enum ElementType {
         return null;
     }
 
+    public static List<ElementType> getMovableSolids() {
+        if (MOVABLE_SOLIDS == null) {
+            MOVABLE_SOLIDS = initializeList(ClassType.MOVABLESOLID);
+        }
+        return MOVABLE_SOLIDS;
+    }
+
+    public static List<ElementType> getImmovableSolids() {
+        if (IMMOVABLE_SOLIDS == null) {
+            IMMOVABLE_SOLIDS = initializeList(ClassType.IMMOVABLESOLID);
+        }
+        return IMMOVABLE_SOLIDS;
+    }
+
+    public static List<ElementType> getLiquids() {
+        if (LIQUIDS == null) {
+            LIQUIDS = initializeList(ClassType.LIQUID);
+        }
+        return LIQUIDS;
+    }
+
+    public static List<ElementType> getGasses() {
+        if (GASSES == null) {
+            GASSES = initializeList(ClassType.GAS);
+        }
+        return GASSES;
+    }
+
+    private static List<ElementType> initializeList(ClassType classType) {
+        return Arrays.stream(ElementType.values()).filter(elementType -> elementType.classType.equals(classType)).collect(Collectors.toList());
+    }
+
+
     public static Element createParticleByMatrix(CellularMatrix matrix, int x, int y, Vector3 vector3, Element sourceElement) {
         if (matrix.isWithinBounds(x, y)) {
             Element newElement = new Particle(x, y, vector3, sourceElement);
@@ -186,5 +230,16 @@ public enum ElementType {
             return newElement;
         }
         return null;
+    }
+
+    public enum ClassType {
+        MOVABLESOLID,
+        IMMOVABLESOLID,
+        LIQUID,
+        GAS,
+        PARTICLE,
+        EMPTYCELL,
+        PLAYER;
+
     }
 }

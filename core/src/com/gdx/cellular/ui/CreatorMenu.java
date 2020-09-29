@@ -10,10 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.gdx.cellular.CellularAutomaton;
@@ -23,6 +20,7 @@ import com.gdx.cellular.input.MouseMode;
 import com.gdx.cellular.elements.ElementType;
 
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class CreatorMenu {
@@ -96,8 +94,29 @@ public class CreatorMenu {
                 }
             }
         };
-        List<Button> elementButtons = createElementButtons(skin);
-        elementButtons.forEach(button -> {
+        dropDownElementList.add(new Label("Solids", skin)).width(CELL_WIDTH).height(CELL_HEIGHT);
+        dropDownElementList.row();
+        List<Button> immovableSolidsButtons = createElementButtons(ElementType.getImmovableSolids(), skin);
+        immovableSolidsButtons.forEach(button -> {
+            dropDownElementList.add(button).width(CELL_WIDTH).height(CELL_HEIGHT);
+            dropDownElementList.row();
+        });
+        List<Button> movableSolidsButtons = createElementButtons(ElementType.getMovableSolids(), skin);
+        movableSolidsButtons.forEach(button -> {
+            dropDownElementList.add(button).width(CELL_WIDTH).height(CELL_HEIGHT);
+            dropDownElementList.row();
+        });
+        dropDownElementList.add(new Label("Liquids", skin)).width(CELL_WIDTH).height(CELL_HEIGHT);
+        dropDownElementList.row();
+        List<Button> liquidButtons = createElementButtons(ElementType.getLiquids(), skin);
+        liquidButtons.forEach(button -> {
+            dropDownElementList.add(button).width(CELL_WIDTH).height(CELL_HEIGHT);
+            dropDownElementList.row();
+        });
+        dropDownElementList.add(new Label("Gasses", skin)).width(CELL_WIDTH).height(CELL_HEIGHT);
+        dropDownElementList.row();
+        List<Button> gasButtons = createElementButtons(ElementType.getGasses(), skin);
+        gasButtons.forEach(button -> {
             dropDownElementList.add(button).width(CELL_WIDTH).height(CELL_HEIGHT);
             dropDownElementList.row();
         });
@@ -208,8 +227,8 @@ public class CreatorMenu {
         return listTableMap.get(selectedSubList);
     }
 
-    private List<Button> createElementButtons(Skin skin) {
-        return Arrays.stream(ElementType.values()).map(elementType -> createElementButton(skin, elementType)).collect(Collectors.toList());
+    private List<Button> createElementButtons(List<ElementType> elements, Skin skin) {
+        return elements.stream().map(elementType -> createElementButton(skin, elementType)).collect(Collectors.toList());
     }
 
     private Button createElementButton(Skin skin, ElementType elementType) {

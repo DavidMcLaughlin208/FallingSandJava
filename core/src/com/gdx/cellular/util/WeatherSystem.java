@@ -9,7 +9,7 @@ public class WeatherSystem {
 
     public ElementType elementType;
     public int weight;
-    boolean disabled = true;
+    public boolean disabled = true;
 
     public WeatherSystem(ElementType elementType, int weight) {
         this.elementType = elementType;

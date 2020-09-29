@@ -466,6 +466,7 @@ public class InputManager {
         if (readyToLoad) {
             try {
                 readyToLoad = false;
+                matrix.clearAll();
                 setIsPaused(false);
                 Path newPath = savePath.resolve(fileNameForLevel + ".ser");
                 String level = Files.readAllLines(newPath, StandardCharsets.UTF_8).get(0);

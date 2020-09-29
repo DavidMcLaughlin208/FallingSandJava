@@ -154,8 +154,14 @@ public abstract class Liquid extends Element {
         } else if (neighbor instanceof Liquid) {
             Liquid liquidNeighbor = (Liquid) neighbor;
             if (compareDensities(liquidNeighbor)) {
-                swapLiquidForDensities(matrix, liquidNeighbor, modifiedMatrixX, modifiedMatrixY, lastValidLocation);
-                return false;
+                if (isFinal) {
+                    swapLiquidForDensities(matrix, liquidNeighbor, modifiedMatrixX, modifiedMatrixY, lastValidLocation);
+                    return true;
+                } else {
+                    lastValidLocation.x = modifiedMatrixX;
+                    lastValidLocation.y = modifiedMatrixY;
+                    return false;
+                }
             }
             if (depth > 0) {
                 return true;
@@ -187,7 +193,7 @@ public abstract class Liquid extends Element {
             neighbor.vel.y = vel.y;
             vel.x *= frictionFactor;
             if (diagonalNeighbor != null) {
-                boolean stoppedDiagonally = iterateToAdditional(matrix, getMatrixX() + additionalX, getMatrixY() + additionalY, distance);
+                boolean stoppedDiagonally = iterateToAdditional(matrix, getMatrixX() + additionalX, getMatrixY() + additionalY, distance, lastValidLocation);
                 if (!stoppedDiagonally) {
                     isFreeFalling = true;
                     return true;
@@ -196,7 +202,7 @@ public abstract class Liquid extends Element {
 
             Element adjacentNeighbor = matrix.get(getMatrixX() + additionalX, getMatrixY());
             if (adjacentNeighbor != null && adjacentNeighbor != diagonalNeighbor) {
-                boolean stoppedAdjacently = iterateToAdditional(matrix, getMatrixX() + additionalX, getMatrixY(), distance);
+                boolean stoppedAdjacently = iterateToAdditional(matrix, getMatrixX() + additionalX, getMatrixY(), distance, lastValidLocation);
                 if (stoppedAdjacently) vel.x *= -1;
                 if (!stoppedAdjacently) {
                     isFreeFalling = false;
@@ -236,7 +242,7 @@ public abstract class Liquid extends Element {
             neighbor.vel.y = vel.y;
             vel.x *= frictionFactor;
             if (diagonalNeighbor != null) {
-                boolean stoppedDiagonally = iterateToAdditional(matrix, getMatrixX() + additionalX, getMatrixY() + additionalY, distance);
+                boolean stoppedDiagonally = iterateToAdditional(matrix, getMatrixX() + additionalX, getMatrixY() + additionalY, distance, lastValidLocation);
                 if (!stoppedDiagonally) {
                     isFreeFalling = true;
                     return true;
@@ -245,7 +251,7 @@ public abstract class Liquid extends Element {
 
             Element adjacentNeighbor = matrix.get(getMatrixX() + additionalX, getMatrixY());
             if (adjacentNeighbor != null) {
-                boolean stoppedAdjacently = iterateToAdditional(matrix, getMatrixX() + additionalX, getMatrixY(), distance);
+                boolean stoppedAdjacently = iterateToAdditional(matrix, getMatrixX() + additionalX, getMatrixY(), distance, lastValidLocation);
                 if (stoppedAdjacently) vel.x *= -1;
                 if (!stoppedAdjacently) {
                     isFreeFalling = false;
@@ -267,9 +273,9 @@ public abstract class Liquid extends Element {
         return false;
     }
 
-    private boolean iterateToAdditional(CellularMatrix matrix, int startingX, int startingY, int distance) {
+    private boolean iterateToAdditional(CellularMatrix matrix, int startingX, int startingY, int distance, Vector3 lastValid) {
         int distanceModifier = distance > 0 ? 1 : -1;
-        Vector3 lastValidLocation = new Vector3(getMatrixX(), getMatrixY(), 0);
+        Vector3 lastValidLocation = lastValid.cpy();
         for (int i = 0; i <= Math.abs(distance); i++) {
             int modifiedX = startingX + i * distanceModifier;
             Element neighbor = matrix.get(modifiedX, startingY);
@@ -289,9 +295,11 @@ public abstract class Liquid extends Element {
                 lastValidLocation.y = startingY;
             } else if (neighbor instanceof Liquid) {
                 Liquid liquidNeighbor = (Liquid) neighbor;
-                if (compareDensities(liquidNeighbor)) {
-                    swapLiquidForDensities(matrix, liquidNeighbor, modifiedX, startingY, lastValidLocation);
-                    return false;
+                if (isFinal) {
+                    if (compareDensities(liquidNeighbor)) {
+                        swapLiquidForDensities(matrix, liquidNeighbor, modifiedX, startingY, lastValidLocation);
+                        return false;
+                    }
                 }
             } else if (neighbor instanceof Solid) {
                 if (isFirst) {

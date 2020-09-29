@@ -12,6 +12,7 @@ public class ModeActor extends Actor {
     public Skin skin;
     public Label modeLabel;
     public Label elementLabel;
+    public Label weatherLabel;
     public int pixelX;
     public int pixelY;
 
@@ -20,6 +21,7 @@ public class ModeActor extends Actor {
         this.skin = Skins.getSkin("uiskin");
         this.modeLabel = new Label(inputManager.getMouseMode().toString(), skin);
         this.elementLabel = new Label(inputManager.currentlySelectedElement.toString(), skin);
+        this.weatherLabel = new Label("Weather", skin);
         this.pixelX = x;
         this.pixelY = y;
     }
@@ -34,5 +36,10 @@ public class ModeActor extends Actor {
         this.elementLabel.setX(this.pixelX);
         this.elementLabel.setY(this.pixelY - this.modeLabel.getHeight()/1.5f);
         this.elementLabel.draw(batch, 1);
+        String weatherString = this.inputManager.weatherSystem.disabled ? "OFF" : "ON";
+        this.weatherLabel.setText("Weather: " + weatherString + "  Element: " + this.inputManager.weatherSystem.elementType.toString());
+        this.weatherLabel.setX(this.pixelX);
+        this.weatherLabel.setY(this.pixelY - (this.modeLabel.getHeight()/1.5f) * 2);
+        this.weatherLabel.draw(batch, 1);
     }
 }

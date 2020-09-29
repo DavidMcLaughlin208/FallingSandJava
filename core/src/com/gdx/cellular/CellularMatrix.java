@@ -319,6 +319,10 @@ public class CellularMatrix {
         return true;
     }
 
+    public Element get(Vector3 location) {
+        return get((int) location.x, (int) location.y);
+    }
+
     public Element get(float x, float y) {
         return get((int) x, (int) y);
     }
