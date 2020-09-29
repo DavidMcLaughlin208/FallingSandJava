@@ -14,6 +14,7 @@ import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.elements.EmptyCell;
 import com.gdx.cellular.elements.liquid.Liquid;
+import com.gdx.cellular.elements.player.PlayerMeat;
 import com.gdx.cellular.elements.solid.movable.MovableSolid;
 import com.gdx.cellular.input.InputManager;
 import com.gdx.cellular.particles.Explosion;
@@ -367,12 +368,15 @@ public class CellularMatrix {
     }
 
     public Element spawnElementByMatrix(int matrixX, int matrixY, ElementType elementType) {
-        if (isWithinBounds(matrixX, matrixY) && get(matrixX, matrixY).getClass() != elementType.clazz) {
-            get(matrixX, matrixY).die(this);
-            Element newElement = elementType.createElementByMatrix(matrixX, matrixY);
-            setElementAtIndex(matrixX, matrixY, newElement);
-            reportToChunkActive(newElement);
-            return newElement;
+        if (isWithinBounds(matrixX, matrixY)) {
+            Element currentElement = get(matrixX, matrixY);
+            if (currentElement.getClass() != elementType.clazz && !(currentElement instanceof PlayerMeat)) {
+                get(matrixX, matrixY).die(this);
+                Element newElement = elementType.createElementByMatrix(matrixX, matrixY);
+                setElementAtIndex(matrixX, matrixY, newElement);
+                reportToChunkActive(newElement);
+                return newElement;
+            }
         }
         return null;
     }

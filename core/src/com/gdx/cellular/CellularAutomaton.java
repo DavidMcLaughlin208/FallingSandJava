@@ -169,6 +169,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 		inputManager.drawCursor();
 
 		inputManager.weatherSystem.enact(this.matrix);
+		gameManager.stepPlayers(this.matrix);
 	}
 
 	@Override

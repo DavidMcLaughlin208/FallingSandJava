@@ -92,7 +92,9 @@ public class CreatorInputProcessor implements InputProcessor {
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-        inputManager.spawnElementByInput(matrix);
+        if (!inputManager.drawMenu) {
+            inputManager.spawnElementByInput(matrix);
+        }
         return false;
     }
 

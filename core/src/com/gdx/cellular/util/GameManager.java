@@ -18,13 +18,30 @@ public class GameManager {
         }
     }
 
+    public void stepPlayers(CellularMatrix matrix) {
+        for (int i = 0; i < players.size; i++) {
+            Player player = players.get(i);
+            if (player == null) {
+                continue;
+            }
+            player.step(matrix);
+        }
+    }
+
     public Player createPlayer(int x, int y) {
-        int index = this.players.indexOf(null, false);
+        int index = -1;
+        for (int i = 0; i < players.size; i++) {
+            Player player = players.get(i);
+            if (player == null) {
+                index = i;
+                break;
+            }
+        }
         if (index == -1) {
             return null;
         }
         Player newPlayer = new Player(x, y, index, cellularAutomaton.matrix);
-        players.add(newPlayer);
+        players.set(index, newPlayer);
         return newPlayer;
     }
 
