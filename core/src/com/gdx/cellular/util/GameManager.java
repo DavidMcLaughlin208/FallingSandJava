@@ -50,5 +50,12 @@ public class GameManager {
         this.players.set(playerIndex, null);
     }
 
+    public Player getPlayer(int index) {
+        if (index < 0 || index >= players.size) {
+            return null;
+        }
+        return players.get(index);
+    }
+
 
 }

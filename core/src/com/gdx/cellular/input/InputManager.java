@@ -403,7 +403,7 @@ public class InputManager {
     }
 
     public void save(CellularMatrix matrix) {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.S) && !readyToSave) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.K) && !readyToSave) {
             paused = true;
             Gdx.input.getTextInput(saveLevelNameListener, "Save Level", "File Name", "");
         }
@@ -459,7 +459,7 @@ public class InputManager {
     }
 
     public void load(CellularMatrix matrix) {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.D)) {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.L)) {
             paused = true;
             Gdx.input.getTextInput(loadLevelNameListener, "Load Level", "File Name", "");
         }

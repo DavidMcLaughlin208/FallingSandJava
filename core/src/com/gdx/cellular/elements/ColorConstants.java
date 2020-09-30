@@ -1,8 +1,8 @@
 package com.gdx.cellular.elements;
 
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.gdx.cellular.util.Assets;
 import com.gdx.cellular.util.MaterialMap;
 
 import java.util.*;
@@ -182,15 +182,10 @@ public class ColorConstants {
         if (missingElements.size() > 0) {
             throw new IllegalStateException("Elements " + missingElements.toString() + "have no assigned colors");
         }
-        AssetManager manager = new AssetManager();
-        // Load custom textures
-        manager.load("elementtextures/Stone.png", Pixmap.class);
-        manager.load("elementtextures/Wood.png", Pixmap.class);
-        manager.finishLoading();
 
         // Place custom textures in materialsMap
-        Pixmap stonePixmap = manager.get("elementtextures/Stone.png");
-        Pixmap woodPixmap = manager.get("elementtextures/Wood.png");
+        Pixmap stonePixmap = Assets.getPixmap("elementtextures/Stone.png");
+        Pixmap woodPixmap = Assets.getPixmap("elementtextures/Wood.png");
         materialsMap.put("STONE", new MaterialMap(stonePixmap));
         materialsMap.put("WOOD", new MaterialMap(woodPixmap));
     }

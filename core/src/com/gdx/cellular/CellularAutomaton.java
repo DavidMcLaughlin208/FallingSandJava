@@ -2,7 +2,6 @@ package com.gdx.cellular;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
@@ -19,7 +18,6 @@ import com.gdx.cellular.input.InputProcessors;
 import com.gdx.cellular.ui.MatrixActor;
 import com.gdx.cellular.util.ElementColumnStepper;
 import com.gdx.cellular.util.GameManager;
-import com.gdx.cellular.util.WeatherSystem;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -37,7 +35,6 @@ public class CellularAutomaton extends ApplicationAdapter {
     private ShapeRenderer shapeRenderer;
     public CellularMatrix matrix;
     private OrthographicCamera camera;
-	AssetManager manager = new AssetManager();
 
     private int numThreads = 12;
     private boolean useMultiThreading = true;
@@ -82,11 +79,11 @@ public class CellularAutomaton extends ApplicationAdapter {
 		ShapeFactory.initialize(b2dWorld);
 		debugRenderer = new Box2DDebugRenderer();
 
-		inputProcessors = new InputProcessors(inputManager, matrix, camera);
 		setUpBasicBodies();
 
 		this.gameManager = new GameManager(this);
-		this.gameManager.createPlayer(matrix.innerArraySize/2, matrix.outerArraySize/2);
+		gameManager.createPlayer(matrix.innerArraySize/2, matrix.outerArraySize/2);
+		inputProcessors = new InputProcessors(inputManager, matrix, camera, gameManager);
 	}
 
 	@Override

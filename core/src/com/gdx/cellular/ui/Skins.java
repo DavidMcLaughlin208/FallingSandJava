@@ -10,8 +10,8 @@ import java.util.Map;
 
 public class Skins {
 
-    private static Map<String, Skin> skinMap = new HashMap<>();
-    private static AssetManager assetManager = new AssetManager();
+    private static final Map<String, Skin> skinMap = new HashMap<>();
+    private static final AssetManager assetManager = new AssetManager();
 
     private Skins() {
         throw new IllegalStateException("Should not be instantiated");

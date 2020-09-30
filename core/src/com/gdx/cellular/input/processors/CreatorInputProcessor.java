@@ -27,6 +27,9 @@ public class CreatorInputProcessor implements InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
+        if (keycode == Input.Keys.ENTER) {
+            this.parent.setPlayerProcessor();
+        }
         if (keycode == Input.Keys.EQUALS) {
             inputManager.calculateNewBrushSize(2);
         }

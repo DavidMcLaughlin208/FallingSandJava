@@ -1,6 +1,5 @@
 package com.gdx.cellular.player;
 
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.math.Vector3;
@@ -14,6 +13,7 @@ import com.gdx.cellular.elements.gas.Gas;
 import com.gdx.cellular.elements.liquid.Liquid;
 import com.gdx.cellular.elements.player.PlayerMeat;
 import com.gdx.cellular.elements.solid.movable.MovableSolid;
+import com.gdx.cellular.util.Assets;
 import com.gdx.cellular.util.MaterialMap;
 
 public class Player {
@@ -33,8 +33,35 @@ public class Player {
         this.matrixY = y;
     }
 
+    public void addVelocity(Vector3 velToAdd) {
+        this.vel.add(velToAdd);
+    }
+
+    public void addVelocity(float x, float y) {
+        this.vel.x += x;
+        this.vel.y += y;
+    }
+
+    public void setVelocity(Vector3 velToTake) {
+        this.vel.x = velToTake.x;
+        this.vel.y = velToTake.y;
+    }
+
+    public void setVelocity(float x, float y) {
+        this.vel.x = x;
+        this.vel.y = y;
+    }
+
+    public void setXVelocity(int x) {
+        this.vel.x = x;
+    }
+
+    public void setYVelocity(int y) {
+        this.vel.y = y;
+    }
+
     public void step(CellularMatrix matrix) {
-        vel.add(CellularAutomaton.gravity);
+        addVelocity(CellularAutomaton.gravity);
 
         int yModifier = vel.y < 0 ? -1 : 1;
         int xModifier = vel.x < 0 ? -1 : 1;
@@ -93,14 +120,14 @@ public class Player {
 
             int xOffset = xIncrease * xModifier;
             int yOffset = yIncrease * yModifier;
-            boolean unstopped = true;
+            boolean unstopped;
             for (Array<Element> meatRow : this.bodyMeat) {
                 for (Element meat : meatRow) {
                     PlayerMeat playerMeat = (PlayerMeat) meat;
                     unstopped = playerMeat.stepAsPlayer(matrix, xOffset, yOffset);
                     if (!unstopped) {
                         moveToLastValid(matrix, lastValidLocation);
-                        this.vel.x = 0;
+//                        this.vel.x = 0;
                         this.vel.y = 0;
                         return;
                     }
@@ -149,8 +176,8 @@ public class Player {
     }
 
     private Array<Array<Element>> createBody(int worldX, int worldY, int playerIndex, CellularMatrix matrix) {
-        FileHandle textureFile = new FileHandle("elementtextures/Player" + playerIndex + ".png");
-        this.playerTexture = new MaterialMap(new Pixmap(textureFile));
+        Pixmap pixmap = Assets.getPixmap("elementtextures/Player0.png");
+        this.playerTexture = new MaterialMap(pixmap);
         Array<Array<Element>> elements = new Array<>();
         for (int y = 0; y < playerTexture.h; y++) {
             Array<Element> innerArray = new Array<>();
@@ -161,7 +188,7 @@ public class Player {
                 ((PlayerMeat) meat).setOwningPlayer(this);
                 int rgb = this.playerTexture.getRGB(x, y);
                 Color color = new Color();
-                Color.argb8888ToColor(color, rgb);
+                Color.rgba8888ToColor(color, rgb);
                 meat.color = color;
                 innerArray.add(meat);
             }
@@ -189,4 +216,6 @@ public class Player {
     public void setMatrixY(int matrixY) {
         this.matrixY = matrixY;
     }
+
+
 }

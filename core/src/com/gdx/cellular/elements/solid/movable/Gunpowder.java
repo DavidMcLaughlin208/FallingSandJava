@@ -6,7 +6,7 @@ import com.gdx.cellular.CellularMatrix;
 public class Gunpowder extends MovableSolid {
 
     private int ignitedCount = 0;
-    private int ignitedThreshold = 5;
+    private final int ignitedThreshold = 7;
 
     public Gunpowder(int x, int y) {
         super(x, y);

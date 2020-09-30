@@ -1,11 +1,8 @@
 package com.gdx.cellular.ui;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.assets.loaders.SkinLoader;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -15,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.gdx.cellular.CellularAutomaton;
-import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.input.InputManager;
 import com.gdx.cellular.input.MouseMode;
 import com.gdx.cellular.elements.ElementType;
@@ -36,7 +32,6 @@ public class CreatorMenu {
     public Table dropDownWeather;
     public Stage dropDownStage;
     public SelectedSubList selectedSubList;
-    AssetManager manager = new AssetManager();
 
     public Map<SelectedSubList, Table> listTableMap = new HashMap<>();
 
