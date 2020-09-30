@@ -14,7 +14,7 @@ one pixel square. This would be too much to synchronize with basic online implem
 improvements in streaming online multiplayer should be possible through 
 [Steam Remote Play](https://store.steampowered.com/streaming/) or [Parsec](https://parsecgaming.com/).
 
-![](media/housescene.gif)
+![](media/HouseScene.gif)
 
 ![](media/ExplosionScene.gif)
 
@@ -30,6 +30,6 @@ The basic steps are:
 * Create a Box2D rigidbody from all the resulting triangles
 * If any elements in the rigidbody are destory repeat the process
 
-![](media/Box2D scene.gif)
+![](media/Box2DScene.gif)
 
 
