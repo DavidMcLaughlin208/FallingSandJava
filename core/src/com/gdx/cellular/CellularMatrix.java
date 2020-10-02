@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
+import com.gdx.cellular.boids.Boid;
 import com.gdx.cellular.box2d.PhysicsElementActor;
 import com.gdx.cellular.box2d.ShapeFactory;
 import com.gdx.cellular.elements.ColorConstants;
@@ -45,6 +46,7 @@ public class CellularMatrix {
     public Array<PhysicsElementActor> physicsElementActors = new Array<>();
     public World world;
     public Array<Explosion> explosionArray = new Array<>();
+    public Array<Boid> boids = new Array<>();
 
     public CellularMatrix(int width, int height, int pixelSizeModifier, World world) {
         this.pixelSizeModifier = pixelSizeModifier;
@@ -314,9 +316,10 @@ public class CellularMatrix {
 
     public boolean clearAll() {
         matrix = generateMatrix();
-        spoutArray = new Array<>();
+        spoutArray.clear();
         physicsElementActors.forEach(pea -> world.destroyBody(pea.getPhysicsBody()));
-        physicsElementActors = new Array<>();
+        physicsElementActors.clear();
+        boids.clear();
         return true;
     }
 
@@ -388,7 +391,7 @@ public class CellularMatrix {
         return matrixX >= 0 && matrixY >= 0 && matrixX < innerArraySize && matrixY < outerArraySize;
     }
 
-    public int distanceBetweenTwoPoints(int x1, int x2, int y1, int y2) {
+    public static int distanceBetweenTwoPoints(int x1, int x2, int y1, int y2) {
         return (int) Math.ceil(Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2)));
     }
 
@@ -791,6 +794,44 @@ public class CellularMatrix {
     public void destroyPhysicsElementActor(PhysicsElementActor physicsElementActor) {
         this.world.destroyBody(physicsElementActor.getPhysicsBody());
         this.physicsElementActors.removeValue(physicsElementActor, true);
+    }
+
+    public Array<Boid> getBoidNeighbors(int matrixX, int matrixY) {
+        Array<Boid> allBoids = new Array<>(boids);
+        Array<Boid> neighbors = new Array<>();
+        for (Boid boid : allBoids) {
+            int distance = distanceBetweenTwoPoints(matrixX, boid.getMatrixX(), matrixY, boid.getMatrixY());
+            if (distance > 0 && distance <= Boid.neighborDistance) {
+                neighbors.add(boid);
+            }
+        }
+        return neighbors;
+    }
+
+    public void addBoid(Boid boid) {
+        this.boids.add(boid);
+    }
+
+    public void spawnBoidsWithBrush(int matrixX, int matrixY, int brushSize, InputManager.BRUSHTYPE brushType) {
+        int halfBrush = brushSize/2;
+        for (int x = matrixX - halfBrush; x <= matrixX + halfBrush; x++) {
+            for (int y = matrixY - halfBrush; y <= matrixY + halfBrush; y++) {
+                if (brushType.equals(InputManager.BRUSHTYPE.CIRCLE)) {
+                    int distance = distanceBetweenTwoPoints(matrixX, x, matrixY, y);
+                    if (distance < halfBrush) {
+                        Vector3 velocity = generateRandomVelocityWithBounds(-100, 100);
+                        spawnBoid(x, y, velocity);
+                    }
+                } else {
+                    Vector3 velocity = generateRandomVelocityWithBounds(-100, 100);
+                    spawnBoid(x, y, velocity);
+                }
+            }
+        }
+    }
+
+    public void spawnBoid(int x, int y, Vector3 velocity) {
+        ElementType.createBoidByMatrix(this, x, y, velocity);
     }
 
     public static class FunctionInput {

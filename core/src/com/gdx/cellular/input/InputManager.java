@@ -21,6 +21,7 @@ import com.gdx.cellular.box2d.PhysicsElementActor;
 import com.gdx.cellular.box2d.ShapeFactory;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
+import com.gdx.cellular.ui.ControlsMenu;
 import com.gdx.cellular.ui.CreatorMenu;
 import com.gdx.cellular.ui.CursorActor;
 import com.gdx.cellular.ui.ModeActor;
@@ -63,10 +64,9 @@ public class InputManager {
     public boolean drawMenu = false;
     private boolean drawCursor = true;
 
-    public boolean earClip = false;
-
     public InputProcessor creatorInputProcessor;
     private final CreatorMenu creatorMenu;
+    private final ControlsMenu controlsMenu;
     public Stage cursorStage;
     public Cursor cursor;
     public Stage modeStage;
@@ -79,6 +79,7 @@ public class InputManager {
     public InputManager(OrthographicCamera camera, Viewport viewport, ShapeRenderer shapeRenderer) {
         this.camera = camera;
         this.creatorMenu = new CreatorMenu(this, viewport);
+        this.controlsMenu = new ControlsMenu(this, viewport);
         this.cursorStage = new Stage(viewport);
         this.cursor = new Cursor(this);
         this.cursorStage.addActor(new CursorActor(shapeRenderer, this.cursor));
@@ -113,12 +114,6 @@ public class InputManager {
             newThreads -= numThreads == 1 ? 0 : 1;
         }
         return newThreads;
-    }
-
-    public void toggleEarClip() {
-        if (Gdx.input.isKeyJustPressed(Input.Keys.U)) {
-            earClip = !earClip;
-        }
     }
 
     public boolean toggleThreads(boolean toggleThreads) {
@@ -199,6 +194,9 @@ public class InputManager {
                             }
                             break;
                     }
+                    break;
+                case BOID:
+                    matrix.spawnBoidsWithBrush(matrix.toMatrix(touchPos.x), matrix.toMatrix(touchPos.y), brushSize, brushType);
                     break;
                 case EXPLOSION:
                     if (touchedLastFrame) {
@@ -510,6 +508,7 @@ public class InputManager {
     }
 
     public void drawMenu() {
+        this.modeStage.act();
         this.modeStage.draw();
         if (drawMenu) {
             this.creatorMenu.dropDownStage.act();

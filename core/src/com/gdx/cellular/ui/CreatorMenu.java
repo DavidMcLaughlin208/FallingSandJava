@@ -356,7 +356,6 @@ public class CreatorMenu {
             public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
                 setElementButton.setColor(Color.RED);
             }
-
             @Override
             public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
                 setElementButton.setColor(Color.GRAY);

@@ -3,6 +3,7 @@ package com.gdx.cellular.elements;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularMatrix;
+import com.gdx.cellular.boids.Boid;
 import com.gdx.cellular.elements.gas.*;
 import com.gdx.cellular.elements.liquid.*;
 import com.gdx.cellular.elements.player.PlayerMeat;
@@ -163,6 +164,12 @@ public enum ElementType {
         public Element createElementByMatrix(int x, int y) {
             throw new IllegalStateException();
         }
+    },
+    BOID(Boid.class, ClassType.PARTICLE) {
+        @Override
+        public Element createElementByMatrix(int x, int y) {
+            throw new IllegalStateException();
+        }
     };
 
     public final Class<? extends Element> clazz;
@@ -185,6 +192,16 @@ public enum ElementType {
             Element newElement = new Particle(x, y, vector3, elementType, color, isIgnited);
             matrix.setElementAtIndex(x, y, newElement);
             return newElement;
+        }
+        return null;
+    }
+
+    public static Boid createBoidByMatrix(CellularMatrix matrix, int x, int y, Vector3 velocity) {
+        if (matrix.isWithinBounds(x, y)) {
+            Boid boid = new Boid(x, y, velocity);
+            matrix.addBoid(boid);
+            matrix.setElementAtIndex(x, y, boid);
+            return boid;
         }
         return null;
     }
