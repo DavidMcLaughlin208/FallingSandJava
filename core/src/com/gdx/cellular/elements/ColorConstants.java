@@ -93,7 +93,9 @@ public class ColorConstants {
 
     // Others
     private static final Color PARTICLE = new Color(0/255f, 0/255f, 0/255f, 0);
-    private static final Color BOID = new Color(0/255f, 255/255f, 0/255f, 0);
+    private static final Color BOID_1 = new Color(0/255f, 255/255f, 255/255f, 0);
+    private static final Color BOID_2 = new Color(200/255f, 0/255f, 255/255f, 0);
+    private static final Color BOID_3 = new Color(150/255f, 255/255f, 255/255f, 0);
     private static final Color EMPTY_CELL = new Color(0/255f, 0/255f, 0/255f, 0);
 
     private static final String GRASS = "Grass";
@@ -165,7 +167,9 @@ public class ColorConstants {
 
         elementColorMap.get(ElementType.PARTICLE).add(PARTICLE);
 
-        elementColorMap.get(ElementType.BOID).add(BOID);
+        elementColorMap.get(ElementType.BOID).add(BOID_1);
+        elementColorMap.get(ElementType.BOID).add(BOID_2);
+        elementColorMap.get(ElementType.BOID).add(BOID_3);
 
         elementColorMap.get(ElementType.EMPTYCELL).add(EMPTY_CELL);
 

@@ -33,6 +33,7 @@ public class Cursor {
                 sr.end();
                 break;
             case SPAWN:
+            case BOID:
             case HEAT:
             case PARTICALIZE:
             case PARTICLE:

@@ -819,11 +819,11 @@ public class CellularMatrix {
                 if (brushType.equals(InputManager.BRUSHTYPE.CIRCLE)) {
                     int distance = distanceBetweenTwoPoints(matrixX, x, matrixY, y);
                     if (distance < halfBrush) {
-                        Vector3 velocity = generateRandomVelocityWithBounds(-100, 100);
+                        Vector3 velocity = generateRandomVelocityWithBounds(-50, 50);
                         spawnBoid(x, y, velocity);
                     }
                 } else {
-                    Vector3 velocity = generateRandomVelocityWithBounds(-100, 100);
+                    Vector3 velocity = generateRandomVelocityWithBounds(-50, 50);
                     spawnBoid(x, y, velocity);
                 }
             }

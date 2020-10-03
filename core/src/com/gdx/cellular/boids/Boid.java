@@ -9,14 +9,27 @@ import com.gdx.cellular.elements.EmptyCell;
 import com.gdx.cellular.elements.liquid.Liquid;
 import com.gdx.cellular.elements.solid.Solid;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Boid extends Element {
 
     public static int neighborDistance = 15;
-    private static final int noiseFactor = 55;
+    private static final int noiseFactor = 7;
+    private static final float coheseFactor = 10f;
+    private static final float alignmentFactor = 10f;
+    private static final float avoidFactor = 5f;
+    private static final String ALIGNMENT = "alignment";
+    private static final String COHESE = "cohese";
+    private static final String AVOID = "avoid";
+    private final Map<String, Vector3> vectorMap = new HashMap<>();
 
     public Boid(int x, int y, Vector3 velocity) {
         super(x, y);
         vel = velocity;
+        vectorMap.put(ALIGNMENT, new Vector3(0, 0, 0));
+        vectorMap.put(COHESE, new Vector3(0, 0, 0));
+        vectorMap.put(AVOID, new Vector3(0, 0, 0));
     }
 
     @Override
@@ -25,16 +38,19 @@ public class Boid extends Element {
         stepped.flip(0);
 
         Array<Boid> neighbors = matrix.getBoidNeighbors(getMatrixX(), getMatrixY());
-        Vector3 alignmentForce = getAlignment(neighbors);
-        Vector3 cohese = getCohesion(neighbors);
-        Vector3 avoid = getAvoid(neighbors);
+
+        calculateVelocities(neighbors);
+        Vector3 alignmentForce = vectorMap.get(ALIGNMENT);
+        Vector3 cohese = vectorMap.get(COHESE);
+        Vector3 avoid = vectorMap.get(AVOID);
         float noiseX = 1 - (float) Math.random() * 2;
         float noiseY = 1 - (float) Math.random() * 2;
         Vector3 noise = new Vector3(noiseX * noiseFactor, noiseY * noiseFactor, 0);
 
-        this.vel.add(alignmentForce.scl(1/10f));
-        this.vel.add(cohese.scl(1/10f));
-        this.vel.add(avoid.scl(1/5f));
+        this.vel.add(alignmentForce.scl(1/alignmentFactor));
+        this.vel.add(cohese.scl(1/coheseFactor));
+        this.vel.add(avoid.scl(1/avoidFactor));
+        this.vel.add(noise);
 
         this.vel.limit(100);
 
@@ -107,66 +123,62 @@ public class Boid extends Element {
 
             } else {
                 if (xDiffIsLarger) {
-                    if (thresholdPassed) {
-                        vel.y *= -1;
-                        vel.x *= -1;
-                    } else {
-                        vel.x *= -1;
-                    }
+                    vel.x *= -1;
                 } else {
-                    if (thresholdPassed) {
-                        vel.y *= -1;
-                        vel.x *= -1;
-                    } else {
-                        vel.x *= -1;
-                    }
+                    vel.y *= -1;
                 }
                 return;
             }
         }
     }
 
-    private Vector3 getAvoid(Array<Boid> neighbors) {
-        Vector3 steer = new Vector3();
+    private void calculateVelocities(Array<Boid> neighbors) {
+        // Avoid variables
+        Vector3 avoid = new Vector3();
         Vector3 location = new Vector3(getMatrixX(), getMatrixY(), 0);
+
+        // Cohese variables
+        int totalX = 0;
+        int totalY = 0;
+        Vector3 cohese = new Vector3(0, 0, 0);
+
+        // Alignment variables
+        Vector3 alignment = new Vector3(0,0,0);
+
         for (Boid neighbor : neighbors) {
+            // Avoid logic
             Vector3 otherLocationn = new Vector3(neighbor.getMatrixX(), neighbor.getMatrixY(), 0);
             float distance = location.dst(otherLocationn);
 
             Vector3 diff = location.cpy().sub(otherLocationn);
             diff.nor();
-            diff.scl(1/ distance);
-            steer.add(diff);
-        }
-        return steer;
-    }
+            diff.scl(1 / distance);
+            avoid.add(diff);
 
-    private Vector3 getCohesion(Array<Boid> neighbors) {
-        int totalX = 0;
-        int totalY = 0;
-        for (Boid neighbor : neighbors) {
+            // Cohese logic
             totalX += neighbor.getMatrixX();
             totalY += neighbor.getMatrixY();
+
+            // Alignment logic
+            alignment.add(neighbor.vel);
         }
+        // Cohesion post processing
         if (neighbors.size > 0) {
             float avgX = totalX / (float)  neighbors.size;
             float avgY = totalY / (float)  neighbors.size;
             float desiredX = avgX - this.getMatrixX();
             float desiredY = avgY - this.getMatrixY();
-            return new Vector3(desiredX, desiredY, 0);
-        } else {
-            return new Vector3();
+            cohese =  new Vector3(desiredX, desiredY, 0);
         }
-    }
 
-    private Vector3 getAlignment(Array<Boid> neighbors) {
-        Vector3 avg = new Vector3(0,0,0);
-        if (neighbors.size == 0) return avg;
-        for (Boid neighbor : neighbors) {
-            avg.add(neighbor.vel);
+        // Alignment post processing
+        if (neighbors.size > 0) {
+            alignment.scl(1f / (float) neighbors.size);
         }
-        avg.scl(1f/(float) neighbors.size);
-        return avg;
+
+        this.vectorMap.put(ALIGNMENT, alignment);
+        this.vectorMap.put(COHESE, cohese);
+        this.vectorMap.put(AVOID, avoid);
     }
 
     @Override
