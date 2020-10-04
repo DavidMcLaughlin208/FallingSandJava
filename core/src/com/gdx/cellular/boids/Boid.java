@@ -14,6 +14,7 @@ import java.util.Map;
 
 public class Boid extends Element {
 
+    private static final int SCAN_DISTANCE = 15;
     public static int neighborDistance = 15;
     private static final int noiseFactor = 7;
     private static final float coheseFactor = 10f;
@@ -52,7 +53,7 @@ public class Boid extends Element {
         this.vel.add(avoid.scl(1/avoidFactor));
         this.vel.add(noise);
 
-        this.vel.limit(100);
+        this.vel.limit(75);
 
         int yModifier = vel.y < 0 ? -1 : 1;
         int xModifier = vel.x < 0 ? -1 : 1;
@@ -92,7 +93,12 @@ public class Boid extends Element {
         int smallerCount = 0;
         Vector3 formerLocation = new Vector3(getMatrixX(), getMatrixY(), 0);
         Vector3 lastValidLocation = new Vector3(getMatrixX(), getMatrixY(), 0);
-        for (int i = 1; i <= upperBound; i++) {
+        boolean onlyCheckingObstacles = false;
+        int scanVariation = SCAN_DISTANCE + (int) (Math.random() * 10);
+        for (int i = 1; i <= upperBound + scanVariation; i++) {
+            if (i > upperBound) {
+                onlyCheckingObstacles = true;
+            }
             freqCounter += floatFreq;
             boolean thresholdPassed = Math.floor(freqCounter) > freqThreshold;
             if (floatFreq != 0 && thresholdPassed && min >= smallerCount) {
@@ -113,6 +119,16 @@ public class Boid extends Element {
             int modifiedMatrixX = getMatrixX() + (xIncrease * xModifier);
             if (matrix.isWithinBounds(modifiedMatrixX, modifiedMatrixY)) {
                 Element neighbor = matrix.get(modifiedMatrixX, modifiedMatrixY);
+                if (onlyCheckingObstacles) {
+                    if (neighbor instanceof Solid || neighbor instanceof Liquid) {
+                        float distance = (int) Math.ceil(Math.sqrt(Math.pow(getMatrixX() - modifiedMatrixX, 2) + Math.pow(getMatrixY() - modifiedMatrixY, 2)));
+                        int modifier = Math.random() > 0.5f ? -1 : 1;
+//                        int modifier = getAvoidModifier();
+                        Vector3 newVel = new Vector3(vel.y, vel.x, 0).scl((1/distance) * 15 * modifier);
+                        vel.add(newVel);
+                    }
+                    continue;
+                }
                 if (neighbor == this) continue;
                 boolean stopped = actOnNeighboringElement(neighbor, modifiedMatrixX, modifiedMatrixY, matrix, i == upperBound, i == 1, lastValidLocation, 0);
                 if (stopped) {
@@ -122,14 +138,36 @@ public class Boid extends Element {
                 lastValidLocation.y = modifiedMatrixY;
 
             } else {
-                if (xDiffIsLarger) {
-                    vel.x *= -1;
+                if (onlyCheckingObstacles) {
+                    float distance = (int) Math.ceil(Math.sqrt(Math.pow(getMatrixX() - modifiedMatrixX, 2) + Math.pow(getMatrixY() - modifiedMatrixY, 2)));
+                    int modifier = Math.random() > 0.5f ? -1 : 1;
+//                    int modifier = getAvoidModifier();
+                    Vector3 newVel = new Vector3(vel.y, vel.x, 0).scl((1/distance) * 15 * modifier);
+                    vel.add(newVel);
+                    break;
                 } else {
-                    vel.y *= -1;
+                    if (xDiffIsLarger) {
+                        vel.x *= -1;
+                    } else {
+                        vel.y *= -1;
+                    }
+                    break;
                 }
-                return;
             }
         }
+    }
+
+    private int getAvoidModifier() {
+        if (vel.y > 0 && vel.x > 0) {
+            return -1;
+        } else if (vel.y < 0 && vel.x > 0) {
+            return 1;
+        } else if (vel.y > 0 && vel.x < 0) {
+            return 1;
+        } else if (vel.y < 0 && vel.x < 0) {
+            return -1;
+        }
+        return 1;
     }
 
     private void calculateVelocities(Array<Boid> neighbors) {
@@ -152,8 +190,10 @@ public class Boid extends Element {
 
             Vector3 diff = location.cpy().sub(otherLocationn);
             diff.nor();
-            diff.scl(1 / distance);
-            avoid.add(diff);
+            if (distance > 0) {
+                diff.scl(1 / distance);
+                avoid.add(diff);
+            }
 
             // Cohese logic
             totalX += neighbor.getMatrixX();
