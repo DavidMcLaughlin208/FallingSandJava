@@ -53,6 +53,9 @@ public class CreatorInputProcessor implements InputProcessor {
         if (keycode == Input.Keys.M) {
             inputManager.cycleBrushType();
         }
+        if (keycode == Input.Keys.Z) {
+            inputManager.toggleBoidChunks();
+        }
         return false;
     }
 

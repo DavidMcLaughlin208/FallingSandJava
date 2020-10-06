@@ -27,7 +27,7 @@ import com.gdx.cellular.util.Chunk;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
-
+import java.util.stream.Collectors;
 
 
 public class CellularMatrix {
@@ -47,6 +47,7 @@ public class CellularMatrix {
     public World world;
     public Array<Explosion> explosionArray = new Array<>();
     public Array<Boid> boids = new Array<>();
+    public boolean useBoidChunks = false;
 
     public CellularMatrix(int width, int height, int pixelSizeModifier, World world) {
         this.pixelSizeModifier = pixelSizeModifier;
@@ -320,6 +321,7 @@ public class CellularMatrix {
         physicsElementActors.forEach(pea -> world.destroyBody(pea.getPhysicsBody()));
         physicsElementActors.clear();
         boids.clear();
+        chunks.forEach(chunkInnerArray -> chunkInnerArray.forEach(Chunk::removeAllBoids));
         return true;
     }
 
@@ -664,6 +666,23 @@ public class CellularMatrix {
         }
     }
 
+    public Chunk addBoidToChunk(Boid boid, Chunk currentChunk) {
+        Chunk chunk = getChunkForCoordinates(boid.getMatrixX(), boid.getMatrixY());
+        if (chunk == null || chunk == currentChunk) {
+            return chunk;
+        }
+        chunk.addBoid(boid);
+        if (currentChunk != null) {
+            currentChunk.removeBoid(boid);
+        }
+        return chunk;
+    }
+
+    public void removeBoidFromChunk(Boid boid) {
+        Chunk chunk = getChunkForCoordinates(boid.getMatrixX(), boid.getMatrixY());
+        chunk.removeBoid(boid);
+    }
+
     public boolean shouldElementInChunkStep(Element element) {
         return getChunkForElement(element).getShouldStep();
     }
@@ -797,6 +816,14 @@ public class CellularMatrix {
     }
 
     public Array<Boid> getBoidNeighbors(int matrixX, int matrixY) {
+        if (useBoidChunks) {
+            return getChunkBoidNeighbors(matrixX, matrixY);
+        } else {
+            return getAllBoidNeighbors(matrixX, matrixY);
+        }
+    }
+
+    public Array<Boid> getAllBoidNeighbors(int matrixX, int matrixY) {
         Array<Boid> allBoids = new Array<>(boids);
         Array<Boid> neighbors = new Array<>();
         for (Boid boid : allBoids) {
@@ -806,6 +833,75 @@ public class CellularMatrix {
             }
         }
         return neighbors;
+    }
+
+    public Array<Boid> getChunkBoidNeighbors(int matrixX, int matrixY) {
+        Set<Chunk> chunks = new HashSet<>();
+        Chunk currentChunk = getChunkForCoordinates(matrixX, matrixY);
+        chunks.add(currentChunk);
+        boolean top = false;
+        boolean right = false;
+        boolean bottom = false;
+        boolean left = false;
+        if (matrixX % Chunk.size < Boid.neighborDistance) {
+            Chunk chunk = getChunkForCoordinates(matrixX - Boid.neighborDistance, matrixY);
+            if (chunk != null) {
+                chunks.add(chunk);
+            }
+            left = true;
+        }
+        if (matrixX % Chunk.size > Chunk.size - Boid.neighborDistance) {
+            Chunk chunk = getChunkForCoordinates(matrixX + Boid.neighborDistance, matrixY);
+            if (chunk != null) {
+                chunks.add(chunk);
+            }
+            right = true;
+        }
+        if (matrixY % Chunk.size < Boid.neighborDistance) {
+            Chunk chunk = getChunkForCoordinates(matrixX, matrixY - Boid.neighborDistance);
+            if (chunk != null) {
+                chunks.add(chunk);
+            }
+            top = true;
+        }
+        if (matrixY % Chunk.size > Chunk.size - Boid.neighborDistance) {
+            Chunk chunk = getChunkForCoordinates(matrixX, matrixY + Boid.neighborDistance);
+            if (chunk != null) {
+                chunks.add(chunk);
+            }
+            bottom = true;
+        }
+        if (top && right) {
+            Chunk chunk = getChunkForCoordinates(matrixX + Boid.neighborDistance, matrixY - Boid.neighborDistance);
+            if (chunk != null) {
+                chunks.add(chunk);
+            }
+        } else if (right && bottom) {
+            Chunk chunk = getChunkForCoordinates(matrixX + Boid.neighborDistance, matrixY + Boid.neighborDistance);
+            if (chunk != null) {
+                chunks.add(chunk);
+            }
+        } else if (bottom && left) {
+            Chunk chunk = getChunkForCoordinates(matrixX - Boid.neighborDistance, matrixY + Boid.neighborDistance);
+            if (chunk != null) {
+                chunks.add(chunk);
+            }
+        } else if (top && left) {
+            Chunk chunk = getChunkForCoordinates(matrixX - Boid.neighborDistance, matrixY - Boid.neighborDistance);
+            if (chunk != null) {
+                chunks.add(chunk);
+            }
+        }
+        List<Boid> allNeighbors = new ArrayList<>();
+        chunks.forEach(chunk -> allNeighbors.addAll(chunk.getAllBoids()));
+        List<Boid> filteredNeighbors = allNeighbors.stream().filter(boid -> {
+            int distance = distanceBetweenTwoPoints(matrixX, boid.getMatrixX(), matrixY, boid.getMatrixY());
+            return distance > 0 && distance < Boid.neighborDistance;
+        }).collect(Collectors.toList());
+        List<Boid> subList = filteredNeighbors.subList(0, Math.min(Boid.maxNeighbors, filteredNeighbors.size()));
+        Array<Boid> returnList = new Array<>();
+        subList.forEach(returnList::add);
+        return returnList;
     }
 
     public void addBoid(Boid boid) {

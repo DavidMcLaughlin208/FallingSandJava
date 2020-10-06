@@ -5,25 +5,30 @@ import com.badlogic.gdx.utils.Array;
 import com.gdx.cellular.CellularAutomaton;
 import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.elements.Element;
+import com.gdx.cellular.elements.ElementType;
 import com.gdx.cellular.elements.EmptyCell;
 import com.gdx.cellular.elements.liquid.Liquid;
 import com.gdx.cellular.elements.solid.Solid;
+import com.gdx.cellular.util.Chunk;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Boid extends Element {
 
     private static final int SCAN_DISTANCE = 15;
     public static int neighborDistance = 15;
+    public static int maxNeighbors = 25;
     private static final int noiseFactor = 7;
-    private static final float coheseFactor = 10f;
+    private static final float coheseFactor = 8;
     private static final float alignmentFactor = 10f;
     private static final float avoidFactor = 5f;
     private static final String ALIGNMENT = "alignment";
     private static final String COHESE = "cohese";
     private static final String AVOID = "avoid";
     private final Map<String, Vector3> vectorMap = new HashMap<>();
+    private Chunk chunk;
 
     public Boid(int x, int y, Vector3 velocity) {
         super(x, y);
@@ -38,6 +43,7 @@ public class Boid extends Element {
         if (stepped.get(0) == CellularAutomaton.stepped.get(0)) return;
         stepped.flip(0);
 
+//        List<Boid> neighbors = matrix.getBoidNeighbors(getMatrixX(), getMatrixY());
         Array<Boid> neighbors = matrix.getBoidNeighbors(getMatrixX(), getMatrixY());
 
         calculateVelocities(neighbors);
@@ -154,6 +160,7 @@ public class Boid extends Element {
                     break;
                 }
             }
+            this.chunk = matrix.addBoidToChunk(this, this.chunk);
         }
     }
 
@@ -233,5 +240,17 @@ public class Boid extends Element {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void dieAndReplace(CellularMatrix matrix, ElementType type) {
+        super.dieAndReplace(matrix, elementType);
+        matrix.removeBoidFromChunk(this);
+    }
+
+    @Override
+    public void die(CellularMatrix matrix) {
+        super.die(matrix);
+        matrix.removeBoidFromChunk(this);
     }
 }

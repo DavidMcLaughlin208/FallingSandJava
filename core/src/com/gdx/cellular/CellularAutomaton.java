@@ -105,6 +105,7 @@ public class CellularAutomaton extends ApplicationAdapter {
         useChunks = inputManager.toggleChunks(useChunks);
 		inputManager.save(matrix);
 		inputManager.load(matrix);
+		this.matrix.useBoidChunks = inputManager.useBoidChunks;
 
 		matrix.reshuffleXIndexes();
 		matrix.reshuffleThreadXIndexes(numThreads);
