@@ -244,7 +244,7 @@ public class Boid extends Element {
 
     @Override
     public void dieAndReplace(CellularMatrix matrix, ElementType type) {
-        super.dieAndReplace(matrix, elementType);
+        super.dieAndReplace(matrix, type);
         matrix.removeBoidFromChunk(this);
     }
 

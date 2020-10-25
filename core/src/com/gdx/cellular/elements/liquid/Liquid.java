@@ -27,9 +27,9 @@ public abstract class Liquid extends Element {
         if (stepped.get(0) == CellularAutomaton.stepped.get(0)) return;
         stepped.flip(0);
 
-//        if (matrix.useChunks && !matrix.shouldElementInChunkStep(this)) {
-//            return;
-//        }
+        if (matrix.useChunks && !matrix.shouldElementInChunkStep(this)) {
+            return;
+        }
 
         vel.add(CellularAutomaton.gravity);
         if (isFreeFalling) vel.x *= .8;

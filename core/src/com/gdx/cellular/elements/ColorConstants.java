@@ -46,6 +46,12 @@ public class ColorConstants {
     // Immovable Solids
     private static final Color STONE = new Color(150/255f, 150/255f, 150/255f, 1);
 
+    private static final Color BRICK_1 = new Color(188/255f, 3/255f, 0/255f, 1);
+    private static final Color BRICK_2 = new Color(188/255f, 3/255f, 0/255f, 1);
+    private static final Color BRICK_3 = new Color(188/255f, 3/255f, 0/255f, 1);
+    private static final Color BRICK_4 = new Color(188/255f, 3/255f, 0/255f, 1);
+    private static final Color BRICK_5 = new Color(206/255f, 206/255f, 206/255f, 1);
+
     private static final Color WOOD_1 = new Color(165/255f, 98/255f, 36/255f, 1);
     private static final Color WOOD_2 = new Color(61/255f, 33/255f, 7/255f, 1);
     private static final Color WOOD_3 = new Color(140/255f, 74/255f, 12/255f, 1);
@@ -129,6 +135,13 @@ public class ColorConstants {
 
         elementColorMap.get(ElementType.STONE).add(STONE);
 
+        elementColorMap.get(ElementType.BRICK).add(BRICK_1);
+        elementColorMap.get(ElementType.BRICK).add(BRICK_2);
+        elementColorMap.get(ElementType.BRICK).add(BRICK_3);
+        elementColorMap.get(ElementType.BRICK).add(BRICK_4);
+        elementColorMap.get(ElementType.BRICK).add(BRICK_5);
+
+
         elementColorMap.get(ElementType.WOOD).add(WOOD_1);
         elementColorMap.get(ElementType.WOOD).add(WOOD_2);
         elementColorMap.get(ElementType.WOOD).add(WOOD_3);
@@ -193,8 +206,10 @@ public class ColorConstants {
         // Place custom textures in materialsMap
         Pixmap stonePixmap = Assets.getPixmap("elementtextures/Stone.png");
         Pixmap woodPixmap = Assets.getPixmap("elementtextures/Wood.png");
+        Pixmap brickPixmap = Assets.getPixmap("elementtextures/Brick.png");
         materialsMap.put("STONE", new MaterialMap(stonePixmap));
         materialsMap.put("WOOD", new MaterialMap(woodPixmap));
+        materialsMap.put("BRICK", new MaterialMap(brickPixmap));
     }
 
     public static Color getColorByName(String name) {

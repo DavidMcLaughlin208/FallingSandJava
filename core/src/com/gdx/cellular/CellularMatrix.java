@@ -47,7 +47,6 @@ public class CellularMatrix {
     public World world;
     public Array<Explosion> explosionArray = new Array<>();
     public Array<Boid> boids = new Array<>();
-    public boolean useBoidChunks = false;
 
     public CellularMatrix(int width, int height, int pixelSizeModifier, World world) {
         this.pixelSizeModifier = pixelSizeModifier;
@@ -119,7 +118,7 @@ public class CellularMatrix {
 
     public void drawAll(ShapeRenderer sr) {
         drawElements(sr);
-//        drawChunks(sr);
+        drawChunks(sr);
     }
 
     private void drawElements(ShapeRenderer sr) {
@@ -236,7 +235,7 @@ public class CellularMatrix {
     }
 
     private float rectDrawWidth(int index) {
-        return (index * pixelSizeModifier) + (pixelSizeModifier - 1);
+        return (index * pixelSizeModifier) + (pixelSizeModifier);
     }
 
     public void stepProvidedRows(int minRow, int maxRow) {
@@ -816,11 +815,7 @@ public class CellularMatrix {
     }
 
     public Array<Boid> getBoidNeighbors(int matrixX, int matrixY) {
-        if (useBoidChunks) {
-            return getChunkBoidNeighbors(matrixX, matrixY);
-        } else {
-            return getAllBoidNeighbors(matrixX, matrixY);
-        }
+        return getChunkBoidNeighbors(matrixX, matrixY);
     }
 
     public Array<Boid> getAllBoidNeighbors(int matrixX, int matrixY) {

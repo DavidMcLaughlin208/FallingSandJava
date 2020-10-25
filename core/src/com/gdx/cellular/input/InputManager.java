@@ -72,7 +72,6 @@ public class InputManager {
     public Stage modeStage;
     public Camera camera;
     public WeatherSystem weatherSystem;
-    public boolean useBoidChunks = false;
 
 
     public Vector3 rectStartPos = new Vector3();
@@ -560,11 +559,6 @@ public class InputManager {
         } else if (brushType == BRUSHTYPE.CIRCLE) {
             brushType = BRUSHTYPE.RECTANGLE;
         }
-    }
-
-    public void toggleBoidChunks() {
-        this.useBoidChunks = !this.useBoidChunks;
-        System.out.println("UseBoidChunks: " + this.useBoidChunks);
     }
 
     public enum BRUSHTYPE {

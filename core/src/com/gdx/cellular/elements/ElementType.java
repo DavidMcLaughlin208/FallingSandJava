@@ -33,6 +33,12 @@ public enum ElementType {
             return new Stone(x, y);
         }
     },
+    BRICK(Brick.class, ClassType.IMMOVABLESOLID) {
+        @Override
+        public Element createElementByMatrix(int x, int y) {
+            return new Brick(x, y);
+        }
+    },
     SAND(Sand.class, ClassType.MOVABLESOLID) {
         @Override
         public Element createElementByMatrix(int x, int y) {
