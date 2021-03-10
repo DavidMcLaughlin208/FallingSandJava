@@ -37,7 +37,9 @@ public class CellularMatrix {
     public int pixelSizeModifier;
     private final List<Integer> shuffledXIndexes;
     public boolean useChunks = true;
+    public int drawThreadCount = 6;
     private List<List<Integer>> shuffledXIndexesForThreads;
+    private List<List<Integer>> shuffledYIndexesForThreads;
     private int threadedIndexOffset = 0;
 
     private Array<Array<Element>> matrix;
@@ -118,7 +120,7 @@ public class CellularMatrix {
 
     public void drawAll(ShapeRenderer sr) {
         drawElements(sr);
-        drawChunks(sr);
+//        drawChunks(sr);
     }
 
     private void drawElements(ShapeRenderer sr) {
@@ -212,28 +214,6 @@ public class CellularMatrix {
         sr.end();
     }
 
-    public void drawAll(Pixmap pixmap) {
-        for (int y = 0; y < outerArraySize; y++) {
-            Array<Element> row = getRow(y);
-            for (int x = 0; x < row.size; x++) {
-                Element element = row.get(x);
-                Color currentColor = element.color;
-                int toIndex = x;
-                for (int following = x; following < row.size; following++) {
-                    if (get(following, y).color != currentColor) {
-                        break;
-                    }
-                    toIndex = following;
-                }
-                x = toIndex;
-                if (element != null) {
-                    pixmap.setColor(element.color);
-                    pixmap.drawLine(element.pixelX, element.pixelY, element.pixelX + toIndex, element.pixelY);
-                }
-            }
-        }
-    }
-
     private float rectDrawWidth(int index) {
         return (index * pixelSizeModifier) + (pixelSizeModifier);
     }
@@ -264,6 +244,35 @@ public class CellularMatrix {
                 }
             }
         }
+    }
+
+    public void drawProvidedRows(int minRow, int maxRow, ShapeRenderer sr) {
+        sr.begin();
+        sr.set(ShapeRenderer.ShapeType.Filled);
+        for (int y = minRow; y < maxRow; y++) {
+            Array<Element> row = getRow(y);
+            for (int x = 0; x < row.size; x++) {
+                Element element = row.get(x);
+                if (element.owningBody != null) {
+                    continue;
+                }
+                Color currentColor = element.color;
+                int toIndex = x;
+                for (int following = x; following < row.size; following++) {
+                    Element followingElement = row.get(following);
+                    if (!followingElement.color.equals(currentColor)) {
+                        break;
+                    }
+                    toIndex = following;
+                }
+
+                sr.setColor(element.color);
+                sr.rect(element.toPixel(x), element.toPixel(y), rectDrawWidth(toIndex), pixelSizeModifier);
+                x = toIndex;
+
+            }
+        }
+        sr.end();
     }
 
     private int calculateIndexWithOffset(int x) {
