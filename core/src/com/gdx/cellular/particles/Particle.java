@@ -93,10 +93,10 @@ public class Particle extends Element {
     public void step(CellularMatrix matrix) {
         if (stepped.get(0) == CellularAutomaton.stepped.get(0)) return;
         stepped.flip(0);
-        vel.add(CellularAutomaton.gravity);
         if (vel.y > -64 && vel.y < 32) {
             vel.y = -64;
         }
+        vel.add(CellularAutomaton.gravity);
         if (vel.y < -500) {
             vel.y = -500;
         } else if (vel.y > 500) {
@@ -112,14 +112,12 @@ public class Particle extends Element {
 
         int upperBound = Math.max(Math.abs(velXDeltaTime), Math.abs(velYDeltaTime));
         int min = Math.min(Math.abs(velXDeltaTime), Math.abs(velYDeltaTime));
-        int freq = (min == 0 || upperBound == 0) ? 0 : (upperBound / min);
+        float slope = (min == 0 || upperBound == 0) ? 0 : ((float) (min + 1) / (upperBound + 1));
 
-        int smallerCount = 0;
+        int smallerCount;
         Vector3 lastValidLocation = new Vector3(getMatrixX(), getMatrixY(), 0);
         for (int i = 1; i <= upperBound; i++) {
-            if (freq != 0 && i % freq == 0 && min >= smallerCount) {
-                smallerCount += 1;
-            }
+            smallerCount = (int) Math.floor(i * slope);
 
             int yIncrease, xIncrease;
             if (xDiffIsLarger) {

@@ -1,6 +1,7 @@
 package com.gdx.cellular.particles;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.gdx.cellular.CellularMatrix;
 import com.gdx.cellular.elements.Element;
 import com.gdx.cellular.elements.ElementType;
@@ -58,7 +59,8 @@ public class Explosion {
         for (int x = radius; x >= radius * -1; x--) {
             for (int y = radius; y >= radius * -1; y--) {
                 if (Math.abs(x) == radius || Math.abs(y) == radius) {
-                    iterateBetweenTwoPoints(matrixX, matrixY, matrixX + x, matrixY + y, strength, coordinatesCache, matrix);
+                    //if (Math.random() < 0.05)
+                        iterateBetweenTwoPoints(matrixX, matrixY, matrixX + x, matrixY + y, strength, coordinatesCache, matrix);
                 }
             }
         }
@@ -86,18 +88,11 @@ public class Explosion {
 
         int upperBound = Math.max(Math.abs(xDiff), Math.abs(yDiff));
         int min = Math.min(Math.abs(xDiff), Math.abs(yDiff));
-        float floatFreq = (min == 0 || upperBound == 0) ? 0 : ((float) min / upperBound);
-        int freqThreshold = 0;
-        float freqCounter = 0;
+        float slope = (min == 0 || upperBound == 0) ? 0 : ((float) (min + 1) / (upperBound + 1));
 
-        int smallerCount = 0;
+        int smallerCount;
         for (int i = 0; i <= upperBound; i++) {
-            freqCounter += floatFreq;
-            boolean thresholdPassed = Math.floor(freqCounter) > freqThreshold;
-            if (floatFreq != 0 && thresholdPassed && min >= smallerCount) {
-                freqThreshold = (int) Math.floor(freqCounter);
-                smallerCount += 1;
-            }
+            smallerCount = (int) Math.floor(i * slope);
             int yIncrease, xIncrease;
             if (xDiffIsLarger) {
                 xIncrease = i;
@@ -171,7 +166,7 @@ public class Explosion {
                 Vector2 center = new Vector2(matrixX, matrixY);
                 Vector2 newPoint = new Vector2(currentX, currentY);
                 newPoint.sub(center).nor();
-//                matrix.particalizeByMatrix(currentX, currentY, new Vector3(newPoint.x * radius * 5, newPoint.y  * radius * 5, 0));
+                matrix.particalizeByMatrix(currentX, currentY, new Vector3(newPoint.x * radius * 5, newPoint.y  * radius * 5, 0));
                 if (Math.random() > .8) {
                     break;
                 }

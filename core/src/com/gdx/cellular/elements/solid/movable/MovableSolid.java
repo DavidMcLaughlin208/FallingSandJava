@@ -62,20 +62,13 @@ public abstract class MovableSolid extends Solid {
 
         int upperBound = Math.max(Math.abs(velXDeltaTime), Math.abs(velYDeltaTime));
         int min = Math.min(Math.abs(velXDeltaTime), Math.abs(velYDeltaTime));
-        float floatFreq = (min == 0 || upperBound == 0) ? 0 : ((float) min / upperBound);
-        int freqThreshold = 0;
-        float freqCounter = 0;
+        float slope = (min == 0 || upperBound == 0) ? 0 : ((float) (min + 1) / (upperBound + 1));
 
-        int smallerCount = 0;
+        int smallerCount;
         Vector3 formerLocation = new Vector3(getMatrixX(), getMatrixY(), 0);
         Vector3 lastValidLocation = new Vector3(getMatrixX(), getMatrixY(), 0);
         for (int i = 1; i <= upperBound; i++) {
-            freqCounter += floatFreq;
-            boolean thresholdPassed = Math.floor(freqCounter) > freqThreshold;
-            if (floatFreq != 0 && thresholdPassed && min >= smallerCount) {
-                freqThreshold = (int) Math.floor(freqCounter);
-                smallerCount += 1;
-            }
+            smallerCount = (int) Math.floor(i * slope);
 
             int yIncrease, xIncrease;
             if (xDiffIsLarger) {

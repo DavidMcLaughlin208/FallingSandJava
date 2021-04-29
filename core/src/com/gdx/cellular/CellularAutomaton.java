@@ -27,7 +27,7 @@ import java.util.List;
 public class CellularAutomaton extends ApplicationAdapter {
 	public static int screenWidth = 1280; // 480;
 	public static int screenHeight = 800; //800;
-	public static int pixelSizeModifier = 2;
+	public static int pixelSizeModifier = 6;
 	public static int box2dSizeModifier = 10;
     public static Vector3 gravity = new Vector3(0f, -5f, 0f);
     public static BitSet stepped = new BitSet(1);
