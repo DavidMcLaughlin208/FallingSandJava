@@ -11,7 +11,7 @@ public class Coal extends MovableSolid {
         super(x, y);
         vel = new Vector3(0f, -124f,0f);
         frictionFactor = .4f;
-        inertialResistance = .8f;
+        inertialResistance = .85f;
         mass = 200;
         flammabilityResistance = 100;
         resetFlammabilityResistance = 35;

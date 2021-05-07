@@ -311,7 +311,7 @@ public class CellularMatrix {
         for (Explosion explosion : explosionArray) {
             explosion.enact();
         }
-        explosionArray.clear();
+        //explosionArray.clear();
     }
 
 
@@ -578,11 +578,11 @@ public class CellularMatrix {
                 if (input.getBrushType().equals(InputManager.BRUSHTYPE.CIRCLE)) {
                     int distance = distanceBetweenTwoPoints(matrixX, x, matrixY, y);
                     if (distance < halfBrush) {
-                        Vector3 velocity = generateRandomVelocityWithBounds(-200, 200);
+                        Vector3 velocity = generateRandomVelocityWithBounds(100, 300);
                         spawnParticleByMatrix(x, y, elementType, velocity);
                     }
                 } else {
-                    Vector3 velocity = generateRandomVelocityWithBounds(-200, 200);
+                    Vector3 velocity = generateRandomVelocityWithBounds(100, 300);
                     spawnParticleByMatrix(x, y, elementType, velocity);
                 }
             }

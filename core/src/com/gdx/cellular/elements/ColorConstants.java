@@ -44,7 +44,7 @@ public class ColorConstants {
     private static final Color PLAYERMEAT = new Color(255/255f, 255/255f, 0/255f, 1);
 
     // Immovable Solids
-    private static final Color STONE = new Color(150/255f, 150/255f, 150/255f, 1);
+    private static final Color STONE = Color.RED;//new Color(150/255f, 150/255f, 150/255f, 1);
 
     private static final Color BRICK_1 = new Color(188/255f, 3/255f, 0/255f, 1);
     private static final Color BRICK_2 = new Color(188/255f, 3/255f, 0/255f, 1);
@@ -52,9 +52,9 @@ public class ColorConstants {
     private static final Color BRICK_4 = new Color(188/255f, 3/255f, 0/255f, 1);
     private static final Color BRICK_5 = new Color(206/255f, 206/255f, 206/255f, 1);
 
-    private static final Color WOOD_1 = new Color(165/255f, 98/255f, 36/255f, 1);
-    private static final Color WOOD_2 = new Color(61/255f, 33/255f, 7/255f, 1);
-    private static final Color WOOD_3 = new Color(140/255f, 74/255f, 12/255f, 1);
+    private static final Color WOOD_1 = Color.GOLD; //new Color(165/255f, 98/255f, 36/255f, 1);
+//    private static final Color WOOD_2 = new Color(61/255f, 33/255f, 7/255f, 1);
+//    private static final Color WOOD_3 = new Color(140/255f, 74/255f, 12/255f, 1);
 
     private static final Color TITANIUM = new Color(234/255f, 234/255f, 234/255f, 1);
 
@@ -63,7 +63,7 @@ public class ColorConstants {
     private static final Color SLIME_MOLD_3 = new Color(234/255f, 35/255f, 213/255f, 1);
 
 
-    private static final Color GROUND = new Color(68/255f, 37/255f, 37/255f, 1);
+    private static final Color GROUND = Color.FIREBRICK; //new Color(68/255f, 37/255f, 37/255f, 1);
 
 
     // Liquids
@@ -143,8 +143,8 @@ public class ColorConstants {
 
 
         elementColorMap.get(ElementType.WOOD).add(WOOD_1);
-        elementColorMap.get(ElementType.WOOD).add(WOOD_2);
-        elementColorMap.get(ElementType.WOOD).add(WOOD_3);
+//        elementColorMap.get(ElementType.WOOD).add(WOOD_2);
+//        elementColorMap.get(ElementType.WOOD).add(WOOD_3);
 
         elementColorMap.get(ElementType.TITANIUM).add(TITANIUM);
 
@@ -204,11 +204,11 @@ public class ColorConstants {
         }
 
         // Place custom textures in materialsMap
-        Pixmap stonePixmap = Assets.getPixmap("elementtextures/Stone.png");
-        Pixmap woodPixmap = Assets.getPixmap("elementtextures/Wood.png");
+//        Pixmap stonePixmap = Assets.getPixmap("elementtextures/Stone.png");
+        //Pixmap woodPixmap = Assets.getPixmap("elementtextures/Wood.png");
         Pixmap brickPixmap = Assets.getPixmap("elementtextures/Brick.png");
-        materialsMap.put("STONE", new MaterialMap(stonePixmap));
-        materialsMap.put("WOOD", new MaterialMap(woodPixmap));
+//        materialsMap.put("STONE", new MaterialMap(stonePixmap));
+        //materialsMap.put("WOOD", new MaterialMap(woodPixmap));
         materialsMap.put("BRICK", new MaterialMap(brickPixmap));
     }
 

@@ -16,6 +16,7 @@ public class Ground extends ImmovableSolid{
         inertialResistance = 1.1f;
         mass = 200;
         health = 250;
+        explosionResistance = 100;
     }
 
     @Override

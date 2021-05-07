@@ -1,6 +1,7 @@
 package com.gdx.cellular.util;
 
 import com.badlogic.gdx.math.Vector3;
+import com.gdx.cellular.CellularAutomaton;
 import com.gdx.cellular.boids.Boid;
 
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import java.util.stream.Collectors;
 
 public class Chunk {
 
-    public static int size = 32;
+    public static int size = 64 / CellularAutomaton.pixelSizeModifier;
 
     private boolean shouldStep = true;
     private boolean shouldStepNextFrame = true;

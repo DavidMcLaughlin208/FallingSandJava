@@ -9,7 +9,7 @@ public class Dirt extends MovableSolid {
         super(x, y);
         vel = new Vector3(0f, -124f,0f);
         frictionFactor = .6f;
-        inertialResistance = .8f;
+        inertialResistance = .4f;
         mass = 200;
     }
 

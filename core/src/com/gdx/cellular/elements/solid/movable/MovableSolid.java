@@ -68,7 +68,7 @@ public abstract class MovableSolid extends Solid {
         Vector3 formerLocation = new Vector3(getMatrixX(), getMatrixY(), 0);
         Vector3 lastValidLocation = new Vector3(getMatrixX(), getMatrixY(), 0);
         for (int i = 1; i <= upperBound; i++) {
-            smallerCount = (int) Math.floor(i * slope);
+            smallerCount = (int) Math.round(i * slope);
 
             int yIncrease, xIncrease;
             if (xDiffIsLarger) {
