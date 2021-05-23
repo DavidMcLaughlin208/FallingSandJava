@@ -204,12 +204,12 @@ public class ColorConstants {
         }
 
         // Place custom textures in materialsMap
-        Pixmap stonePixmap = Assets.getPixmap("elementtextures/Stone.png");
-        Pixmap woodPixmap = Assets.getPixmap("elementtextures/Wood.png");
-        Pixmap brickPixmap = Assets.getPixmap("elementtextures/Brick.png");
-        materialsMap.put("STONE", new MaterialMap(stonePixmap));
-        materialsMap.put("WOOD", new MaterialMap(woodPixmap));
-        materialsMap.put("BRICK", new MaterialMap(brickPixmap));
+//        Pixmap stonePixmap = Assets.getPixmap("elementtextures/Stone.png");
+//        Pixmap woodPixmap = Assets.getPixmap("elementtextures/Wood.png");
+//        Pixmap brickPixmap = Assets.getPixmap("elementtextures/Brick.png");
+//        materialsMap.put("STONE", new MaterialMap(stonePixmap));
+//        materialsMap.put("WOOD", new MaterialMap(woodPixmap));
+//        materialsMap.put("BRICK", new MaterialMap(brickPixmap));
     }
 
     public static Color getColorByName(String name) {

@@ -27,7 +27,7 @@ import java.util.List;
 public class CellularAutomaton extends ApplicationAdapter {
 	public static int screenWidth = 1280; // 480;
 	public static int screenHeight = 800; //800;
-	public static int pixelSizeModifier = 6;
+	public static int pixelSizeModifier = 2;
 	public static int box2dSizeModifier = 10;
     public static Vector3 gravity = new Vector3(0f, -5f, 0f);
     public static BitSet stepped = new BitSet(1);
@@ -79,10 +79,11 @@ public class CellularAutomaton extends ApplicationAdapter {
 		ShapeFactory.initialize(b2dWorld);
 		debugRenderer = new Box2DDebugRenderer();
 
-		setUpBasicBodies();
+//		setUpBasicBodies();
+		setUpGround();
 
-		this.gameManager = new GameManager(this);
-		gameManager.createPlayer(matrix.innerArraySize/2, matrix.outerArraySize/2);
+//		this.gameManager = new GameManager(this);
+//		gameManager.createPlayer(matrix.innerArraySize/2, matrix.outerArraySize/2);
 		inputProcessors = new InputProcessors(inputManager, matrix, camera, gameManager);
 	}
 
@@ -165,7 +166,7 @@ public class CellularAutomaton extends ApplicationAdapter {
 		inputManager.drawCursor();
 
 		inputManager.weatherSystem.enact(this.matrix);
-		gameManager.stepPlayers(this.matrix);
+//		gameManager.stepPlayers(this.matrix);
 	}
 
 	@Override
@@ -186,6 +187,12 @@ public class CellularAutomaton extends ApplicationAdapter {
 				new Vector3((camera.viewportWidth/2/box2dSizeModifier - camera.viewportWidth/2/box2dSizeModifier/8) * 20, 50, 0),
 				ElementType.STONE,
 				BodyDef.BodyType.StaticBody);
+	}
+
+	private void setUpGround() {
+		Vector3 startPoint = new Vector3(screenWidth/5, screenHeight/5, 0);
+		Vector3 endPoint = new Vector3(screenWidth - screenWidth/5, screenHeight/5, 0);
+		matrix.spawnElementBetweenTwoPoints(startPoint, endPoint, ElementType.STONE, 30, InputManager.BRUSHTYPE.SQUARE);
 	}
 
 	private void startAndWaitOnEvenThreads(List<Thread> threads) {
