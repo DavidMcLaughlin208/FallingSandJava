@@ -1,6 +1,8 @@
 # FallingSandJava
 Falling sand simulation written in Java and LIBGDX
 
+YouTube video tutorial on how to build this: https://youtu.be/5Ka3tbbT-9E
+
 ![](media/SandScene.gif)
 
 ## Overview:<br>
